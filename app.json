@@ -1,53 +1,53 @@
 {
-  "expo": {
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "foregroundImage": "./src/assets/images/adaptive-icon.png"
-      },
-      "edgeToEdgeEnabled": true
-    },
-    "experiments": {
-      "typedRoutes": true
-    },
-    "icon": "./src/assets/images/icon.png",
-    "ios": {
-      "bundleIdentifier": "cafe.tolo.app",
-      "supportsTablet": true
-    },
-    "name": "TOLO",
-    "newArchEnabled": true,
-    "orientation": "portrait",
-    "plugins": [
-      "expo-router",
-      "react-native-bottom-tabs",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#ffffff",
-          "image": "./src/assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain"
-        }
-      ],
-      "react-native-edge-to-edge"
-    ],
-    "scheme": "tolo",
-    "slug": "tolo",
-    "userInterfaceStyle": "automatic",
-    "version": "1.0.0",
-    "web": {
-      "bundler": "metro",
-      "favicon": "./src/assets/images/favicon.png",
-      "output": "static"
-    }
-  }
+	"expo": {
+		"android": {
+			"adaptiveIcon": {
+				"backgroundColor": "#ffffff",
+				"foregroundImage": "./src/assets/images/adaptive-icon.png"
+			},
+			"edgeToEdgeEnabled": true
+		},
+		"experiments": {
+			"typedRoutes": true
+		},
+		"icon": "./src/assets/images/icon.png",
+		"ios": {
+			"bundleIdentifier": "cafe.tolo.app",
+			"supportsTablet": true
+		},
+		"name": "TOLO",
+		"newArchEnabled": true,
+		"orientation": "portrait",
+		"plugins": [
+			"expo-router",
+			"react-native-bottom-tabs",
+			[
+				"expo-build-properties",
+				{
+					"ios": {
+						"useFrameworks": "static"
+					}
+				}
+			],
+			[
+				"expo-splash-screen",
+				{
+					"backgroundColor": "#ffffff",
+					"image": "./src/assets/images/splash-icon.png",
+					"imageWidth": 200,
+					"resizeMode": "contain"
+				}
+			],
+			"react-native-edge-to-edge"
+		],
+		"scheme": "tolo",
+		"slug": "tolo",
+		"userInterfaceStyle": "automatic",
+		"version": "1.0.0",
+		"web": {
+			"bundler": "metro",
+			"favicon": "./src/assets/images/favicon.png",
+			"output": "static"
+		}
+	}
 }

@@ -1,0 +1,5 @@
+module.exports = {
+	messages: JSON.parse(
+		'{"+5kO8P":["Saturday"],"2FYpfJ":["More"],"4CETZY":["Get Directions"],"4N00Lf":["Monday - Friday"],"B0KMTj":["TOLO Coffee"],"Bz71MY":["Quality First"],"CTWsuc":["Instagram"],"DBC3t5":["Sunday"],"GQU6jd":["Community Focus"],"GleTa0":["Sustainability"],"MHD3pG":["Our Story"],"MXV1ap":["POPULAR"],"On0aF2":["Website"],"QJ3zov":["TOLO Coffee Shop"],"QhrFYp":["We source only the best beans and ingredients"],"RtBCrg":["About TOLO"],"UkWOIs":["Committed to eco-friendly practices"],"YpgSCr":["TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we\'re here to make yours special."],"eyNidr":["Building connections one cup at a time"],"jfC/xh":["Contact"],"p6NueD":["NEW"],"vXIe7J":["Language"],"wB3UW+":["Our Values"],"wJijgU":["Location"],"y9REyX":["Fresh • Local • Delicious"],"yY8wAv":["Hours"],"zmwvG2":["Phone"],"zucql+":["Menu"]}',
+	),
+}
