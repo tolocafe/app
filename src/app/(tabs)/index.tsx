@@ -7,6 +7,7 @@ import {
 } from '@/lib/queries/preferences'
 import { Trans } from '@lingui/react/macro'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Head from 'expo-router/head'
 import { useState } from 'react'
 import {
 	ActivityIndicator,
@@ -51,7 +52,7 @@ export default function Menu() {
 	if (isLoading) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" color={styles.theme.colors.primary} />
+				<ActivityIndicator size="large" />
 				<Text style={styles.loadingText}>
 					<Trans>Loading menu...</Trans>
 				</Text>
@@ -148,45 +149,64 @@ export default function Menu() {
 	}
 
 	return (
-		<ScrollView
-			contentInsetAdjustmentBehavior="automatic"
-			style={styles.container}
-		>
+		<>
+			<Head>
+				<title>Menú - TOLO Buen Café</title>
+				<meta
+					name="description"
+					content="Descubre nuestro menú de café casero con espresso, lattes, cappuccinos y deliciosos acompañamientos. TOLO - donde el buen café se encuentra contigo."
+				/>
+				<meta
+					name="keywords"
+					content="menú TOLO, buen café, espresso, latte, cappuccino, café casero, menú cafetería"
+				/>
+				<meta property="og:title" content="Menú - TOLO Buen Café" />
+				<meta
+					property="og:description"
+					content="Descubre nuestro menú de café casero con espresso, lattes, cappuccinos y deliciosos acompañamientos."
+				/>
+				<meta property="og:url" content="/" />
+			</Head>
 			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				style={styles.categoriesContainer}
-				contentContainerStyle={styles.categoriesContent}
+				contentInsetAdjustmentBehavior="automatic"
+				style={styles.container}
 			>
-				{categories.map((category: any) => (
-					<TouchableOpacity
-						key={category.id}
-						style={[
-							styles.categoryButton,
-							selectedCategory === category.id && styles.categoryButtonActive,
-						]}
-						onPress={() => setSelectedCategory(category.id)}
-					>
-						<Text
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					style={styles.categoriesContainer}
+					contentContainerStyle={styles.categoriesContent}
+				>
+					{categories.map((category: any) => (
+						<TouchableOpacity
+							key={category.id}
 							style={[
-								styles.categoryText,
-								selectedCategory === category.id && styles.categoryTextActive,
+								styles.categoryButton,
+								selectedCategory === category.id && styles.categoryButtonActive,
 							]}
+							onPress={() => setSelectedCategory(category.id)}
 						>
-							{category.name}
-						</Text>
-					</TouchableOpacity>
-				))}
-			</ScrollView>
+							<Text
+								style={[
+									styles.categoryText,
+									selectedCategory === category.id && styles.categoryTextActive,
+								]}
+							>
+								{category.name}
+							</Text>
+						</TouchableOpacity>
+					))}
+				</ScrollView>
 
-			<FlatList
-				data={filteredItems}
-				renderItem={renderMenuItem}
-				keyExtractor={(item) => item.id}
-				contentContainerStyle={styles.menuList}
-				showsVerticalScrollIndicator={false}
-			/>
-		</ScrollView>
+				<FlatList
+					data={filteredItems}
+					renderItem={renderMenuItem}
+					keyExtractor={(item) => item.id}
+					contentContainerStyle={styles.menuList}
+					showsVerticalScrollIndicator={false}
+				/>
+			</ScrollView>
+		</>
 	)
 }
 

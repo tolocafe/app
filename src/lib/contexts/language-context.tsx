@@ -18,21 +18,21 @@ const storage = new MMKV()
 const LANGUAGE_KEY = 'tolo_language'
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-	const [currentLanguage, setCurrentLanguage] = useState<Language>('en')
+	const [currentLanguage, setCurrentLanguage] = useState<Language>('es')
 	const [isReady, setIsReady] = useState(false)
 
 	useEffect(() => {
 		// Initialize i18n on mount
 		const initializeLanguage = async () => {
 			try {
-				// Get stored language or default to 'en'
+				// Get stored language or default to 'es' (Spanish)
 				const storedLanguage = storage.getString(LANGUAGE_KEY) as
 					| Language
 					| undefined
 				const language =
 					storedLanguage === 'es' || storedLanguage === 'en'
 						? storedLanguage
-						: 'en'
+						: 'es'
 
 				// Load messages based on language
 				if (language === 'es') {
@@ -49,10 +49,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 				setIsReady(true)
 			} catch (error) {
 				console.error('Failed to initialize language:', error)
-				// Fallback to English if something goes wrong
-				const { messages } = await import('../locales/en/messages.js')
-				i18n.load('en', messages)
-				i18n.activate('en')
+				// Fallback to Spanish if something goes wrong
+				const { messages } = await import('../locales/es/messages.js')
+				i18n.load('es', messages)
+				i18n.activate('es')
+				setCurrentLanguage('es')
 				setIsReady(true)
 			}
 		}

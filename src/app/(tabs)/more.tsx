@@ -1,5 +1,6 @@
 import { useLanguage } from '@/lib/contexts/language-context'
 import { Trans } from '@lingui/react/macro'
+import Head from 'expo-router/head'
 import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
@@ -24,179 +25,201 @@ export default function More() {
 	}
 
 	return (
-		<ScrollView
-			contentContainerStyle={styles.scrollContent}
-			contentInsetAdjustmentBehavior="automatic"
-		>
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Location</Trans>
-				</Text>
-				<View style={styles.card}>
-					<Text style={styles.cardTitle}>
-						<Trans>TOLO Coffee Shop</Trans>
+		<>
+			<Head>
+				<title>Visítanos - TOLO Buen Café</title>
+				<meta
+					name="description"
+					content="Ven a conocer TOLO en 123 Coffee Street, San Francisco. Aquí encontrarás nuestros horarios, cómo contactarnos y conectarte con nuestra comunidad cafetera."
+				/>
+				<meta
+					name="keywords"
+					content="TOLO ubicación, horarios TOLO, contacto TOLO, buen café San Francisco, cafetería barrio"
+				/>
+				<meta property="og:title" content="Visítanos - TOLO Buen Café" />
+				<meta
+					property="og:description"
+					content="Ven a conocer TOLO en 123 Coffee Street, San Francisco. Aquí encontrarás nuestra comunidad cafetera."
+				/>
+				<meta property="og:url" content="/more" />
+			</Head>
+			<ScrollView
+				contentContainerStyle={styles.scrollContent}
+				contentInsetAdjustmentBehavior="automatic"
+			>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Location</Trans>
 					</Text>
-					<Text style={styles.cardText}>123 Coffee Street</Text>
-					<Text style={styles.cardText}>San Francisco, CA 94105</Text>
-					<TouchableOpacity style={styles.button} onPress={handleDirections}>
-						<Text style={styles.buttonText}>
-							<Trans>Get Directions</Trans>
+					<View style={styles.card}>
+						<Text style={styles.cardTitle}>
+							<Trans>TOLO Coffee Shop</Trans>
 						</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Hours</Trans>
-				</Text>
-				<View style={styles.card}>
-					<View style={styles.hoursRow}>
-						<Text style={styles.dayText}>
-							<Trans>Monday - Friday</Trans>
-						</Text>
-						<Text style={styles.hoursText}>6:00 AM - 8:00 PM</Text>
-					</View>
-					<View style={styles.hoursRow}>
-						<Text style={styles.dayText}>
-							<Trans>Saturday</Trans>
-						</Text>
-						<Text style={styles.hoursText}>7:00 AM - 9:00 PM</Text>
-					</View>
-					<View style={styles.hoursRow}>
-						<Text style={styles.dayText}>
-							<Trans>Sunday</Trans>
-						</Text>
-						<Text style={styles.hoursText}>7:00 AM - 7:00 PM</Text>
+						<Text style={styles.cardText}>123 Coffee Street</Text>
+						<Text style={styles.cardText}>San Francisco, CA 94105</Text>
+						<TouchableOpacity style={styles.button} onPress={handleDirections}>
+							<Text style={styles.buttonText}>
+								<Trans>Get Directions</Trans>
+							</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
-			</View>
 
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Contact</Trans>
-				</Text>
-				<View style={styles.card}>
-					<TouchableOpacity style={styles.contactRow} onPress={handleCall}>
-						<Text style={styles.contactLabel}>
-							<Trans>Phone</Trans>
-						</Text>
-						<Text style={styles.contactValue}>(415) 555-1234</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.contactRow} onPress={handleWebsite}>
-						<Text style={styles.contactLabel}>
-							<Trans>Website</Trans>
-						</Text>
-						<Text style={styles.contactValue}>tolocoffee.com</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.contactRow} onPress={handleInstagram}>
-						<Text style={styles.contactLabel}>
-							<Trans>Instagram</Trans>
-						</Text>
-						<Text style={styles.contactValue}>@tolocoffee</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Our Story</Trans>
-				</Text>
-				<View style={styles.card}>
-					<Text style={styles.storyText}>
-						<Trans>
-							TOLO Coffee is a neighborhood coffee shop dedicated to serving the
-							finest locally-roasted coffee. We believe in creating a warm,
-							welcoming space where community comes together over exceptional
-							coffee and fresh, locally-sourced food. Every cup tells a story,
-							and we&apos;re here to make yours special.
-						</Trans>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Hours</Trans>
 					</Text>
+					<View style={styles.card}>
+						<View style={styles.hoursRow}>
+							<Text style={styles.dayText}>
+								<Trans>Monday - Friday</Trans>
+							</Text>
+							<Text style={styles.hoursText}>6:00 AM - 8:00 PM</Text>
+						</View>
+						<View style={styles.hoursRow}>
+							<Text style={styles.dayText}>
+								<Trans>Saturday</Trans>
+							</Text>
+							<Text style={styles.hoursText}>7:00 AM - 9:00 PM</Text>
+						</View>
+						<View style={styles.hoursRow}>
+							<Text style={styles.dayText}>
+								<Trans>Sunday</Trans>
+							</Text>
+							<Text style={styles.hoursText}>7:00 AM - 7:00 PM</Text>
+						</View>
+					</View>
 				</View>
-			</View>
 
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Our Values</Trans>
-				</Text>
-				<View style={styles.card}>
-					<View style={styles.valueItem}>
-						<Text style={styles.valueTitle}>
-							<Trans>Quality First</Trans>
-						</Text>
-						<Text style={styles.valueText}>
-							<Trans>We source only the best beans and ingredients</Trans>
-						</Text>
-					</View>
-					<View style={styles.valueItem}>
-						<Text style={styles.valueTitle}>
-							<Trans>Community Focus</Trans>
-						</Text>
-						<Text style={styles.valueText}>
-							<Trans>Building connections one cup at a time</Trans>
-						</Text>
-					</View>
-					<View style={styles.valueItem}>
-						<Text style={styles.valueTitle}>
-							<Trans>Sustainability</Trans>
-						</Text>
-						<Text style={styles.valueText}>
-							<Trans>Committed to eco-friendly practices</Trans>
-						</Text>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Contact</Trans>
+					</Text>
+					<View style={styles.card}>
+						<TouchableOpacity style={styles.contactRow} onPress={handleCall}>
+							<Text style={styles.contactLabel}>
+								<Trans>Phone</Trans>
+							</Text>
+							<Text style={styles.contactValue}>(415) 555-1234</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.contactRow} onPress={handleWebsite}>
+							<Text style={styles.contactLabel}>
+								<Trans>Website</Trans>
+							</Text>
+							<Text style={styles.contactValue}>tolocoffee.com</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.contactRow}
+							onPress={handleInstagram}
+						>
+							<Text style={styles.contactLabel}>
+								<Trans>Instagram</Trans>
+							</Text>
+							<Text style={styles.contactValue}>@tolocoffee</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
-			</View>
 
-			<View style={styles.section}>
-				<Text style={styles.sectionTitle}>
-					<Trans>Language</Trans>
-				</Text>
-				<View style={styles.card}>
-					<TouchableOpacity
-						style={[
-							styles.languageRow,
-							currentLanguage === 'en' && styles.languageRowActive,
-						]}
-						onPress={() => changeLanguage('en')}
-					>
-						<Text
-							style={[
-								styles.languageText,
-								currentLanguage === 'en' && styles.languageTextActive,
-							]}
-						>
-							English
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Our Story</Trans>
+					</Text>
+					<View style={styles.card}>
+						<Text style={styles.storyText}>
+							<Trans>
+								TOLO Coffee is a neighborhood coffee shop dedicated to serving
+								the finest locally-roasted coffee. We believe in creating a
+								warm, welcoming space where community comes together over
+								exceptional coffee and fresh, locally-sourced food. Every cup
+								tells a story, and we&apos;re here to make yours special.
+							</Trans>
 						</Text>
-						{currentLanguage === 'en' && (
-							<View style={styles.checkmark}>
-								<Text style={styles.checkmarkText}>✓</Text>
-							</View>
-						)}
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={[
-							styles.languageRow,
-							currentLanguage === 'es' && styles.languageRowActive,
-						]}
-						onPress={() => changeLanguage('es')}
-					>
-						<Text
-							style={[
-								styles.languageText,
-								currentLanguage === 'es' && styles.languageTextActive,
-							]}
-						>
-							Español
-						</Text>
-						{currentLanguage === 'es' && (
-							<View style={styles.checkmark}>
-								<Text style={styles.checkmarkText}>✓</Text>
-							</View>
-						)}
-					</TouchableOpacity>
+					</View>
 				</View>
-			</View>
-		</ScrollView>
+
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Our Values</Trans>
+					</Text>
+					<View style={styles.card}>
+						<View style={styles.valueItem}>
+							<Text style={styles.valueTitle}>
+								<Trans>Quality First</Trans>
+							</Text>
+							<Text style={styles.valueText}>
+								<Trans>We source only the best beans and ingredients</Trans>
+							</Text>
+						</View>
+						<View style={styles.valueItem}>
+							<Text style={styles.valueTitle}>
+								<Trans>Community Focus</Trans>
+							</Text>
+							<Text style={styles.valueText}>
+								<Trans>Building connections one cup at a time</Trans>
+							</Text>
+						</View>
+						<View style={styles.valueItem}>
+							<Text style={styles.valueTitle}>
+								<Trans>Sustainability</Trans>
+							</Text>
+							<Text style={styles.valueText}>
+								<Trans>Committed to eco-friendly practices</Trans>
+							</Text>
+						</View>
+					</View>
+				</View>
+
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Language</Trans>
+					</Text>
+					<View style={styles.card}>
+						<TouchableOpacity
+							style={[
+								styles.languageRow,
+								currentLanguage === 'en' && styles.languageRowActive,
+							]}
+							onPress={() => changeLanguage('en')}
+						>
+							<Text
+								style={[
+									styles.languageText,
+									currentLanguage === 'en' && styles.languageTextActive,
+								]}
+							>
+								English
+							</Text>
+							{currentLanguage === 'en' && (
+								<View style={styles.checkmark}>
+									<Text style={styles.checkmarkText}>✓</Text>
+								</View>
+							)}
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[
+								styles.languageRow,
+								currentLanguage === 'es' && styles.languageRowActive,
+							]}
+							onPress={() => changeLanguage('es')}
+						>
+							<Text
+								style={[
+									styles.languageText,
+									currentLanguage === 'es' && styles.languageTextActive,
+								]}
+							>
+								Español
+							</Text>
+							{currentLanguage === 'es' && (
+								<View style={styles.checkmark}>
+									<Text style={styles.checkmarkText}>✓</Text>
+								</View>
+							)}
+						</TouchableOpacity>
+					</View>
+				</View>
+			</ScrollView>
+		</>
 	)
 }
 
