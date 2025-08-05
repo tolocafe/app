@@ -1,0 +1,39 @@
+---
+description: React Native Unistyles Styling Guidelines
+globs: ['src/**/*.tsx', 'src/**/*.ts']
+alwaysApply: true
+---
+
+# Unistyles Usage Guidelines
+
+Use react-native-unistyles for all styling in the app. Follow these patterns:
+
+## Setup and Theme
+
+- Define theme in a central theme file with colors, spacing, typography
+- Use createUnistylesTheme for type-safe theme creation
+- Support light and dark themes
+
+## Creating Styles
+
+- Use StyleSheet.create() with theme and runtime parameters
+- Access theme values for all design tokens
+- Keep style definitions close to components
+- Use the styles object directly without hooks
+
+## Best Practices
+
+- Never use inline styles - always use unistyles
+- Use theme values for all colors, spacing, and typography
+- Create reusable style utilities for common patterns
+- Use variants for conditional styling
+- Leverage runtime values when needed
+- Keep style definitions close to components
+
+## Common Patterns
+
+- Use theme.spacing for consistent spacing
+- Use theme.colors for all color values
+- Use theme.fontSizes for typography
+- Create semantic color names (primary, secondary, danger, etc.)
+- Use theme.borderRadius for consistent rounded corners

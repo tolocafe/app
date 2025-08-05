@@ -1,0 +1,126 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/app/(tabs)/more.tsx:33
+msgid "About TOLO"
+msgstr "About TOLO"
+
+#: src/app/(tabs)/more.tsx:142
+msgid "Building connections one cup at a time"
+msgstr "Building connections one cup at a time"
+
+#: src/app/(tabs)/more.tsx:150
+msgid "Committed to eco-friendly practices"
+msgstr "Committed to eco-friendly practices"
+
+#: src/app/(tabs)/more.tsx:139
+msgid "Community Focus"
+msgstr "Community Focus"
+
+#: src/app/(tabs)/more.tsx:83
+msgid "Contact"
+msgstr "Contact"
+
+#: src/app/(tabs)/index.tsx:56
+msgid "Fresh • Local • Delicious"
+msgstr "Fresh • Local • Delicious"
+
+#: src/app/(tabs)/more.tsx:49
+msgid "Get Directions"
+msgstr "Get Directions"
+
+#: src/app/(tabs)/more.tsx:57
+msgid "Hours"
+msgstr "Hours"
+
+#: src/app/(tabs)/more.tsx:100
+msgid "Instagram"
+msgstr "Instagram"
+
+#: src/app/(tabs)/more.tsx:158
+msgid "Language"
+msgstr "Language"
+
+#: src/app/(tabs)/more.tsx:39
+msgid "Location"
+msgstr "Location"
+
+#: src/app/(tabs)/_layout.tsx:19
+msgid "Menu"
+msgstr "Menu"
+
+#: src/app/(tabs)/more.tsx:62
+msgid "Monday - Friday"
+msgstr "Monday - Friday"
+
+#: src/app/(tabs)/_layout.tsx:20
+msgid "More"
+msgstr "More"
+
+#: src/app/(tabs)/index.tsx:28
+msgid "NEW"
+msgstr "NEW"
+
+#: src/app/(tabs)/more.tsx:109
+msgid "Our Story"
+msgstr "Our Story"
+
+#: src/app/(tabs)/more.tsx:126
+msgid "Our Values"
+msgstr "Our Values"
+
+#: src/app/(tabs)/more.tsx:88
+msgid "Phone"
+msgstr "Phone"
+
+#: src/app/(tabs)/index.tsx:35
+msgid "POPULAR"
+msgstr "POPULAR"
+
+#: src/app/(tabs)/more.tsx:131
+msgid "Quality First"
+msgstr "Quality First"
+
+#: src/app/(tabs)/more.tsx:68
+msgid "Saturday"
+msgstr "Saturday"
+
+#: src/app/(tabs)/more.tsx:74
+msgid "Sunday"
+msgstr "Sunday"
+
+#: src/app/(tabs)/more.tsx:147
+msgid "Sustainability"
+msgstr "Sustainability"
+
+#: src/app/(tabs)/index.tsx:53
+msgid "TOLO Coffee"
+msgstr "TOLO Coffee"
+
+#: src/app/(tabs)/more.tsx:113
+msgid "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
+msgstr "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
+
+#: src/app/(tabs)/more.tsx:43
+msgid "TOLO Coffee Shop"
+msgstr "TOLO Coffee Shop"
+
+#: src/app/(tabs)/more.tsx:134
+msgid "We source only the best beans and ingredients"
+msgstr "We source only the best beans and ingredients"
+
+#: src/app/(tabs)/more.tsx:94
+msgid "Website"
+msgstr "Website"

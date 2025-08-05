@@ -1,0 +1,26 @@
+---
+description: React Native and Expo Best Practices
+globs: ['src/**/*.tsx', 'src/**/*.ts']
+alwaysApply: false
+---
+
+# React Native & Expo Standards
+
+## Core Principles
+
+- Use functional components with TypeScript
+- Keep components simple and focused
+- Follow React best practices
+- Use Expo Router for navigation
+
+## Performance
+
+- Use FlatList for long lists
+- Memoize expensive operations
+- Avoid unnecessary re-renders
+
+## Code Quality
+
+- Type everything with TypeScript
+- Handle errors gracefully
+- Keep code readable and maintainable

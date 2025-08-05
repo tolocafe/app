@@ -1,0 +1,41 @@
+---
+description: Lingui Internationalization Guidelines
+globs: ['src/**/*.tsx', 'src/**/*.ts']
+alwaysApply: true
+---
+
+# Lingui Localization Guidelines
+
+Use @lingui for all text content in the app. Support English and Spanish initially.
+
+## Text Content
+
+- Use Trans component for JSX text content
+- Use t macro for string values and placeholders
+- Import from @lingui/macro for compile-time optimizations
+- Use useLingui hook to access i18n instance
+
+## Best Practices
+
+- Wrap ALL user-facing text with Trans or t
+- Never hardcode strings - always use lingui
+- Use meaningful IDs for complex translations
+- Include context comments for translators
+- Use plurals for count-based messages
+- Use variables for dynamic content
+- Support ICU message format
+
+## Common Translations
+
+- Menu categories and item names
+- Store information and hours
+- Navigation labels
+- Button text and actions
+- Error messages and alerts
+- Placeholder text
+
+## File Organization
+
+- Keep translations in locales/ directory
+- Use lingui extract to generate message catalogs
+- Compile translations before building

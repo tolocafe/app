@@ -1,0 +1,5 @@
+module.exports = {
+  messages: JSON.parse(
+    '{"+5kO8P":["Sábado"],"2FYpfJ":["Más"],"4CETZY":["Obtener Direcciones"],"4N00Lf":["Lunes - Viernes"],"B0KMTj":["TOLO Coffee"],"Bz71MY":["Calidad Primero"],"CTWsuc":["Instagram"],"DBC3t5":["Domingo"],"GQU6jd":["Enfoque Comunitario"],"GleTa0":["Sostenibilidad"],"MHD3pG":["Nuestra Historia"],"MXV1ap":["POPULAR"],"On0aF2":["Sitio Web"],"QJ3zov":["Cafetería TOLO"],"QhrFYp":["Solo obtenemos los mejores granos e ingredientes"],"RtBCrg":["Acerca de TOLO"],"UkWOIs":["Comprometidos con prácticas ecológicas"],"YpgSCr":["TOLO Coffee es una cafetería de barrio dedicada a servir el mejor café tostado localmente. Creemos en crear un espacio cálido y acogedor donde la comunidad se reúne alrededor de un café excepcional y comida fresca de origen local. Cada taza cuenta una historia, y estamos aquí para hacer la tuya especial."],"eyNidr":["Construyendo conexiones una taza a la vez"],"jfC/xh":["Contacto"],"p6NueD":["NUEVO"],"vXIe7J":["Idioma"],"wB3UW+":["Nuestros Valores"],"wJijgU":["Ubicación"],"y9REyX":["Fresco • Local • Delicioso"],"yY8wAv":["Horario"],"zmwvG2":["Teléfono"],"zucql+":["Menú"]}',
+  ),
+}

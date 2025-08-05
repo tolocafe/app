@@ -1,0 +1,30 @@
+---
+description: TOLO Coffee Shop App Standards
+globs: ['src/**/*.tsx', 'src/**/*.ts']
+alwaysApply: true
+---
+
+# TOLO Coffee Shop App
+
+React Native coffee shop app with focus on simplicity and user experience.
+
+## Core Features
+
+- Menu browsing with categories
+- Store location and hours
+- Contact information
+- Multi-language support
+
+## Design Principles
+
+- Clean, modern UI
+- Fast performance
+- Accessible design
+- Consistent spacing and typography
+
+## Technical Standards
+
+- Use React Native Unistyles for all styling
+- Lingui for all user-facing text
+- TypeScript for type safety
+- Follow KISS principle

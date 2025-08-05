@@ -1,0 +1,126 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-08-05 12:19-0600\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: es\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/app/(tabs)/more.tsx:33
+msgid "About TOLO"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:142
+msgid "Building connections one cup at a time"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:150
+msgid "Committed to eco-friendly practices"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:139
+msgid "Community Focus"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:83
+msgid "Contact"
+msgstr ""
+
+#: src/app/(tabs)/index.tsx:56
+msgid "Fresh • Local • Delicious"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:49
+msgid "Get Directions"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:57
+msgid "Hours"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:100
+msgid "Instagram"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:158
+msgid "Language"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:39
+msgid "Location"
+msgstr ""
+
+#: src/app/(tabs)/_layout.tsx:19
+msgid "Menu"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:62
+msgid "Monday - Friday"
+msgstr ""
+
+#: src/app/(tabs)/_layout.tsx:20
+msgid "More"
+msgstr ""
+
+#: src/app/(tabs)/index.tsx:28
+msgid "NEW"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:109
+msgid "Our Story"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:126
+msgid "Our Values"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:88
+msgid "Phone"
+msgstr ""
+
+#: src/app/(tabs)/index.tsx:35
+msgid "POPULAR"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:131
+msgid "Quality First"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:68
+msgid "Saturday"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:74
+msgid "Sunday"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:147
+msgid "Sustainability"
+msgstr ""
+
+#: src/app/(tabs)/index.tsx:53
+msgid "TOLO Coffee"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:113
+msgid "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:43
+msgid "TOLO Coffee Shop"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:134
+msgid "We source only the best beans and ingredients"
+msgstr ""
+
+#: src/app/(tabs)/more.tsx:94
+msgid "Website"
+msgstr ""
