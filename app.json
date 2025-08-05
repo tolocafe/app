@@ -12,20 +12,25 @@
 		},
 		"icon": "./src/assets/images/icon.png",
 		"ios": {
-			"bundleIdentifier": "cafe.tolo.app",
-			"supportsTablet": true,
 			"associatedDomains": [
 				"applinks:app.tolo.cafe",
 				"activitycontinuation:app.tolo.cafe",
 				"webcredentials:app.tolo.cafe"
-			]
+			],
+			"bundleIdentifier": "cafe.tolo.app",
+			"supportsTablet": true
 		},
 		"name": "TOLO",
 		"newArchEnabled": true,
 		"orientation": "portrait",
 		"plugins": [
 			"react-native-bottom-tabs",
-			["expo-router", { "headOrigin": "https://app.tolo.cafe" }],
+			[
+				"expo-router",
+				{
+					"headOrigin": "https://app.tolo.cafe"
+				}
+			],
 			[
 				"expo-build-properties",
 				{
