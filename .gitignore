@@ -3,6 +3,8 @@
 .cursor/mcp.json
 /ios
 /android
+.wrangler/
+.vscode/
 
 # dependencies
 node_modules/

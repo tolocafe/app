@@ -1,72 +1,87 @@
 {
-	"expo": {
-		"android": {
-			"adaptiveIcon": {
-				"backgroundColor": "#ffffff",
-				"foregroundImage": "./src/assets/images/adaptive-icon.png"
-			},
-			"edgeToEdgeEnabled": true
-		},
-		"experiments": {
-			"typedRoutes": true
-		},
-		"icon": "./src/assets/images/icon.png",
-		"ios": {
-			"associatedDomains": [
-				"applinks:app.tolo.cafe",
-				"activitycontinuation:app.tolo.cafe",
-				"webcredentials:app.tolo.cafe"
-			],
-			"bundleIdentifier": "cafe.tolo.app",
-			"supportsTablet": true
-		},
-		"name": "TOLO",
-		"newArchEnabled": true,
-		"orientation": "portrait",
-		"plugins": [
-			"react-native-bottom-tabs",
-			[
-				"expo-router",
-				{
-					"headOrigin": "https://app.tolo.cafe"
-				}
-			],
-			[
-				"expo-build-properties",
-				{
-					"ios": {
-						"useFrameworks": "static"
-					}
-				}
-			],
-			[
-				"expo-splash-screen",
-				{
-					"backgroundColor": "#ffffff",
-					"image": "./src/assets/images/splash-icon.png",
-					"imageWidth": 200,
-					"resizeMode": "contain"
-				}
-			],
-			"react-native-edge-to-edge"
-		],
-		"scheme": "tolo",
-		"slug": "tolo",
-		"userInterfaceStyle": "automatic",
-		"version": "1.0.0",
-		"web": {
-			"backgroundColor": "#ffffff",
-			"bundler": "metro",
-			"description": "TOLO - Buen Café. Tu cafetería de barrio donde cada taza cuenta una historia",
-			"display": "standalone",
-			"favicon": "./src/assets/images/favicon.png",
-			"lang": "es",
-			"name": "TOLO - Buen Café",
-			"orientation": "portrait",
-			"output": "static",
-			"shortName": "TOLO",
-			"startUrl": "/",
-			"themeColor": "#ffffff"
-		}
-	}
+  "expo": {
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./src/assets/images/adaptive-icon.png"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "icon": "./src/assets/images/icon.png",
+    "ios": {
+      "associatedDomains": [
+        "applinks:app.tolo.cafe",
+        "activitycontinuation:app.tolo.cafe",
+        "webcredentials:app.tolo.cafe",
+        "applinks:app.tolo.cafe",
+        "activitycontinuation:app.tolo.cafe",
+        "webcredentials:app.tolo.cafe"
+      ],
+      "bundleIdentifier": "cafe.tolo.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "name": "TOLO",
+    "newArchEnabled": true,
+    "orientation": "portrait",
+    "plugins": [
+      "react-native-bottom-tabs",
+      [
+        "expo-router",
+        {
+          "headOrigin": "https://app.tolo.cafe"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./src/assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
+      "react-native-edge-to-edge"
+    ],
+    "scheme": "tolo",
+    "slug": "tolo",
+    "userInterfaceStyle": "automatic",
+    "version": "1.0.0",
+    "web": {
+      "backgroundColor": "#ffffff",
+      "bundler": "metro",
+      "description": "TOLO - Buen Café. Tu cafetería de barrio donde cada taza cuenta una historia",
+      "display": "standalone",
+      "favicon": "./src/assets/images/favicon.png",
+      "lang": "es",
+      "name": "TOLO - Buen Café",
+      "orientation": "portrait",
+      "output": "static",
+      "shortName": "TOLO",
+      "startUrl": "/",
+      "themeColor": "#ffffff"
+    },
+    "extra": {
+      "router": {
+        "headOrigin": "https://app.tolo.cafe"
+      },
+      "eas": {
+        "projectId": "25e3751a-b837-480a-b9fc-ee67327f46e9"
+      }
+    },
+    "owner": "tolo-cafe"
+  }
 }

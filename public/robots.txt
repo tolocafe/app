@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: /sitemap.xml
-
 # Disallow admin or API routes if any
 Disallow: /api/
