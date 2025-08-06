@@ -19,7 +19,7 @@ import {
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { useAuth } from '@/lib/hooks/use-auth'
-import AddToBagModal from '@/components/AddToBagModal'
+import SignInModal from '@/components/SignInModal'
 
 export default function Menu() {
 	const [selectedCategory, setSelectedCategory] = useState('coffee')
@@ -230,10 +230,10 @@ export default function Menu() {
 				/>
 			</ScrollView>
 
-			<AddToBagModal
+			<SignInModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
-				itemName={selectedItem?.name || ''}
+				itemName={selectedItem?.name}
 			/>
 		</>
 	)

@@ -7,7 +7,11 @@ import { useAuth } from '@/lib/hooks/use-auth'
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 
-export default function NotSignedIn() {
+interface NotSignedInProps {
+	onSignIn?: () => void
+}
+
+export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
 	const { i18n } = useLingui()
 	const { signIn } = useAuth()
 	const colorScheme = useColorScheme()
@@ -32,6 +36,7 @@ export default function NotSignedIn() {
 					authorizationCode: credential.authorizationCode || undefined,
 				}
 				signIn(authUser)
+				onSignIn?.()
 			}
 		} catch (error: any) {
 			if (error.code === 'ERR_CANCELED') {
