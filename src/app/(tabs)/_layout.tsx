@@ -16,7 +16,8 @@ export default function TabLayout() {
 				tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
 			}}
 		>
-			<Tabs.Screen name="index" options={{ title: t(i18n)`Menu` }} />
+			<Tabs.Screen name="menu" options={{ title: t(i18n)`Menu` }} />
+			<Tabs.Screen name="orders" options={{ title: t(i18n)`Orders` }} />
 			<Tabs.Screen name="more" options={{ title: t(i18n)`More` }} />
 		</Tabs>
 	)
