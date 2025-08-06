@@ -18,3 +18,14 @@ export async function verifyJwt(token: string, secret: string): Promise<string |
     return null
   }
 }
+
+export function extractToken(authorizationHeader?: string | null): string | null {
+  if (!authorizationHeader) return null;
+  return authorizationHeader.startsWith('Bearer ') ? authorizationHeader.slice(7) : null;
+}
+
+export async function authenticate(authorizationHeader: string | null | undefined, secret: string): Promise<string | null> {
+  const token = extractToken(authorizationHeader)
+  if (!token) return null
+  return verifyJwt(token, secret)
+}

@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { signJwt, verifyJwt } from './utils/jwt'
+import { signJwt, authenticate } from './utils/jwt'
 import { generateOtp, storeOtp, verifyOtp } from './utils/otp'
-import { createPosterClient, getPosterClientByPhone, getPosterClientById, updatePosterClient } from './utils/poster'
+import { createPosterClient, getPosterClientByPhone, getPosterClientById, updatePosterClient, sendSms } from './utils/poster'
 import { requestOtpSchema, verifyOtpSchema } from './utils/schemas'
 
 const BASE_URL = 'https://joinposter.com/api'
@@ -109,8 +109,11 @@ app
        }
        const code = generateOtp()
        await storeOtp(c.env.OTP_CODES, phone, code)
-       // TODO: integrate Poster SMS/e-mail send or other provider; placeholder logging
-       console.log('OTP code', code, 'sent to', phone)
+       try {
+         await sendSms(c.env.POSTER_TOKEN, phone, `Your verification code: ${code}`)
+       } catch {
+         return c.json({ error: 'Failed to send SMS' }, 500, defaultJsonHeaders)
+       }
        return c.json({ success: true }, 200, defaultJsonHeaders)
      } catch {
        return c.json({ error: 'Failed to issue OTP' }, 500, defaultJsonHeaders)
@@ -147,9 +150,7 @@ app
      }
    })
 	.get('/auth/self', async (c) => {
-      const auth = c.req.header('Authorization') || ''
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
-      const clientId = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      const clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
       if (!clientId) {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
@@ -160,9 +161,7 @@ app
       return c.json({ client }, 200, defaultJsonHeaders)
     })
 	.get('/auth/sessions', async (c) => {
-      const auth = c.req.header('Authorization') || ''
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
-      const clientId = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      const clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
       if (!clientId) {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
@@ -173,9 +172,7 @@ app
     })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
-      const auth = c.req.header('Authorization') || ''
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
-      const clientIdFromToken = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      const clientIdFromToken = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
       if (!clientIdFromToken) {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
