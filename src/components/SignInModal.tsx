@@ -54,7 +54,9 @@ export default function SignInModal({
 										{ color: Colors[colorScheme ?? 'light'].text },
 									]}
 								>
-									<Trans>Sign in to add &ldquo;{itemName}&rdquo; to your bag</Trans>
+									<Trans>
+										Sign in to add &ldquo;{itemName}&rdquo; to your bag
+									</Trans>
 								</Text>
 							</View>
 						)}
