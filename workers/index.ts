@@ -129,7 +129,7 @@ app
        const clientId = String(client.client_id ?? client.id)
        const token = await signJwt(clientId, c.env.JWT_SECRET)
        // Store session
-       const key = `sessions:${clientId}`
+       const key = clientId
        const currentRaw = await c.env.KV_SESSIONS.get(key)
        const sessions = currentRaw ? (JSON.parse(currentRaw) as Array<any>) : []
        sessions.push({ token, name: sessionName, createdAt: Date.now() })
@@ -159,7 +159,7 @@ app
       } catch {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
-      const key = `sessions:${clientId}`
+      const key = clientId
       const sessionsRaw = await c.env.KV_SESSIONS.get(key)
       const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
       return c.json(sessions, 200, defaultJsonHeaders)
