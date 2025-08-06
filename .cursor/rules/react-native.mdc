@@ -36,6 +36,14 @@ alwaysApply: false
 - Use generic types for reusable components
 - Leverage discriminated unions for complex state scenarios
 
+## React Import Patterns
+
+- **Never import React default**: JSX is available at runtime, no need for `import React from 'react'`
+- **Import specific APIs**: Use `import { useState, useEffect } from 'react'` for hooks
+- **Import React Native components**: Use `import { View, Text } from 'react-native'`
+- **Import third-party APIs directly**: Import only what you need from each package
+- **No default React import**: Modern React Native handles JSX transformation automatically
+
 ## Performance Optimization
 
 - Minimize useState and useEffect; prefer context and reducers for state management

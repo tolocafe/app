@@ -42,6 +42,7 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 - **State Management**: TanStack Query for server state, React Context for client state
 - **Navigation**: Expo Router with typed routes
 - **Package Manager**: bun (never npm or yarn)
+- **React Imports**: Never import React default - import specific APIs only
 
 ### File Naming Conventions
 - **ALL files**: kebab-case naming (e.g., `language-context.tsx`, `use-color-scheme.ts`)
@@ -153,6 +154,7 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 - **Modern Practices**: Use current React Native and Expo best practices
 - **Type Safety**: Always include proper TypeScript types
 - **Performance Minded**: Consider performance implications of suggestions
+- **Correct Imports**: Never import React default, use specific API imports only
 
 ### Documentation Standards
 - **Minimal JSDoc**: Only document complex or non-obvious functions
@@ -162,42 +164,25 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 
 ## Common Patterns
 
-### Component Structure
-```typescript
-// Standard component pattern
-interface ComponentProps {
-  // Proper TypeScript interfaces
-}
+### Import Patterns
+- **React Hooks**: `import { useState, useEffect, useCallback } from 'react'`
+- **React Native**: `import { View, Text, Pressable } from 'react-native'`
+- **Lingui**: `import { Trans } from '@lingui/react/macro'` and `import { t } from '@lingui/core/macro'`
+- **Never**: `import React from 'react'` (not needed in modern React Native)
 
-export function ComponentName({ prop }: ComponentProps) {
-  // Component logic
-  return (
-    // JSX with Unistyles
-  );
-}
-```
+### Component Structure
+- Use functional components with TypeScript interfaces
+- Import specific React hooks as needed
+- Export components with PascalCase names from kebab-case files
 
 ### Hook Pattern
-```typescript
-// Custom hook pattern
-export function useHookName() {
-  // Hook logic with proper dependencies
-  return {
-    // Return object with clear interface
-  };
-}
-```
+- Import specific hooks from React
+- Create custom hooks with clear return interfaces
+- Use proper dependency arrays
 
 ### Error Handling Pattern
-```typescript
-// Error handling pattern
-try {
-  // Operation
-} catch (error) {
-  // Log to Sentry with context
-  // Provide user feedback
-  // Graceful fallback
-}
-```
+- Log errors to Sentry with proper context
+- Provide user-friendly feedback
+- Implement graceful fallbacks
 
 This configuration ensures consistent, high-quality development while maintaining the simplicity and performance focus that defines the TOLO coffee shop experience.
