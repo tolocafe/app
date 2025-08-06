@@ -7,23 +7,23 @@ on:
 
 jobs:
   format-and-lint:
-    name: 🎨 Format and Lint
+    name: Format and Lint
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Bun
+      - name: 🧄 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.19
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Check formatting
+      - name: 🎨 Check formatting
         run: bun run format:check
 
-      - name: Run linting
+      - name: 🔍 Run linting
         run: bun run lint
