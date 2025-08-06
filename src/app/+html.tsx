@@ -22,8 +22,6 @@ export default function Root({ children }: PropsWithChildren) {
 				<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 				<meta name="apple-mobile-web-app-title" content="TOLO" />
 
-				{/* Favicon and Icons */}
-				<link rel="icon" href="/favicon.png" type="image/png" />
 				<link rel="apple-touch-icon" href="/icon.png" />
 				<link rel="manifest" href="/manifest.json" />
 
@@ -60,15 +58,10 @@ export default function Root({ children }: PropsWithChildren) {
 				/>
 				<meta name="twitter:image" content="/icon.png" />
 
-				{/* Performance and Caching */}
-				<meta
-					httpEquiv="Cache-Control"
-					content="public, max-age=31536000, immutable"
-				/>
-
 				{/* Disable body scrolling on web for native-like experience */}
 				<ScrollViewStyleReset />
 			</head>
+
 			<body>{children}</body>
 		</html>
 	)
