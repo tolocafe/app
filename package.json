@@ -13,6 +13,7 @@
 		"lingui:extract": "lingui extract",
 		"lingui:compile": "lingui compile",
 		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"deploy": "wrangler deploy",
 		"update:publish": "eas update --auto",
 		"update:publish:preview": "eas update --channel preview --message",
