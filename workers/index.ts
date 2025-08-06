@@ -157,7 +157,7 @@ app
       if (!client) {
         return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
       }
-      return c.json({ client }, 200, defaultJsonHeaders)
+      return c.json(client, 200, defaultJsonHeaders)
     })
 	.get('/auth/sessions', async (c) => {
       let clientId: string
@@ -169,7 +169,7 @@ app
       const key = `sessions:${clientId}`
       const sessionsRaw = await c.env.KV_SESSIONS.get(key)
       const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
-      return c.json({ sessions }, 200, defaultJsonHeaders)
+      return c.json(sessions, 200, defaultJsonHeaders)
     })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
