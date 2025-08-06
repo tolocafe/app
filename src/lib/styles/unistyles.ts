@@ -100,6 +100,12 @@ const themes = {
 	light: lightTheme,
 }
 
+StyleSheet.configure({
+	breakpoints,
+	settings: { adaptiveThemes: true },
+	themes,
+})
+
 type AppBreakpoints = typeof breakpoints
 type AppThemes = typeof themes
 
@@ -109,9 +115,3 @@ declare module 'react-native-unistyles' {
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface UnistylesThemes extends AppThemes {}
 }
-
-StyleSheet.configure({
-	breakpoints,
-	settings: { adaptiveThemes: true },
-	themes,
-})

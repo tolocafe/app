@@ -3,6 +3,8 @@ import Head from 'expo-router/head'
 import { Text, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
+import '@/lib/styles/unistyles'
+
 export default function NotFoundScreen() {
 	return (
 		<>
