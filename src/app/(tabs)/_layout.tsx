@@ -1,7 +1,6 @@
 import Tabs from '@/components/Tabs'
 import { t } from '@lingui/core/macro'
 import { useLingui } from '@lingui/react'
-import React from 'react'
 
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
