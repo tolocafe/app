@@ -31,25 +31,16 @@ export const persister = createSyncStoragePersister({
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			// Stale-while-revalidate configuration for mobile apps
-			staleTime: 1000 * 60 * 30, // 30 minutes - data is fresh for 30 minutes
-			gcTime: 1000 * 60 * 60 * 24, // 24 hours - keep in cache for 24 hours when unused
-			
-			// Retry configuration optimized for mobile networks
+			staleTime: 1000 * 60 * 30, // 30 minutes
+			gcTime: 1000 * 60 * 60 * 24, // 24 hours
 			retry: 3,
 			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-			
-			// Network mode optimized for offline-first mobile experience
-			networkMode: 'offlineFirst', // Important for mobile apps
-			
-			// Refetch behavior optimized for mobile
-			refetchOnWindowFocus: true, // Refetch when app comes to foreground
-			refetchOnReconnect: true, // Refetch when network reconnects
-			refetchOnMount: true, // Refetch when component mounts (if stale)
-			
-			// Background refetch settings
-			refetchInterval: false, // No automatic polling by default
-			refetchIntervalInBackground: false, // Don't refetch in background
+			networkMode: 'offlineFirst',
+			refetchOnWindowFocus: true,
+			refetchOnReconnect: true,
+			refetchOnMount: true,
+			refetchInterval: false,
+			refetchIntervalInBackground: false,
 		},
 		mutations: {
 			retry: 3,

@@ -111,69 +111,6 @@ queryClient.prefetchQuery(menuQueryOptions)
 queryClient.setQueryData(menuQueryOptions.queryKey, newData)
 ```
 
-## TanStack Query Caching Strategy
-
-The app now uses an optimized **stale-while-revalidate** caching approach designed for mobile applications:
-
-### Key Configuration Changes
-
-#### Global Defaults (query-client.ts)
-- **staleTime**: 30 minutes (increased from 5 minutes) - data is considered fresh longer
-- **gcTime**: 24 hours (increased from 1 hour) - cache persists longer when unused
-- **refetchOnWindowFocus**: true - refetches when app comes to foreground
-- **refetchOnReconnect**: true - refetches when network reconnects
-- **networkMode**: 'offlineFirst' - optimized for mobile connectivity
-
-#### Per-Query Optimizations
-
-**Categories** (menu.ts):
-- staleTime: 1 hour - categories change infrequently
-- gcTime: 1 week - long-term caching for stable data
-
-**Products List** (menu.ts):
-- staleTime: 15 minutes - balance between freshness and performance
-- gcTime: 24 hours - reasonable cache retention
-
-**Individual Products** (product.ts):
-- staleTime: 10 minutes - more frequent updates for pricing/availability
-- gcTime: 24 hours - standard cache retention
-
-### Benefits of This Approach
-
-1. **Improved Performance**: Users see cached data immediately while fresh data loads in background
-2. **Better Mobile Experience**: Longer cache times reduce network requests on mobile
-3. **Offline Resilience**: Data remains available when offline for extended periods
-4. **Reduced Data Usage**: Less frequent network requests save mobile data
-5. **Faster Navigation**: Cached data provides instant navigation between screens
-
-### How It Works
-
-1. **Initial Load**: Data is fetched and cached with timestamp
-2. **Subsequent Requests**: 
-   - If data is within `staleTime` → serve from cache (no network request)
-   - If data is stale but within `gcTime` → serve from cache AND fetch fresh data in background
-   - If data is beyond `gcTime` → remove from cache and fetch fresh data
-
-### Usage Examples
-
-```typescript
-// Using the optimized query options
-const { data: menuData, isLoading, error } = useQuery(menuQueryOptions)
-
-// Prefetching with optimized cache settings
-queryClient.prefetchQuery(menuQueryOptions)
-
-// Setting data with cache-aware updates
-queryClient.setQueryData(menuQueryOptions.queryKey, newData)
-```
-
-### Migration Notes
-
-- Existing queries will automatically benefit from new caching defaults
-- No breaking changes to existing API usage
-- Query invalidation and mutations work the same way
-- DevTools will show longer cache retention times
-
 ## API Structure
 
 ### Categories
