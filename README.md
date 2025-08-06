@@ -11,22 +11,46 @@ React Native app for TOLO Coffee Shop built with Expo.
 
 ## Quick Start
 
+### Prerequisites
+
+This project uses [Bun](https://bun.sh) as the package manager. If you don't have Bun installed:
+
 ```bash
-# Install
+# Install Bun
+curl -fsSL https://bun.sh/install | bash
+
+# Or use the provided script
+./scripts/install-bun.sh
+```
+
+### Development
+
+```bash
+# Install dependencies
 bun install
 
-# Run
-bun ios     # iOS
-bun android # Android
-bun web     # Web
+# Run development server
+bun start     # Start Expo dev server
+bun ios       # iOS simulator
+bun android   # Android emulator
+bun web       # Web browser
 
 # Translations
 bun lingui:extract  # Extract strings
-bun lingui:compile  # Compile
+bun lingui:compile  # Compile translations
+
+# Package management
+bun add <package>   # Add dependency
+bun remove <package> # Remove dependency
+bun update          # Update dependencies
+
+# Verify setup
+./scripts/verify-setup.sh  # Verify project configuration
 ```
 
 ## Stack
 
+- **Package Manager**: Bun (fast, reliable JavaScript runtime & package manager)
 - Expo Router for navigation
 - React Native Unistyles for styling
 - Lingui for internationalization
@@ -60,8 +84,8 @@ To publish an update:
 
 ```bash
 # For production
-eas update --branch production
+bunx eas update --branch production
 
 # For preview
-eas update --branch preview
+bunx eas update --branch preview
 ```
