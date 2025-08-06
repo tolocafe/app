@@ -1,13 +1,13 @@
 import { Stack } from 'expo-router'
-import { t } from '@lingui/core/macro'
-import { useLingui } from '@lingui/react'
+import { useLingui } from '@lingui/react/macro'
+import { defaultStackScreenOptions } from '@/lib/navigation'
 
 export default function OrdersLayout() {
-	const { i18n } = useLingui()
+	const { t } = useLingui()
 
 	return (
-		<Stack>
-			<Stack.Screen name="index" options={{ title: t(i18n)`Orders` }} />
+		<Stack screenOptions={defaultStackScreenOptions}>
+			<Stack.Screen name="index" options={{ title: t`Orders` }} />
 		</Stack>
 	)
 }

@@ -1,7 +1,4 @@
-import { getApiUrl } from '../config/api'
-
-// API configuration
-export const API_BASE_URL = getApiUrl() || 'https://app.tolo.cafe/api'
+import { API_BASE_URL } from '@/lib/config/api'
 
 // Helper function for API calls
 export async function apiClient<T>(
@@ -42,10 +39,10 @@ export interface PosterCategory {
 	right: string
 	level: string
 	category_tag: string | null
-	visible: Array<{
+	visible: {
 		spot_id: number
 		visible: number
-	}>
+	}[]
 }
 
 export interface PosterIngredient {
@@ -121,13 +118,13 @@ export interface PosterProduct {
 	type: string
 	weight_flag: string
 	color: string
-	spots: Array<{
+	spots: {
 		spot_id: string
 		price: string
 		profit: string
 		profit_netto: string
 		visible: string
-	}>
+	}[]
 	ingredient_id: string
 	cooking_time: string
 	different_spots_prices: string

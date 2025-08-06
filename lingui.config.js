@@ -4,7 +4,7 @@ module.exports = {
 	sourceLocale: 'es',
 	catalogs: [
 		{
-			path: 'src/locales/{locale}/messages',
+			path: 'src/lib/locales/{locale}/messages',
 			include: ['src/**/*.ts', 'src/**/*.tsx'],
 			exclude: ['**/node_modules/**', '**/dist/**'],
 		},

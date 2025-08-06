@@ -1,6 +1,6 @@
 import { Modal, View, Text, TouchableOpacity, Pressable } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { Trans } from '@lingui/core/macro'
+import { Trans } from '@lingui/react/macro'
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import NotSignedIn from '@/components/NotSignedIn'

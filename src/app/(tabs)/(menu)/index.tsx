@@ -5,7 +5,7 @@ import {
 	preferencesQueryOptions,
 	type UserPreferences,
 } from '@/lib/queries/preferences'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Head from 'expo-router/head'
 import { useState } from 'react'
@@ -25,6 +25,7 @@ export default function Menu() {
 	const [selectedCategory, setSelectedCategory] = useState('coffee')
 	const [modalVisible, setModalVisible] = useState(false)
 	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
+	const { t } = useLingui()
 	const queryClient = useQueryClient()
 	const { isAuthenticated } = useAuth()
 
@@ -174,7 +175,7 @@ export default function Menu() {
 	return (
 		<>
 			<Head>
-				<title>Menú - TOLO Buen Café</title>
+				<title>{t`Menu - TOLO Good Coffee`}</title>
 				<meta
 					name="description"
 					content="Descubre nuestro menú de café casero con espresso, lattes, cappuccinos y deliciosos acompañamientos. TOLO - donde el buen café se encuentra contigo."

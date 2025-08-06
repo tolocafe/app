@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2025-08-05 12:19-0600\n"
+"POT-Creation-Date: 2025-08-06 09:35-0600\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,114 +13,167 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/app/(tabs)/more.tsx:33
-msgid "About TOLO"
-msgstr ""
+#: src/app/(tabs)/(menu)/index.tsx:167
+msgid "Add to Bag"
+msgstr "Agregar al Carrito"
 
-#: src/app/(tabs)/more.tsx:142
+#: src/app/(tabs)/more/index.tsx:158
 msgid "Building connections one cup at a time"
-msgstr ""
+msgstr "Construyendo conexiones taza a taza"
 
-#: src/app/(tabs)/more.tsx:150
+#: src/app/(tabs)/more/index.tsx:166
 msgid "Committed to eco-friendly practices"
-msgstr ""
+msgstr "Comprometidos con prácticas ecológicas"
 
-#: src/app/(tabs)/more.tsx:139
+#: src/app/(tabs)/more/index.tsx:155
 msgid "Community Focus"
-msgstr ""
+msgstr "Enfoque Comunitario"
 
-#: src/app/(tabs)/more.tsx:83
+#: src/app/(tabs)/more/index.tsx:96
 msgid "Contact"
-msgstr ""
+msgstr "Contacto"
 
-#: src/app/(tabs)/index.tsx:56
-msgid "Fresh • Local • Delicious"
-msgstr ""
+#: src/app/(tabs)/(menu)/index.tsx:74
+msgid "Failed to load menu. Please try again."
+msgstr "Error al cargar el menú. Por favor, inténtalo de nuevo."
 
-#: src/app/(tabs)/more.tsx:49
+#: src/app/(tabs)/more/index.tsx:62
 msgid "Get Directions"
-msgstr ""
+msgstr "Cómo Llegar"
 
-#: src/app/(tabs)/more.tsx:57
+#: src/app/(tabs)/more/index.tsx:70
 msgid "Hours"
-msgstr ""
+msgstr "Horarios"
 
-#: src/app/(tabs)/more.tsx:100
+#: src/app/(tabs)/more/index.tsx:116
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
-#: src/app/(tabs)/more.tsx:158
+#: src/app/(tabs)/more/index.tsx:174
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
-#: src/app/(tabs)/more.tsx:39
+#: src/app/(tabs)/(menu)/index.tsx:63
+msgid "Loading menu..."
+msgstr "Cargando menú..."
+
+#: src/app/(tabs)/more/index.tsx:52
 msgid "Location"
-msgstr ""
+msgstr "Ubicación"
 
-#: src/app/(tabs)/_layout.tsx:19
+#: src/app/(tabs)/_layout.tsx:23
+#: src/app/(tabs)/(menu)/_layout.tsx:10
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
-#: src/app/(tabs)/more.tsx:62
+#: src/app/(tabs)/(menu)/index.tsx:178
+msgid "Menu - TOLO Good Coffee"
+msgstr "Menú - TOLO Buen Café"
+
+#: src/app/(tabs)/more/index.tsx:75
 msgid "Monday - Friday"
-msgstr ""
+msgstr "Lunes - Viernes"
 
-#: src/app/(tabs)/_layout.tsx:20
+#: src/app/(tabs)/_layout.tsx:41
+#: src/app/(tabs)/more/_layout.tsx:10
 msgid "More"
-msgstr ""
+msgstr "Más"
 
-#: src/app/(tabs)/index.tsx:28
+#: src/app/(tabs)/(menu)/index.tsx:135
 msgid "NEW"
-msgstr ""
+msgstr "NUEVO"
 
-#: src/app/(tabs)/more.tsx:109
+#: src/app/(tabs)/orders/index.tsx:58
+msgid "No orders yet"
+msgstr "Aún no hay pedidos"
+
+#: src/app/(tabs)/_layout.tsx:32
+#: src/app/(tabs)/orders/_layout.tsx:10
+#: src/app/(tabs)/orders/index.tsx:22
+msgid "Orders"
+msgstr "Pedidos"
+
+#: src/app/(tabs)/more/index.tsx:125
 msgid "Our Story"
-msgstr ""
+msgstr "Nuestra Historia"
 
-#: src/app/(tabs)/more.tsx:126
+#: src/app/(tabs)/more/index.tsx:142
 msgid "Our Values"
-msgstr ""
+msgstr "Nuestros Valores"
 
-#: src/app/(tabs)/more.tsx:88
+#: src/app/(tabs)/more/index.tsx:101
 msgid "Phone"
-msgstr ""
+msgstr "Teléfono"
 
-#: src/app/(tabs)/index.tsx:35
+#: src/components/NotSignedIn.tsx:66
+msgid "Please sign in to access this feature"
+msgstr "Por favor, inicia sesión para acceder a esta función"
+
+#: src/app/(tabs)/(menu)/index.tsx:142
 msgid "POPULAR"
-msgstr ""
+msgstr "POPULAR"
 
-#: src/app/(tabs)/more.tsx:131
+#: src/app/(tabs)/more/index.tsx:147
 msgid "Quality First"
-msgstr ""
+msgstr "Calidad Primero"
 
-#: src/app/(tabs)/more.tsx:68
+#: src/app/(tabs)/(menu)/index.tsx:84
+msgid "Retry"
+msgstr "Reintentar"
+
+#: src/app/(tabs)/more/index.tsx:81
 msgid "Saturday"
-msgstr ""
+msgstr "Sábado"
 
-#: src/app/(tabs)/more.tsx:74
+#: src/components/NotSignedIn.tsx:46
+msgid "Sign In Error"
+msgstr "Error de Inicio de Sesión"
+
+#: src/components/NotSignedIn.tsx:58
+msgid "Sign In Required"
+msgstr "Inicio de Sesión Requerido"
+
+#: src/components/SignInModal.tsx:57
+msgid "Sign in to add “{itemName}” to your bag"
+msgstr "Inicia sesión para agregar “{itemName}” a tu carrito"
+
+#: src/app/(tabs)/more/index.tsx:87
 msgid "Sunday"
-msgstr ""
+msgstr "Domingo"
 
-#: src/app/(tabs)/more.tsx:147
+#: src/app/(tabs)/more/index.tsx:163
 msgid "Sustainability"
-msgstr ""
+msgstr "Sostenibilidad"
 
-#: src/app/(tabs)/index.tsx:53
-msgid "TOLO Coffee"
-msgstr ""
+#: src/components/NotSignedIn.tsx:47
+msgid "There was an error signing in. Please try again."
+msgstr "Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo."
 
-#: src/app/(tabs)/more.tsx:113
+#: src/app/(tabs)/more/index.tsx:129
 msgid "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
-msgstr ""
+msgstr "TOLO Coffee es una cafetería de barrio dedicada a servir el mejor café tostado localmente. Creemos en crear un espacio cálido y acogedor donde la comunidad se reúne en torno a café excepcional y comida fresca de origen local. Cada taza cuenta una historia, y estamos aquí para hacer la tuya especial."
 
-#: src/app/(tabs)/more.tsx:43
+#: src/app/(tabs)/more/index.tsx:56
 msgid "TOLO Coffee Shop"
-msgstr ""
+msgstr "Cafetería TOLO"
 
-#: src/app/(tabs)/more.tsx:134
+#: src/app/(tabs)/more/index.tsx:150
 msgid "We source only the best beans and ingredients"
-msgstr ""
+msgstr "Seleccionamos solo los mejores granos e ingredientes"
 
-#: src/app/(tabs)/more.tsx:94
+#: src/app/(tabs)/more/index.tsx:107
 msgid "Website"
-msgstr ""
+msgstr "Sitio Web"
+
+#. placeholder {0}: user.fullName
+#: src/app/(tabs)/orders/index.tsx:46
+msgid "Welcome back, {0}!"
+msgstr "¡Bienvenido de vuelta, {0}!"
+
+#: src/app/(tabs)/orders/index.tsx:66
+msgid "Your order history will appear here"
+msgstr "Tu historial de pedidos aparecerá aquí"
+
+#: src/app/(tabs)/orders/index.tsx:37
+msgid "Your Orders"
+msgstr "Tus Pedidos"

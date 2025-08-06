@@ -1,6 +1,6 @@
 import { useAuth } from '@/lib/hooks/use-auth'
 import NotSignedIn from '@/components/NotSignedIn'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { Text, View, ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
@@ -9,6 +9,7 @@ import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 
 export default function Orders() {
 	const { isAuthenticated, user } = useAuth()
+	const { t } = useLingui()
 	const colorScheme = useColorScheme()
 
 	if (!isAuthenticated) {
@@ -18,7 +19,7 @@ export default function Orders() {
 	return (
 		<>
 			<Head>
-				<title>Orders</title>
+				<title>{t`Orders`}</title>
 			</Head>
 			<ScrollView
 				style={[

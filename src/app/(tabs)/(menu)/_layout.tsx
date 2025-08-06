@@ -2,12 +2,12 @@ import { Stack } from 'expo-router'
 import { useLingui } from '@lingui/react/macro'
 import { defaultStackScreenOptions } from '@/lib/navigation'
 
-export default function MoreLayout() {
+export default function MenuLayout() {
 	const { t } = useLingui()
 
 	return (
 		<Stack screenOptions={defaultStackScreenOptions}>
-			<Stack.Screen name="index" options={{ title: t`More` }} />
+			<Stack.Screen name="index" options={{ title: t`Menu` }} />
 		</Stack>
 	)
 }

@@ -1,6 +1,5 @@
 import * as AppleAuthentication from 'expo-apple-authentication'
-import { t, Trans } from '@lingui/core/macro'
-import { useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Alert, Text, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { useAuth } from '@/lib/hooks/use-auth'
@@ -12,7 +11,7 @@ interface NotSignedInProps {
 }
 
 export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
-	const { i18n } = useLingui()
+	const { t } = useLingui()
 	const { signIn } = useAuth()
 	const colorScheme = useColorScheme()
 
@@ -44,8 +43,8 @@ export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
 				return
 			}
 			Alert.alert(
-				t(i18n)`Sign In Error`,
-				t(i18n)`There was an error signing in. Please try again.`,
+				t`Sign In Error`,
+				t`There was an error signing in. Please try again.`,
 			)
 		}
 	}

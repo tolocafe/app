@@ -5,10 +5,19 @@
 				"backgroundColor": "#ffffff",
 				"foregroundImage": "./src/assets/images/adaptive-icon.png"
 			},
-			"edgeToEdgeEnabled": true
+			"edgeToEdgeEnabled": true,
+			"package": "cafe.tolo.app"
 		},
 		"experiments": {
 			"typedRoutes": true
+		},
+		"extra": {
+			"eas": {
+				"projectId": "25e3751a-b837-480a-b9fc-ee67327f46e9"
+			},
+			"router": {
+				"headOrigin": "https://app.tolo.cafe"
+			}
 		},
 		"icon": "./src/assets/images/icon.png",
 		"ios": {
@@ -18,14 +27,16 @@
 				"webcredentials:app.tolo.cafe"
 			],
 			"bundleIdentifier": "cafe.tolo.app",
-			"supportsTablet": true,
 			"infoPlist": {
 				"ITSAppUsesNonExemptEncryption": false
-			}
+			},
+			"supportsTablet": true,
+			"usesAppleSignIn": true
 		},
 		"name": "TOLO",
 		"newArchEnabled": true,
 		"orientation": "portrait",
+		"owner": "tolo-cafe",
 		"plugins": [
 			"expo-updates",
 			"expo-apple-authentication",
@@ -55,8 +66,17 @@
 			],
 			"react-native-edge-to-edge"
 		],
+		"runtimeVersion": {
+			"policy": "fingerprint"
+		},
 		"scheme": "tolo",
 		"slug": "tolo",
+		"updates": {
+			"checkAutomatically": "ON_LOAD",
+			"enabled": true,
+			"fallbackToCacheTimeout": 3000,
+			"url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9"
+		},
 		"userInterfaceStyle": "automatic",
 		"version": "1.0.0",
 		"web": {
@@ -72,24 +92,6 @@
 			"shortName": "TOLO",
 			"startUrl": "/",
 			"themeColor": "#ffffff"
-		},
-		"extra": {
-			"router": {
-				"headOrigin": "https://app.tolo.cafe"
-			},
-			"eas": {
-				"projectId": "25e3751a-b837-480a-b9fc-ee67327f46e9"
-			}
-		},
-		"updates": {
-			"enabled": true,
-			"checkAutomatically": "ON_LOAD",
-			"fallbackToCacheTimeout": 3000,
-			"url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9"
-		},
-		"runtimeVersion": {
-			"policy": "fingerprint"
-		},
-		"owner": "tolo-cafe"
+		}
 	}
 }

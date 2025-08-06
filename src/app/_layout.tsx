@@ -48,7 +48,7 @@ function RootLayout() {
 				},
 			})
 		}
-	}, [updates.error])
+	}, [updates.channel, updates.error, updates.runtimeVersion, updates.updateId])
 
 	return (
 		<QueryProvider>
