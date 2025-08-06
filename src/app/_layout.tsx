@@ -31,10 +31,22 @@ function RootLayout() {
 		}
 	}, [ref])
 
-	// Log update information for debugging
+	// Capture update errors to Sentry instead of console logs
 	useEffect(() => {
 		if (updates.error) {
-			console.error('Update error:', updates.error)
+			Sentry.captureMessage('Update process completed with error', {
+				level: 'error',
+				tags: {
+					feature: 'expo-updates',
+					operation: 'updateStatus',
+				},
+				extra: {
+					error: updates.error,
+					runtimeVersion: updates.runtimeVersion,
+					updateId: updates.updateId,
+					channel: updates.channel,
+				},
+			})
 		}
 	}, [updates.error])
 

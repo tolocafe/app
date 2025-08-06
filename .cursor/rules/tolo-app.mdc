@@ -32,6 +32,7 @@ React Native coffee shop app with focus on simplicity and user experience.
 - ALL files must use kebab-case naming (e.g., language-context.tsx, use-color-scheme.ts)
 - ALWAYS use `bun` as package manager, never npm or yarn
 - ALWAYS run `bun run format` after completing any task
+- ALWAYS run `bun run lint` and verify for errors after completing any task
 - Capture all errors to Sentry with proper context
 
 ## AI Assistant Guidelines
