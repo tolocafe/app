@@ -1,0 +1,26 @@
+# Cursor Rules for TOLO Coffee Shop App
+
+## Package Manager
+- ALWAYS use `bun` as the package manager, never npm or yarn
+- Use `bun install` for installing dependencies
+- Use `bun run <script>` for running scripts
+- Use `bun add <package>` for adding new dependencies
+- Use `bun remove <package>` for removing dependencies
+
+## Code Style
+- Use TypeScript for all new files
+- Follow existing project structure and naming conventions
+- Use React Native Unistyles for styling
+- Use Lingui for internationalization
+- Implement proper error handling with Sentry integration
+
+## Expo Updates
+- Updates are configured with fingerprint runtime policy
+- Always capture update errors to Sentry with proper context
+- Use channels for different environments (development, preview, production)
+- Never create UI components for update status - keep updates silent
+
+## Development
+- Test on both iOS and Android platforms
+- Use development builds for testing native changes
+- Follow React Native best practices for performance

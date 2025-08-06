@@ -17,18 +17,18 @@ React Native app for TOLO Coffee Shop built with Expo.
 bun install
 
 # Run
-bun ios     # iOS
-bun android # Android
-bun web     # Web
+bun run ios     # iOS
+bun run android # Android
+bun run web     # Web
 
 # Translations
-bun lingui:extract  # Extract strings
-bun lingui:compile  # Compile
+bun run lingui:extract  # Extract strings
+bun run lingui:compile  # Compile
 
 # Updates
-bun update:publish              # Publish update to all channels
-bun update:publish:preview      # Publish to preview channel
-bun update:publish:production   # Publish to production channel
+bun run update:publish              # Publish update to all channels
+bun run update:publish:preview      # Publish to preview channel
+bun run update:publish:production   # Publish to production channel
 ```
 
 ## Stack
@@ -53,7 +53,8 @@ This app is configured with `expo-updates` using fingerprint as the runtime poli
 1. **Automatic Checking**: The app checks for updates on launch (production builds only)
 2. **Fingerprint Validation**: Updates are only downloaded if the runtime fingerprint matches
 3. **Seamless Installation**: Updates are applied automatically and the app reloads
-4. **Error Handling**: Update errors are logged and don't crash the app
+4. **Error Handling**: Update errors are captured to Sentry with context and don't crash the app
+5. **Silent Updates**: No UI components - updates happen transparently in the background
 
 ### Publishing Updates
 

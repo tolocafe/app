@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native'
 import * as Updates from 'expo-updates'
 import { useEffect, useState } from 'react'
 
@@ -40,11 +41,26 @@ export function useUpdates() {
 				await Updates.reloadAsync()
 			}
 		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+			
+			// Capture error to Sentry
+			Sentry.captureException(error, {
+				tags: {
+					feature: 'expo-updates',
+					operation: 'checkForUpdates'
+				},
+				extra: {
+					runtimeVersion: Updates.runtimeVersion,
+					updateId: Updates.updateId,
+					channel: Updates.channel
+				}
+			})
+			
 			setState(prev => ({ 
 				...prev, 
 				isChecking: false, 
 				isDownloading: false,
-				error: error instanceof Error ? error.message : 'Unknown error occurred'
+				error: errorMessage
 			}))
 		}
 	}
@@ -53,9 +69,24 @@ export function useUpdates() {
 		try {
 			await Updates.reloadAsync()
 		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Failed to reload app'
+			
+			// Capture error to Sentry
+			Sentry.captureException(error, {
+				tags: {
+					feature: 'expo-updates',
+					operation: 'reloadApp'
+				},
+				extra: {
+					runtimeVersion: Updates.runtimeVersion,
+					updateId: Updates.updateId,
+					channel: Updates.channel
+				}
+			})
+			
 			setState(prev => ({ 
 				...prev, 
-				error: error instanceof Error ? error.message : 'Failed to reload app'
+				error: errorMessage
 			}))
 		}
 	}
