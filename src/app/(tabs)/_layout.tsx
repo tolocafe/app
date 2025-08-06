@@ -13,6 +13,7 @@ export default function TabLayout() {
 		<Tabs
 			screenOptions={{
 				tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+				headerShown: false,
 			}}
 		>
 			<Tabs.Screen name="menu" options={{ title: t(i18n)`Menu` }} />
