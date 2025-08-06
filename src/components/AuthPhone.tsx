@@ -7,23 +7,10 @@ export function AuthPhone() {
   const [stage, setStage] = useState<'phone' | 'code'>('phone')
   const [phone, setPhone] = useState('')
   const [code, setCode] = useState('')
-  const { requestOtp, signIn } = useAuth()
+  const { requestOtpMutation, verifyOtpMutation } = useAuth()
 
-  const sendCode = async () => {
-    try {
-      await requestOtp(phone)
-      setStage('code')
-    } catch (e: any) {
-      Alert.alert('Error', e.message)
-    }
-  }
-  const verify = async () => {
-    try {
-      await signIn(phone, code, 'mobile')
-    } catch (e: any) {
-      Alert.alert('Error', e.message)
-    }
-  }
+  const sendCode = () => requestOtpMutation.mutate({ phone })
+  const verify = () => verifyOtpMutation.mutate({ phone, code, sessionName: 'mobile' })
 
   return (
     <View style={styles.container}>
