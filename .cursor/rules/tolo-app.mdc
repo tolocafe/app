@@ -59,8 +59,9 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ### Development Workflow Standards
 
 #### Package Management
-- **ALWAYS use bun**: Never npm or yarn
-- **Install bun first**: `npm install -g bun` if not available
+- **ALWAYS use bun**: Never npm or yarn for dependency installation
+- **Install bun first**: If bun not available, run `npm install -g bun` before proceeding
+- **Dependency installation**: ALWAYS use `bun install` or `bun add <package>` for installing dependencies
 - **Update dependencies**: Run `bun install` after any dependency changes
 - **Verify compatibility**: Run `bunx expo install --fix` after React Native deps
 - **Format code**: Run `bun run format` after completing tasks
