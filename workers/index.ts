@@ -99,9 +99,6 @@ app
          return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
        }
        const { phone, name, email } = parse.data
-       // phone and code validated by zod
-       //
-       //
        // ensure client exists
        let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
        if (!client) {
@@ -150,8 +147,10 @@ app
      }
    })
 	.get('/auth/self', async (c) => {
-      const clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      if (!clientId) {
+      let clientId: string
+      try {
+        clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
+      } catch {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
       const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
@@ -161,8 +160,10 @@ app
       return c.json({ client }, 200, defaultJsonHeaders)
     })
 	.get('/auth/sessions', async (c) => {
-      const clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      if (!clientId) {
+      let clientId: string
+      try {
+        clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
+      } catch {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
       const key = `sessions:${clientId}`
@@ -172,8 +173,10 @@ app
     })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
-      const clientIdFromToken = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      if (!clientIdFromToken) {
+      let clientIdFromToken: string
+      try {
+        clientIdFromToken = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
+      } catch {
         return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
       }
       const id = c.req.param('id')

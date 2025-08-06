@@ -24,8 +24,10 @@ export function extractToken(authorizationHeader?: string | null): string | null
   return authorizationHeader.startsWith('Bearer ') ? authorizationHeader.slice(7) : null;
 }
 
-export async function authenticate(authorizationHeader: string | null | undefined, secret: string): Promise<string | null> {
+export async function authenticate(authorizationHeader: string | null | undefined, secret: string): Promise<string> {
   const token = extractToken(authorizationHeader)
-  if (!token) return null
-  return verifyJwt(token, secret)
+  if (!token) throw new Error('Unauthorized')
+  const clientId = await verifyJwt(token, secret)
+  if (!clientId) throw new Error('Unauthorized')
+  return clientId
 }
