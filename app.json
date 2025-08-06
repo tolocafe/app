@@ -15,9 +15,6 @@
 			"associatedDomains": [
 				"applinks:app.tolo.cafe",
 				"activitycontinuation:app.tolo.cafe",
-				"webcredentials:app.tolo.cafe",
-				"applinks:app.tolo.cafe",
-				"activitycontinuation:app.tolo.cafe",
 				"webcredentials:app.tolo.cafe"
 			],
 			"bundleIdentifier": "cafe.tolo.app",
