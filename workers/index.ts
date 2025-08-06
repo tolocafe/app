@@ -34,7 +34,7 @@ const defaultJsonHeaders = {
 
 // -----------------------------------------------------------------------------
 // Auth utilities --------------------------------------------------------------
-// Removed unused password hash utilities
+const encoder = new TextEncoder()
 function secretKey(secret: string): Uint8Array {
   return encoder.encode(secret)
 }
@@ -77,6 +77,12 @@ async function updatePosterClient(token: string, id: string, body: Record<string
     body: JSON.stringify(body),
   })
   return (await res.json())?.response?.client
+}
+async function getPosterClientById(token: string, id: string) {
+  const res = await fetch(`${BASE_URL}/clients.getClients?token=${token}&client_id=${id}`)
+  const json = await res.json()
+  if (json?.response?.clients?.length) return json.response.clients[0]
+  return null
 }
 // OTP helpers --------------------------------------------------------------
 function generateOtp(length = 6): string {
@@ -184,6 +190,19 @@ app
        return c.json({ error: 'OTP verification failed' }, 500, defaultJsonHeaders)
      }
    })
+	.get('/auth/self', async (c) => {
+      const auth = c.req.header('Authorization') || ''
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
+      const clientId = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      if (!clientId) {
+        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
+      }
+      const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
+      if (!client) {
+        return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
+      }
+      return c.json({ client }, 200, defaultJsonHeaders)
+    })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
       const auth = c.req.header('Authorization') || ''
