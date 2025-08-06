@@ -1,0 +1,632 @@
+# React Native Performance Optimization Guide
+
+Comprehensive performance guidelines for building fast, responsive React Native and Expo applications with optimal user experience.
+
+## Core Performance Principles
+
+- **60fps Target**: Maintain smooth animations and interactions at 60 frames per second
+- **Fast Startup**: Minimize app launch time and time to interactive
+- **Memory Efficiency**: Prevent memory leaks and optimize memory usage
+- **Bundle Size**: Keep JavaScript bundle size minimal for faster loading
+- **Battery Efficiency**: Minimize CPU usage and battery drain
+- **Network Optimization**: Reduce network requests and optimize data loading
+
+## Rendering Performance
+
+### Component Optimization
+
+#### React.memo for Expensive Components
+```typescript
+import React, { memo } from 'react';
+
+// Memoize components that receive complex props
+const ExpensiveComponent = memo(({ data, onPress }: Props) => {
+  return (
+    <View>
+      {/* Expensive rendering logic */}
+    </View>
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison for complex objects
+  return prevProps.data.id === nextProps.data.id &&
+         prevProps.data.lastModified === nextProps.data.lastModified;
+});
+```
+
+#### useMemo for Expensive Calculations
+```typescript
+import { useMemo } from 'react';
+
+function Component({ items, filter }: Props) {
+  // Memoize expensive filtering operations
+  const filteredItems = useMemo(() => {
+    return items.filter(item => item.category === filter);
+  }, [items, filter]);
+
+  // Memoize expensive transformations
+  const processedData = useMemo(() => {
+    return filteredItems.map(item => ({
+      ...item,
+      displayName: formatDisplayName(item.name),
+      price: formatCurrency(item.price)
+    }));
+  }, [filteredItems]);
+
+  return <ItemList items={processedData} />;
+}
+```
+
+#### useCallback for Event Handlers
+```typescript
+import { useCallback } from 'react';
+
+function ParentComponent({ items }: Props) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Memoize event handlers to prevent child re-renders
+  const handleItemPress = useCallback((id: string) => {
+    setSelectedId(id);
+    // Additional logic
+  }, []);
+
+  const handleItemDelete = useCallback((id: string) => {
+    // Delete logic
+  }, []);
+
+  return (
+    <FlatList
+      data={items}
+      renderItem={({ item }) => (
+        <ItemComponent
+          item={item}
+          onPress={handleItemPress}
+          onDelete={handleItemDelete}
+          isSelected={selectedId === item.id}
+        />
+      )}
+      keyExtractor={item => item.id}
+    />
+  );
+}
+```
+
+### List Performance
+
+#### FlatList Optimization
+```typescript
+import { FlatList } from 'react-native';
+
+function OptimizedList({ data }: Props) {
+  const renderItem = useCallback(({ item }: { item: Item }) => (
+    <ItemComponent item={item} />
+  ), []);
+
+  const keyExtractor = useCallback((item: Item) => item.id, []);
+
+  const getItemLayout = useCallback((data: Item[] | null | undefined, index: number) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  }), []);
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout} // For fixed-height items
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      updateCellsBatchingPeriod={50}
+      initialNumToRender={10}
+      windowSize={10}
+      // Performance props
+      disableVirtualization={false}
+      // Memory optimization
+      removeClippedSubviews={true}
+    />
+  );
+}
+```
+
+#### Large List Virtualization
+```typescript
+import { VirtualizedList } from 'react-native';
+
+function VirtualizedComponent({ data }: Props) {
+  const getItem = useCallback((data: Item[], index: number) => data[index], []);
+  const getItemCount = useCallback((data: Item[]) => data.length, []);
+
+  return (
+    <VirtualizedList
+      data={data}
+      initialNumToRender={4}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      getItemCount={getItemCount}
+      getItem={getItem}
+      maxToRenderPerBatch={5}
+      updateCellsBatchingPeriod={30}
+      windowSize={10}
+    />
+  );
+}
+```
+
+## State Management Performance
+
+### Avoid Excessive State Updates
+```typescript
+// BAD: Multiple state updates causing re-renders
+function BadComponent() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<Data | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);     // Re-render 1
+    setError(null);       // Re-render 2
+    try {
+      const result = await api.fetchData();
+      setData(result);    // Re-render 3
+    } catch (err) {
+      setError(err.message); // Re-render 4
+    }
+    setLoading(false);    // Re-render 5
+  };
+}
+
+// GOOD: Batch state updates
+function GoodComponent() {
+  const [state, setState] = useState({
+    loading: false,
+    error: null,
+    data: null
+  });
+
+  const fetchData = async () => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      const result = await api.fetchData();
+      setState({ loading: false, error: null, data: result });
+    } catch (err) {
+      setState({ loading: false, error: err.message, data: null });
+    }
+  };
+}
+```
+
+### useReducer for Complex State
+```typescript
+import { useReducer } from 'react';
+
+interface State {
+  items: Item[];
+  loading: boolean;
+  error: string | null;
+  selectedIds: Set<string>;
+}
+
+type Action = 
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: Item[] }
+  | { type: 'FETCH_ERROR'; payload: string }
+  | { type: 'SELECT_ITEM'; payload: string }
+  | { type: 'DESELECT_ITEM'; payload: string };
+
+function stateReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true, error: null };
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, items: action.payload };
+    case 'FETCH_ERROR':
+      return { ...state, loading: false, error: action.payload };
+    case 'SELECT_ITEM':
+      return {
+        ...state,
+        selectedIds: new Set([...state.selectedIds, action.payload])
+      };
+    default:
+      return state;
+  }
+}
+```
+
+## Image and Asset Optimization
+
+### Image Performance
+```typescript
+import { Image } from 'expo-image';
+
+// Use Expo Image for better performance
+function OptimizedImage({ source, style }: Props) {
+  return (
+    <Image
+      source={source}
+      style={style}
+      contentFit="cover"
+      transition={200}
+      // Performance optimizations
+      cachePolicy="memory-disk"
+      priority="high"
+      // Placeholder while loading
+      placeholder={require('../assets/placeholder.png')}
+      // Error fallback
+      onError={() => {
+        // Handle error
+      }}
+    />
+  );
+}
+
+// Preload critical images
+const preloadImages = () => {
+  const imagesToPreload = [
+    require('../assets/logo.png'),
+    require('../assets/hero-image.png'),
+  ];
+  
+  imagesToPreload.forEach(image => {
+    Image.prefetch(image);
+  });
+};
+```
+
+### Asset Optimization Strategies
+```typescript
+// Use appropriate image formats
+const imageConfig = {
+  // WebP for modern browsers/devices
+  webp: require('../assets/image.webp'),
+  // PNG fallback
+  png: require('../assets/image.png'),
+  // Vector graphics for icons
+  svg: require('../assets/icon.svg'),
+};
+
+// Responsive images
+const getImageSource = (screenWidth: number) => {
+  if (screenWidth > 768) {
+    return require('../assets/image@3x.png');
+  } else if (screenWidth > 414) {
+    return require('../assets/image@2x.png');
+  }
+  return require('../assets/image.png');
+};
+```
+
+## Memory Management
+
+### Prevent Memory Leaks
+```typescript
+import { useEffect, useRef } from 'react';
+
+function ComponentWithCleanup() {
+  const timerRef = useRef<NodeJS.Timeout>();
+  const subscriptionRef = useRef<Subscription>();
+
+  useEffect(() => {
+    // Set up timer
+    timerRef.current = setInterval(() => {
+      // Timer logic
+    }, 1000);
+
+    // Set up subscription
+    subscriptionRef.current = eventEmitter.subscribe('event', handler);
+
+    // Cleanup function
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe();
+      }
+    };
+  }, []);
+
+  // Component logic
+}
+```
+
+### Efficient Data Structures
+```typescript
+// Use Maps for frequent lookups
+const itemsMap = useMemo(() => {
+  return new Map(items.map(item => [item.id, item]));
+}, [items]);
+
+// Use Sets for unique collections
+const selectedIds = useMemo(() => {
+  return new Set(selectedItems.map(item => item.id));
+}, [selectedItems]);
+
+// Avoid creating objects in render
+const memoizedStyle = useMemo(() => ({
+  backgroundColor: theme.colors.primary,
+  borderRadius: theme.borderRadius.md,
+}), [theme]);
+```
+
+## Animation Performance
+
+### React Native Reanimated Optimization
+```typescript
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
+
+function AnimatedComponent() {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  // Use useAnimatedStyle for better performance
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  }, []);
+
+  const handlePress = () => {
+    // Animate on UI thread
+    scale.value = withSpring(0.95, {}, (finished) => {
+      if (finished) {
+        scale.value = withSpring(1);
+        // Run JS function on completion
+        runOnJS(onAnimationComplete)();
+      }
+    });
+  };
+
+  return (
+    <Animated.View style={[styles.container, animatedStyle]}>
+      <Pressable onPress={handlePress}>
+        <Text>Animated Button</Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+```
+
+### Gesture Handler Optimization
+```typescript
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+function GestureComponent() {
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = event.translationX;
+      translateY.value = event.translationY;
+    })
+    .onEnd(() => {
+      translateX.value = withSpring(0);
+      translateY.value = withSpring(0);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
+    </GestureDetector>
+  );
+}
+```
+
+## Network Performance
+
+### Efficient Data Fetching
+```typescript
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// Optimize with proper caching
+function useMenuItems() {
+  return useQuery({
+    queryKey: ['menuItems'],
+    queryFn: fetchMenuItems,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
+// Prefetch related data
+function useOptimizedQueries() {
+  const queryClient = useQueryClient();
+
+  const prefetchRelatedData = useCallback(async (itemId: string) => {
+    await queryClient.prefetchQuery({
+      queryKey: ['itemDetails', itemId],
+      queryFn: () => fetchItemDetails(itemId),
+      staleTime: 2 * 60 * 1000,
+    });
+  }, [queryClient]);
+
+  return { prefetchRelatedData };
+}
+```
+
+### Request Optimization
+```typescript
+// Batch multiple requests
+const batchRequests = async (ids: string[]) => {
+  const batchSize = 10;
+  const batches = [];
+  
+  for (let i = 0; i < ids.length; i += batchSize) {
+    batches.push(ids.slice(i, i + batchSize));
+  }
+  
+  const results = await Promise.all(
+    batches.map(batch => api.fetchItemsBatch(batch))
+  );
+  
+  return results.flat();
+};
+
+// Implement request deduplication
+const requestCache = new Map<string, Promise<any>>();
+
+const deduplicatedFetch = (url: string) => {
+  if (requestCache.has(url)) {
+    return requestCache.get(url)!;
+  }
+  
+  const promise = fetch(url).then(response => response.json());
+  requestCache.set(url, promise);
+  
+  // Clean up after request completes
+  promise.finally(() => {
+    requestCache.delete(url);
+  });
+  
+  return promise;
+};
+```
+
+## Bundle Size Optimization
+
+### Code Splitting
+```typescript
+import { lazy, Suspense } from 'react';
+
+// Lazy load non-critical screens
+const MenuScreen = lazy(() => import('../screens/menu-screen'));
+const ProfileScreen = lazy(() => import('../screens/profile-screen'));
+
+function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen 
+          name="Menu" 
+          component={() => (
+            <Suspense fallback={<LoadingScreen />}>
+              <MenuScreen />
+            </Suspense>
+          )} 
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+### Tree Shaking Optimization
+```typescript
+// Import only what you need
+import { format } from 'date-fns/format';
+import { parseISO } from 'date-fns/parseISO';
+
+// Instead of
+// import * as dateFns from 'date-fns';
+
+// Use specific lodash imports
+import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
+
+// Instead of
+// import _ from 'lodash';
+```
+
+## Performance Monitoring
+
+### Performance Metrics
+```typescript
+import { performance } from 'react-native-performance';
+
+// Measure component render time
+function PerformantComponent() {
+  useEffect(() => {
+    const startTime = performance.now();
+    
+    // Component setup logic
+    
+    const endTime = performance.now();
+    console.log(`Component setup took ${endTime - startTime} milliseconds`);
+  }, []);
+
+  return <View>{/* Component content */}</View>;
+}
+
+// Track user interactions
+const trackInteraction = (actionName: string) => {
+  const startTime = performance.now();
+  
+  return () => {
+    const endTime = performance.now();
+    analytics.track(`${actionName}_duration`, {
+      duration: endTime - startTime,
+    });
+  };
+};
+```
+
+### Memory Usage Monitoring
+```typescript
+// Monitor memory usage in development
+const logMemoryUsage = () => {
+  if (__DEV__) {
+    const memoryInfo = performance.memory;
+    console.log('Memory Usage:', {
+      used: `${Math.round(memoryInfo.usedJSHeapSize / 1048576)} MB`,
+      total: `${Math.round(memoryInfo.totalJSHeapSize / 1048576)} MB`,
+      limit: `${Math.round(memoryInfo.jsHeapSizeLimit / 1048576)} MB`,
+    });
+  }
+};
+
+// Regular memory monitoring
+useEffect(() => {
+  if (__DEV__) {
+    const interval = setInterval(logMemoryUsage, 10000);
+    return () => clearInterval(interval);
+  }
+}, []);
+```
+
+## Platform-Specific Optimizations
+
+### iOS Performance
+```typescript
+// Use iOS-specific optimizations
+const iosOptimizations = {
+  // Enable hardware acceleration
+  shouldRasterizeIOS: true,
+  // Optimize for 120Hz displays
+  preferredFramesPerSecond: 120,
+  // Reduce transparency effects
+  allowsBackgroundLocationUpdates: false,
+};
+```
+
+### Android Performance
+```typescript
+// Android-specific optimizations
+const androidOptimizations = {
+  // Enable hardware acceleration
+  renderToHardwareTextureAndroid: true,
+  // Optimize draw operations
+  needsOffscreenAlphaCompositing: false,
+  // Reduce overdraw
+  removeClippedSubviews: true,
+};
+```
+
+This comprehensive performance guide ensures your React Native and Expo applications deliver exceptional user experiences with optimal speed, responsiveness, and efficiency across all platforms.

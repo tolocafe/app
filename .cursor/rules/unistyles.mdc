@@ -4,36 +4,628 @@ globs: ['src/**/*.tsx', 'src/**/*.ts']
 alwaysApply: true
 ---
 
-# Unistyles Usage Guidelines
+# React Native Unistyles Advanced Styling Guide
 
-Use react-native-unistyles for all styling in the app. Follow these patterns:
+Comprehensive styling guidelines using react-native-unistyles for scalable, performant, and maintainable React Native applications.
 
-## Setup and Theme
+## Core Styling Principles
 
-- Define theme in a central theme file with colors, spacing, typography
-- Use createUnistylesTheme for type-safe theme creation
-- Support light and dark themes
+- **Zero Inline Styles**: ALL styling must use Unistyles - never inline styles
+- **Theme-Driven Design**: Use theme values for all design tokens
+- **Type Safety**: Leverage TypeScript for theme and style definitions
+- **Performance First**: Optimize for runtime performance and memory usage
+- **Responsive Design**: Support multiple screen sizes and orientations
+- **Dark Mode Ready**: Full light/dark theme support
 
-## Creating Styles
+## Theme Architecture
 
-- Use StyleSheet.create() with theme and runtime parameters
-- Access theme values for all design tokens
-- Keep style definitions close to components
-- Use the styles object directly without hooks
+### Theme Structure
+```typescript
+// theme/index.ts
+import { createUnistylesTheme } from 'react-native-unistyles';
+
+export const lightTheme = createUnistylesTheme({
+  colors: {
+    // Semantic colors
+    primary: '#8B4513',      // Coffee brown
+    secondary: '#D2691E',    // Light brown
+    accent: '#F4A460',       // Sandy brown
+    
+    // Neutral colors
+    background: '#FFFFFF',
+    surface: '#F8F8F8',
+    card: '#FFFFFF',
+    
+    // Text colors
+    text: {
+      primary: '#1A1A1A',
+      secondary: '#666666',
+      tertiary: '#999999',
+      inverse: '#FFFFFF'
+    },
+    
+    // Status colors
+    success: '#4CAF50',
+    warning: '#FF9800',
+    error: '#F44336',
+    info: '#2196F3',
+    
+    // Interactive colors
+    interactive: {
+      default: '#8B4513',
+      hover: '#A0522D',
+      pressed: '#654321',
+      disabled: '#CCCCCC'
+    },
+    
+    // Border colors
+    border: {
+      default: '#E0E0E0',
+      focus: '#8B4513',
+      error: '#F44336'
+    }
+  },
+  
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    xxl: 48,
+    xxxl: 64
+  },
+  
+  typography: {
+    fontFamily: {
+      regular: 'System',
+      medium: 'System-Medium',
+      semiBold: 'System-SemiBold',
+      bold: 'System-Bold'
+    },
+    fontSize: {
+      xs: 12,
+      sm: 14,
+      md: 16,
+      lg: 18,
+      xl: 20,
+      xxl: 24,
+      xxxl: 32,
+      display: 48
+    },
+    lineHeight: {
+      xs: 16,
+      sm: 20,
+      md: 24,
+      lg: 28,
+      xl: 32,
+      xxl: 36,
+      xxxl: 48,
+      display: 64
+    }
+  },
+  
+  borderRadius: {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
+    full: 9999
+  },
+  
+  shadows: {
+    sm: {
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2
+    },
+    md: {
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 4
+    },
+    lg: {
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 8
+    }
+  }
+});
+
+export const darkTheme = createUnistylesTheme({
+  ...lightTheme,
+  colors: {
+    ...lightTheme.colors,
+    background: '#121212',
+    surface: '#1E1E1E',
+    card: '#2C2C2C',
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#CCCCCC',
+      tertiary: '#999999',
+      inverse: '#1A1A1A'
+    },
+    border: {
+      default: '#333333',
+      focus: '#D2691E',
+      error: '#F44336'
+    }
+  }
+});
+```
+
+### Theme Configuration
+```typescript
+// unistyles.config.ts
+import { UnistylesRegistry } from 'react-native-unistyles';
+import { lightTheme, darkTheme } from './theme';
+
+UnistylesRegistry
+  .addThemes({
+    light: lightTheme,
+    dark: darkTheme
+  })
+  .addConfig({
+    adaptiveThemes: true,
+    initialTheme: 'light'
+  });
+```
+
+## Styling Patterns
+
+### Component Styling Structure
+```typescript
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+
+interface ComponentProps {
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+}
+
+export function StyledComponent({ variant = 'primary', size = 'md', disabled }: ComponentProps) {
+  const { styles } = useStyles(stylesheet, { variant, size, disabled });
+  
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Content</Text>
+    </View>
+  );
+}
+
+const stylesheet = createStyleSheet((theme, runtime) => ({
+  container: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    
+    // Responsive design
+    ...(runtime.screen.width < 768 && {
+      padding: theme.spacing.sm
+    }),
+    
+    // Variants
+    variants: {
+      variant: {
+        primary: {
+          backgroundColor: theme.colors.primary,
+        },
+        secondary: {
+          backgroundColor: theme.colors.secondary,
+        }
+      },
+      size: {
+        sm: {
+          padding: theme.spacing.sm,
+        },
+        md: {
+          padding: theme.spacing.md,
+        },
+        lg: {
+          padding: theme.spacing.lg,
+        }
+      },
+      disabled: {
+        true: {
+          opacity: 0.5,
+          backgroundColor: theme.colors.interactive.disabled,
+        }
+      }
+    }
+  },
+  
+  text: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.fontSize.md,
+    lineHeight: theme.typography.lineHeight.md,
+    fontFamily: theme.typography.fontFamily.regular,
+    
+    variants: {
+      variant: {
+        primary: {
+          color: theme.colors.text.inverse,
+        },
+        secondary: {
+          color: theme.colors.text.primary,
+        }
+      }
+    }
+  }
+}));
+```
+
+### Layout Components
+```typescript
+// Common layout patterns
+const layoutStyles = createStyleSheet((theme) => ({
+  // Flexbox utilities
+  flex1: { flex: 1 },
+  flexRow: { flexDirection: 'row' },
+  flexColumn: { flexDirection: 'column' },
+  
+  // Alignment
+  center: { 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  spaceBetween: { 
+    justifyContent: 'space-between' 
+  },
+  spaceAround: { 
+    justifyContent: 'space-around' 
+  },
+  
+  // Container patterns
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  
+  safeContainer: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: theme.spacing.md,
+  },
+  
+  card: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    ...theme.shadows.sm,
+  },
+  
+  section: {
+    marginBottom: theme.spacing.lg,
+  }
+}));
+```
+
+## Advanced Patterns
+
+### Responsive Design
+```typescript
+const responsiveStyles = createStyleSheet((theme, runtime) => ({
+  adaptiveContainer: {
+    padding: theme.spacing.md,
+    
+    // Breakpoint-based styling
+    ...(runtime.screen.width >= 768 && {
+      padding: theme.spacing.lg,
+      maxWidth: 1200,
+      alignSelf: 'center',
+    }),
+    
+    ...(runtime.screen.width >= 1024 && {
+      padding: theme.spacing.xl,
+    }),
+  },
+  
+  gridItem: {
+    // Mobile: single column
+    width: '100%',
+    
+    // Tablet: two columns
+    ...(runtime.screen.width >= 768 && runtime.screen.width < 1024 && {
+      width: '48%',
+    }),
+    
+    // Desktop: three columns
+    ...(runtime.screen.width >= 1024 && {
+      width: '31%',
+    }),
+  }
+}));
+```
+
+### Animation Support
+```typescript
+const animatedStyles = createStyleSheet((theme) => ({
+  animatedContainer: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    
+    // Prepare for animations
+    transform: [{ scale: 1 }],
+    opacity: 1,
+  },
+  
+  pressable: {
+    backgroundColor: theme.colors.interactive.default,
+    
+    // Hover state (web)
+    ':hover': {
+      backgroundColor: theme.colors.interactive.hover,
+    },
+    
+    // Pressed state
+    ':active': {
+      backgroundColor: theme.colors.interactive.pressed,
+      transform: [{ scale: 0.98 }],
+    },
+  }
+}));
+```
+
+### Complex Component Styling
+```typescript
+// Menu item component example
+const menuItemStyles = createStyleSheet((theme, runtime) => ({
+  menuItem: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...theme.shadows.sm,
+    
+    // Interactive states
+    variants: {
+      pressed: {
+        true: {
+          backgroundColor: theme.colors.surface,
+          transform: [{ scale: 0.98 }],
+        }
+      },
+      available: {
+        false: {
+          opacity: 0.6,
+          backgroundColor: theme.colors.border.default,
+        }
+      }
+    }
+  },
+  
+  imageContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: theme.borderRadius.sm,
+    marginRight: theme.spacing.md,
+    overflow: 'hidden',
+  },
+  
+  contentContainer: {
+    flex: 1,
+  },
+  
+  title: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.fontFamily.semiBold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
+  },
+  
+  description: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.text.secondary,
+    lineHeight: theme.typography.lineHeight.sm,
+    marginBottom: theme.spacing.xs,
+  },
+  
+  priceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  
+  price: {
+    fontSize: theme.typography.fontSize.lg,
+    fontFamily: theme.typography.fontFamily.bold,
+    color: theme.colors.primary,
+  },
+  
+  addButton: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.full,
+    
+    variants: {
+      disabled: {
+        true: {
+          backgroundColor: theme.colors.interactive.disabled,
+        }
+      }
+    }
+  },
+  
+  addButtonText: {
+    color: theme.colors.text.inverse,
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.fontFamily.medium,
+  }
+}));
+```
+
+## Performance Optimization
+
+### Style Memoization
+```typescript
+// Memoize expensive style calculations
+const expensiveStyles = createStyleSheet((theme, runtime) => ({
+  complexGradient: {
+    // Complex calculations only run when theme changes
+    background: `linear-gradient(45deg, ${theme.colors.primary}, ${theme.colors.secondary})`,
+    
+    // Conditional styles based on runtime
+    ...(runtime.orientation === 'landscape' && {
+      flexDirection: 'row',
+    }),
+  }
+}));
+```
+
+### Conditional Styling
+```typescript
+// Efficient conditional styling
+const conditionalStyles = createStyleSheet((theme) => ({
+  button: {
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+    
+    variants: {
+      // Use variants instead of inline conditionals
+      size: {
+        small: { padding: theme.spacing.sm },
+        medium: { padding: theme.spacing.md },
+        large: { padding: theme.spacing.lg },
+      },
+      variant: {
+        primary: { backgroundColor: theme.colors.primary },
+        secondary: { backgroundColor: theme.colors.secondary },
+        outline: { 
+          backgroundColor: 'transparent',
+          borderWidth: 1,
+          borderColor: theme.colors.primary,
+        },
+      }
+    }
+  }
+}));
+```
 
 ## Best Practices
 
-- Never use inline styles - always use unistyles
-- Use theme values for all colors, spacing, and typography
-- Create reusable style utilities for common patterns
-- Use variants for conditional styling
-- Leverage runtime values when needed
-- Keep style definitions close to components
+### Theme Token Usage
+```typescript
+// GOOD: Use theme tokens
+const goodStyles = createStyleSheet((theme) => ({
+  container: {
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+  }
+}));
 
-## Common Patterns
+// BAD: Hardcoded values
+const badStyles = createStyleSheet(() => ({
+  container: {
+    backgroundColor: '#F8F8F8',  // ❌ Hardcoded
+    padding: 16,                 // ❌ Hardcoded
+    borderRadius: 12,            // ❌ Hardcoded
+  }
+}));
+```
 
-- Use theme.spacing for consistent spacing
-- Use theme.colors for all color values
-- Use theme.fontSizes for typography
-- Create semantic color names (primary, secondary, danger, etc.)
-- Use theme.borderRadius for consistent rounded corners
+### Component Composition
+```typescript
+// Reusable style utilities
+export const utilityStyles = createStyleSheet((theme) => ({
+  // Spacing utilities
+  mt_xs: { marginTop: theme.spacing.xs },
+  mt_sm: { marginTop: theme.spacing.sm },
+  mt_md: { marginTop: theme.spacing.md },
+  
+  // Text utilities
+  textCenter: { textAlign: 'center' },
+  textBold: { fontFamily: theme.typography.fontFamily.bold },
+  
+  // Layout utilities
+  fullWidth: { width: '100%' },
+  flex1: { flex: 1 },
+}));
+
+// Usage in components
+function Component() {
+  const { styles: utils } = useStyles(utilityStyles);
+  
+  return (
+    <View style={[styles.container, utils.mt_md]}>
+      <Text style={[styles.text, utils.textCenter, utils.textBold]}>
+        Content
+      </Text>
+    </View>
+  );
+}
+```
+
+### Platform-Specific Styling
+```typescript
+const platformStyles = createStyleSheet((theme, runtime) => ({
+  container: {
+    backgroundColor: theme.colors.surface,
+    
+    // iOS specific styles
+    ...(runtime.platform === 'ios' && {
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    }),
+    
+    // Android specific styles
+    ...(runtime.platform === 'android' && {
+      elevation: 4,
+    }),
+    
+    // Web specific styles
+    ...(runtime.platform === 'web' && {
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      cursor: 'pointer',
+    }),
+  }
+}));
+```
+
+## Testing Styles
+
+### Style Testing Utilities
+```typescript
+// Test style application
+import { renderWithUnistyles } from '../test-utils';
+
+describe('Component Styles', () => {
+  it('applies correct theme colors', () => {
+    const { getByTestId } = renderWithUnistyles(
+      <Component testID="component" />,
+      { theme: 'light' }
+    );
+    
+    const element = getByTestId('component');
+    expect(element).toHaveStyle({
+      backgroundColor: lightTheme.colors.surface,
+    });
+  });
+  
+  it('responds to theme changes', () => {
+    const { getByTestId, rerender } = renderWithUnistyles(
+      <Component testID="component" />,
+      { theme: 'light' }
+    );
+    
+    // Switch to dark theme
+    rerender(<Component testID="component" />, { theme: 'dark' });
+    
+    const element = getByTestId('component');
+    expect(element).toHaveStyle({
+      backgroundColor: darkTheme.colors.surface,
+    });
+  });
+});
+```
+
+This comprehensive Unistyles configuration ensures scalable, maintainable, and performant styling that adapts to different themes, screen sizes, and platforms while maintaining excellent developer experience.
