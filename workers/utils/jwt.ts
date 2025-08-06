@@ -7,7 +7,6 @@ export async function signJwt(clientId: string, secret: string): Promise<string>
   return new SignJWT({ sub: clientId })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
-    .setExpirationTime('7d')
     .sign(secretKey(secret))
 }
 

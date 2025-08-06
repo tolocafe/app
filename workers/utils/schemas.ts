@@ -17,4 +17,5 @@ export const requestOtpSchema = z.object({
 export const verifyOtpSchema = z.object({
   phone: phoneSchema,
   code: z.string().length(6),
+  sessionName: z.string().min(1),
 })

@@ -42,7 +42,7 @@ async function signJwt(clientId: string, secret: string): Promise<string> {
   return new SignJWT({ sub: clientId })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    //.setExpirationTime('7d')
     .sign(secretKey(secret))
 }
 async function verifyJwt(token: string, secret: string): Promise<string | null> {
@@ -99,7 +99,7 @@ async function verifyOtp(kv: KVNamespace, phone: string, code: string): Promise<
 }
 // -----------------------------------------------------------------------------
 
-const app = new Hono<{ Bindings: { POSTER_TOKEN: string; JWT_SECRET: string; OTP_CODES: KVNamespace } }>().basePath('/api')
+const app = new Hono<{ Bindings: { POSTER_TOKEN: string; JWT_SECRET: string; OTP_CODES: KVNamespace; KV_SESSIONS: KVNamespace } }>().basePath('/api')
 
 app.use('*', cors())
 
@@ -181,12 +181,8 @@ app
        if (!parse.success) {
          return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
        }
-       const { phone, code } = parse.data
-       // phone and code are already validated by zod
-       //
-       if (!phone || !code) {
-         return c.json({ error: 'phone and code required' }, 400, defaultJsonHeaders)
-       }
+       const { phone, code, sessionName } = parse.data
+       // phone and code validated by zod
        const isValid = await verifyOtp(c.env.OTP_CODES, phone, code)
        if (!isValid) {
          return c.json({ error: 'Invalid or expired code' }, 401, defaultJsonHeaders)
@@ -197,6 +193,12 @@ app
        }
        const clientId = String(client.client_id ?? client.id)
        const token = await signJwt(clientId, c.env.JWT_SECRET)
+       // Store session
+       const key = `sessions:${clientId}`
+       const currentRaw = await c.env.KV_SESSIONS.get(key)
+       const sessions = currentRaw ? (JSON.parse(currentRaw) as Array<any>) : []
+       sessions.push({ token, name: sessionName, createdAt: Date.now() })
+       await c.env.KV_SESSIONS.put(key, JSON.stringify(sessions))
        return c.json({ token, client }, 200, defaultJsonHeaders)
      } catch {
        return c.json({ error: 'OTP verification failed' }, 500, defaultJsonHeaders)
@@ -214,6 +216,18 @@ app
         return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
       }
       return c.json({ client }, 200, defaultJsonHeaders)
+    })
+	.get('/auth/sessions', async (c) => {
+      const auth = c.req.header('Authorization') || ''
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
+      const clientId = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      if (!clientId) {
+        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
+      }
+      const key = `sessions:${clientId}`
+      const sessionsRaw = await c.env.KV_SESSIONS.get(key)
+      const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
+      return c.json({ sessions }, 200, defaultJsonHeaders)
     })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
