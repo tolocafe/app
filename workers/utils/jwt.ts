@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose'
+import { HTTPException } from 'hono/http-exception'
 
 const encoder = new TextEncoder()
 const secretKey = (secret: string) => encoder.encode(secret)
@@ -26,8 +27,8 @@ export function extractToken(authorizationHeader?: string | null): string | null
 
 export async function authenticate(authorizationHeader: string | null | undefined, secret: string): Promise<string> {
   const token = extractToken(authorizationHeader)
-  if (!token) throw new Error('Unauthorized')
+  if (!token) throw new HTTPException(401, { message: 'Unauthorized' })
   const clientId = await verifyJwt(token, secret)
-  if (!clientId) throw new Error('Unauthorized')
+  if (!clientId) throw new HTTPException(401, { message: 'Unauthorized' })
   return clientId
 }

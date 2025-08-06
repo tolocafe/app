@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
 import { signJwt, authenticate } from './utils/jwt'
 import { generateOtp, storeOtp, verifyOtp } from './utils/otp'
 import { createPosterClient, getPosterClientByPhone, getPosterClientById, updatePosterClient, sendSms } from './utils/poster'
@@ -43,7 +44,13 @@ const defaultJsonHeaders = {
 
 const app = new Hono<{ Bindings: { POSTER_TOKEN: string; JWT_SECRET: string; OTP_CODES: KVNamespace; KV_SESSIONS: KVNamespace } }>().basePath('/api')
 
-app.use('*', cors())
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return err.getResponse()
+  }
+  console.error(err)
+  return c.json({ error: 'Internal Server Error' }, 500)
+})
 
 app
 	.get('/', (context) => {
@@ -92,30 +99,16 @@ app
 	})
 	// Auth routes --------------------------------------------------------------
 	.post('/auth/request-otp', async (c) => {
-     try {
-       const body = await c.req.json()
-       const parse = requestOtpSchema.safeParse(body)
-       if (!parse.success) {
-         return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
-       }
-       const { phone, name, email } = parse.data
-       // ensure client exists
-       let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-       if (!client) {
-         client = await createPosterClient(c.env.POSTER_TOKEN, { phone, name, email })
-       }
-       const code = generateOtp()
-       await storeOtp(c.env.OTP_CODES, phone, code)
-       try {
-         await sendSms(c.env.POSTER_TOKEN, phone, `Your verification code: ${code}`)
-       } catch {
-         return c.json({ error: 'Failed to send SMS' }, 500, defaultJsonHeaders)
-       }
-       return c.json({ success: true }, 200, defaultJsonHeaders)
-     } catch {
-       return c.json({ error: 'Failed to issue OTP' }, 500, defaultJsonHeaders)
-     }
-   })
+      const { phone, name, email } = requestOtpSchema.parse(await c.req.json())
+      let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+      if (!client) {
+        client = await createPosterClient(c.env.POSTER_TOKEN, { phone, name, email })
+      }
+      const code = generateOtp()
+      await storeOtp(c.env.OTP_CODES, phone, code)
+      await sendSms(c.env.POSTER_TOKEN, phone, `Your verification code: ${code}`)
+      return c.json({ success: true })
+    })
    .post('/auth/verify-otp', async (c) => {
      try {
        const body = await c.req.json()
