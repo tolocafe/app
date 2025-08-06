@@ -110,35 +110,19 @@ app
       return c.json({ success: true })
     })
    .post('/auth/verify-otp', async (c) => {
-     try {
-       const body = await c.req.json()
-       const parse = verifyOtpSchema.safeParse(body)
-       if (!parse.success) {
-         return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
-       }
-       const { phone, code, sessionName } = parse.data
-       // phone and code validated by zod
-       const isValid = await verifyOtp(c.env.OTP_CODES, phone, code)
-       if (!isValid) {
-         return c.json({ error: 'Invalid or expired code' }, 401, defaultJsonHeaders)
-       }
-       const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-       if (!client) {
-         return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
-       }
-       const clientId = String(client.client_id ?? client.id)
-       const token = await signJwt(clientId, c.env.JWT_SECRET)
-       // Store session
-       const key = clientId
-       const currentRaw = await c.env.KV_SESSIONS.get(key)
-       const sessions = currentRaw ? (JSON.parse(currentRaw) as Array<any>) : []
-       sessions.push({ token, name: sessionName, createdAt: Date.now() })
-       await c.env.KV_SESSIONS.put(key, JSON.stringify(sessions))
-       return c.json({ token, client }, 200, defaultJsonHeaders)
-     } catch {
-       return c.json({ error: 'OTP verification failed' }, 500, defaultJsonHeaders)
-     }
-   })
+      const { phone, code, sessionName } = verifyOtpSchema.parse(await c.req.json())
+      await verifyOtp(c.env.OTP_CODES, phone, code)
+      const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+      if (!client) throw new HTTPException(404, { message: 'Client not found' })
+      const clientId = String(client.client_id ?? client.id)
+      const token = await signJwt(clientId, c.env.JWT_SECRET)
+      const key = clientId
+      const sessionsRaw = await c.env.KV_SESSIONS.get(key)
+      const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
+      sessions.push({ token, name: sessionName, createdAt: Date.now() })
+      await c.env.KV_SESSIONS.put(key, JSON.stringify(sessions))
+      return c.json({ token, client })
+    })
 	.get('/auth/self', async (c) => {
       let clientId: string
       try {
