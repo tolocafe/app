@@ -33,3 +33,14 @@ export async function updatePosterClient(token: string, id: string, body: Record
   })
   return (await res.json())?.response?.client
 }
+
+export async function sendSms(token: string, phone: string, text: string) {
+  const res = await fetch(`${BASE_URL}/clients.sendSms?token=${token}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, text }),
+  })
+  const json = await res.json()
+  if (json?.response?.sms_id) return json.response
+  throw new Error('Failed to send SMS')
+}
