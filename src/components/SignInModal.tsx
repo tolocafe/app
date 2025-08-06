@@ -1,8 +1,6 @@
 import { Modal, View, Text, TouchableOpacity, Pressable } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { Trans } from '@lingui/react/macro'
-import { Colors } from '@/lib/constants/colors'
-import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import NotSignedIn from '@/components/NotSignedIn'
 
 interface SignInModalProps {
@@ -16,8 +14,6 @@ export default function SignInModal({
 	onClose,
 	itemName,
 }: SignInModalProps) {
-	const colorScheme = useColorScheme()
-
 	return (
 		<Modal
 			visible={visible}
@@ -26,34 +22,17 @@ export default function SignInModal({
 			onRequestClose={onClose}
 		>
 			<Pressable style={styles.overlay} onPress={onClose}>
-				<View
-					style={[
-						styles.modal,
-						{ backgroundColor: Colors[colorScheme ?? 'light'].background },
-					]}
-				>
+				<View style={styles.modal}>
 					<Pressable onPress={(e) => e.stopPropagation()}>
 						<View style={styles.header}>
 							<TouchableOpacity onPress={onClose} style={styles.closeButton}>
-								<Text
-									style={[
-										styles.closeButtonText,
-										{ color: Colors[colorScheme ?? 'light'].text },
-									]}
-								>
-									✕
-								</Text>
+								<Text style={styles.closeButtonText}>✕</Text>
 							</TouchableOpacity>
 						</View>
 
 						{itemName && (
 							<View style={styles.messageContainer}>
-								<Text
-									style={[
-										styles.message,
-										{ color: Colors[colorScheme ?? 'light'].text },
-									]}
-								>
+								<Text style={styles.message}>
 									<Trans>
 										Sign in to add &ldquo;{itemName}&rdquo; to your bag
 									</Trans>
@@ -78,37 +57,40 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: 'flex-end',
 	},
 	modal: {
-		borderTopLeftRadius: 20,
-		borderTopRightRadius: 20,
-		paddingTop: 20,
-		paddingBottom: 40,
+		borderTopLeftRadius: theme.borderRadius.xl,
+		borderTopRightRadius: theme.borderRadius.xl,
+		paddingTop: theme.spacing.lg,
+		paddingBottom: theme.spacing.xxl,
 		minHeight: 400,
+		backgroundColor: theme.colors.background,
 	},
 	header: {
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		paddingHorizontal: 24,
-		marginBottom: 16,
+		paddingHorizontal: theme.spacing.lg,
+		marginBottom: theme.spacing.md,
 	},
 	closeButton: {
-		width: 32,
-		height: 32,
+		width: theme.spacing.xl,
+		height: theme.spacing.xl,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
 	closeButtonText: {
-		fontSize: 18,
-		fontWeight: 'bold',
+		fontSize: theme.fontSizes.lg,
+		fontWeight: theme.fontWeights.bold,
+		color: theme.colors.text,
 	},
 	messageContainer: {
-		paddingHorizontal: 24,
-		marginBottom: 24,
+		paddingHorizontal: theme.spacing.lg,
+		marginBottom: theme.spacing.lg,
 	},
 	message: {
-		fontSize: 16,
+		fontSize: theme.fontSizes.md,
 		textAlign: 'center',
-		lineHeight: 24,
+		lineHeight: theme.fontSizes.xxl,
+		color: theme.colors.text,
 	},
 	content: {
 		flex: 1,

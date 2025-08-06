@@ -4,13 +4,10 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { Text, View, ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { Colors } from '@/lib/constants/colors'
-import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 
 export default function Orders() {
 	const { isAuthenticated, user } = useAuth()
 	const { t } = useLingui()
-	const colorScheme = useColorScheme()
 
 	if (!isAuthenticated) {
 		return <NotSignedIn />
@@ -21,48 +18,23 @@ export default function Orders() {
 			<Head>
 				<title>{t`Orders`}</title>
 			</Head>
-			<ScrollView
-				style={[
-					styles.container,
-					{ backgroundColor: Colors[colorScheme ?? 'light'].background },
-				]}
-			>
+			<ScrollView style={styles.container}>
 				<View style={styles.header}>
-					<Text
-						style={[
-							styles.title,
-							{ color: Colors[colorScheme ?? 'light'].text },
-						]}
-					>
+					<Text style={styles.title}>
 						<Trans>Your Orders</Trans>
 					</Text>
 					{user?.fullName && (
-						<Text
-							style={[
-								styles.subtitle,
-								{ color: Colors[colorScheme ?? 'light'].text },
-							]}
-						>
+						<Text style={styles.subtitle}>
 							<Trans>Welcome back, {user.fullName}!</Trans>
 						</Text>
 					)}
 				</View>
 
 				<View style={styles.ordersContainer}>
-					<Text
-						style={[
-							styles.emptyState,
-							{ color: Colors[colorScheme ?? 'light'].text },
-						]}
-					>
+					<Text style={styles.emptyState}>
 						<Trans>No orders yet</Trans>
 					</Text>
-					<Text
-						style={[
-							styles.emptyStateSubtitle,
-							{ color: Colors[colorScheme ?? 'light'].text },
-						]}
-					>
+					<Text style={styles.emptyStateSubtitle}>
 						<Trans>Your order history will appear here</Trans>
 					</Text>
 				</View>
@@ -74,35 +46,40 @@ export default function Orders() {
 const styles = StyleSheet.create((theme) => ({
 	container: {
 		flex: 1,
-		padding: 20,
+		padding: theme.spacing.lg,
+		backgroundColor: theme.colors.background,
 	},
 	header: {
-		marginBottom: 32,
+		marginBottom: theme.spacing.xl,
 	},
 	title: {
-		fontSize: 28,
-		fontWeight: 'bold',
-		marginBottom: 8,
+		fontSize: theme.fontSizes.xxxl,
+		fontWeight: theme.fontWeights.bold,
+		marginBottom: theme.spacing.sm,
+		color: theme.colors.text,
 	},
 	subtitle: {
-		fontSize: 16,
+		fontSize: theme.fontSizes.md,
 		opacity: 0.8,
+		color: theme.colors.text,
 	},
 	ordersContainer: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingVertical: 60,
+		paddingVertical: theme.spacing.xxl,
 	},
 	emptyState: {
-		fontSize: 18,
-		fontWeight: '600',
+		fontSize: theme.fontSizes.lg,
+		fontWeight: theme.fontWeights.semibold,
 		textAlign: 'center',
-		marginBottom: 8,
+		marginBottom: theme.spacing.sm,
+		color: theme.colors.text,
 	},
 	emptyStateSubtitle: {
-		fontSize: 14,
+		fontSize: theme.fontSizes.sm,
 		textAlign: 'center',
 		opacity: 0.6,
+		color: theme.colors.text,
 	},
 }))

@@ -2,10 +2,12 @@ import { StyleSheet } from 'react-native-unistyles'
 
 const lightTheme = {
 	borderRadius: {
-		full: 9999,
-		lg: 16,
-		md: 8,
+		xs: 2,
 		sm: 4,
+		md: 8,
+		lg: 16,
+		xl: 20,
+		full: 9999,
 	},
 	colors: {
 		accent: '#728C70',
@@ -19,12 +21,28 @@ const lightTheme = {
 		text: '#0C0C0C',
 		textSecondary: '#666666',
 	},
-	spacing: {
-		lg: 24,
+	fontSizes: {
+		xs: 12,
+		sm: 14,
 		md: 16,
-		sm: 8,
-		xl: 32,
+		lg: 18,
+		xl: 20,
+		xxl: 24,
+		xxxl: 32,
+	},
+	fontWeights: {
+		regular: '400' as const,
+		medium: '500' as const,
+		semibold: '600' as const,
+		bold: '700' as const,
+	},
+	spacing: {
 		xs: 4,
+		sm: 8,
+		md: 16,
+		lg: 24,
+		xl: 32,
+		xxl: 48,
 	},
 	typography: {
 		body: {
@@ -48,7 +66,7 @@ const lightTheme = {
 			fontWeight: '600' as const,
 		},
 	},
-}
+} as const
 
 const darkTheme = {
 	...lightTheme,

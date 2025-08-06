@@ -3,8 +3,6 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { Alert, Text, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { useAuth } from '@/lib/hooks/use-auth'
-import { Colors } from '@/lib/constants/colors'
-import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 
 interface NotSignedInProps {
 	onSignIn?: () => void
@@ -13,7 +11,6 @@ interface NotSignedInProps {
 export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
 	const { t } = useLingui()
 	const { signIn } = useAuth()
-	const colorScheme = useColorScheme()
 
 	const handleAppleSignIn = async () => {
 		try {
@@ -38,6 +35,7 @@ export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
 				onSignIn?.()
 			}
 		} catch (error: any) {
+			console.log(error)
 			if (error.code === 'ERR_CANCELED') {
 				// User canceled the sign-in flow
 				return
@@ -52,26 +50,15 @@ export default function NotSignedIn({ onSignIn }: NotSignedInProps = {}) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.content}>
-				<Text
-					style={[styles.title, { color: Colors[colorScheme ?? 'light'].text }]}
-				>
+				<Text style={styles.title}>
 					<Trans>Sign In Required</Trans>
 				</Text>
-				<Text
-					style={[
-						styles.subtitle,
-						{ color: Colors[colorScheme ?? 'light'].text },
-					]}
-				>
+				<Text style={styles.subtitle}>
 					<Trans>Please sign in to access this feature</Trans>
 				</Text>
 				<AppleAuthentication.AppleAuthenticationButton
 					buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-					buttonStyle={
-						colorScheme === 'dark'
-							? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-							: AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-					}
+					buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
 					cornerRadius={8}
 					style={styles.appleButton}
 					onPress={handleAppleSignIn}
@@ -86,23 +73,25 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		padding: 20,
+		padding: theme.spacing.lg,
 	},
 	content: {
 		alignItems: 'center',
 		maxWidth: 300,
 	},
 	title: {
-		fontSize: 24,
-		fontWeight: 'bold',
+		fontSize: theme.fontSizes.xxl,
+		fontWeight: theme.fontWeights.bold,
 		textAlign: 'center',
-		marginBottom: 12,
+		marginBottom: theme.spacing.sm,
+		color: theme.colors.text,
 	},
 	subtitle: {
-		fontSize: 16,
+		fontSize: theme.fontSizes.md,
 		textAlign: 'center',
-		marginBottom: 32,
+		marginBottom: theme.spacing.xl,
 		opacity: 0.8,
+		color: theme.colors.text,
 	},
 	appleButton: {
 		width: 200,

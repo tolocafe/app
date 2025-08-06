@@ -1,6 +1,7 @@
 import { Link, Stack } from 'expo-router'
 import Head from 'expo-router/head'
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
 export default function NotFoundScreen() {
 	return (
@@ -24,23 +25,25 @@ export default function NotFoundScreen() {
 	)
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create((theme) => ({
 	container: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		padding: 20,
+		padding: theme.spacing.lg,
+		backgroundColor: theme.colors.background,
 	},
 	title: {
-		fontSize: 20,
-		fontWeight: 'bold',
+		fontSize: theme.fontSizes.xl,
+		fontWeight: theme.fontWeights.bold,
+		color: theme.colors.text,
 	},
 	link: {
-		marginTop: 15,
-		paddingVertical: 15,
+		marginTop: theme.spacing.md,
+		paddingVertical: theme.spacing.md,
 	},
 	linkText: {
-		fontSize: 16,
-		color: '#0a7ea4',
+		fontSize: theme.fontSizes.md,
+		color: theme.colors.primary,
 	},
-})
+}))
