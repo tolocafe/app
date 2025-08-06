@@ -31,12 +31,16 @@ export const persister = createSyncStoragePersister({
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			// Default cache settings for all queries
-			staleTime: 1000 * 60 * 5, // 5 minutes - data is fresh for 5 minutes
-			gcTime: 1000 * 60 * 60, // 1 hour - keep in cache for 1 hour when unused
+			staleTime: 1000 * 60 * 30, // 30 minutes
+			gcTime: 1000 * 60 * 60 * 24, // 24 hours
 			retry: 3,
 			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-			networkMode: 'offlineFirst', // Important for mobile apps
+			networkMode: 'offlineFirst',
+			refetchOnWindowFocus: true,
+			refetchOnReconnect: true,
+			refetchOnMount: true,
+			refetchInterval: false,
+			refetchIntervalInBackground: false,
 		},
 		mutations: {
 			retry: 3,
