@@ -31,6 +31,8 @@ React Native coffee shop app with focus on simplicity and user experience.
 - Follow KISS principle
 - ALL files must use kebab-case naming (e.g., language-context.tsx, use-color-scheme.ts)
 - ALWAYS use `bun` as package manager, never npm or yarn
+- ALWAYS run `bun install` after installing any dependency to update the bun.lock
+- ALWAYS run `bunx expo install --fix` after installing react native dependencies to verify expo compatibility
 - ALWAYS run `bun run format` after completing any task
 - ALWAYS run `bun run lint` and verify for errors after completing any task
 - Capture all errors to Sentry with proper context
