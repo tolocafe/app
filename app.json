@@ -30,6 +30,7 @@
     "newArchEnabled": true,
     "orientation": "portrait",
     "plugins": [
+      "expo-updates",
       "react-native-bottom-tabs",
       [
         "expo-router",
@@ -81,6 +82,15 @@
       "eas": {
         "projectId": "25e3751a-b837-480a-b9fc-ee67327f46e9"
       }
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9"
+    },
+    "runtimeVersion": {
+      "policy": "fingerprint"
     },
     "owner": "tolo-cafe"
   }

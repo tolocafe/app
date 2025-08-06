@@ -12,6 +12,7 @@ import 'react-native-reanimated'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
+import { useUpdates } from '@/lib/hooks/use-updates'
 import { QueryProvider } from '@/lib/providers/query-provider'
 import { useEffect } from 'react'
 
@@ -22,12 +23,20 @@ const navigationIntegration = Sentry.reactNavigationIntegration({
 function RootLayout() {
 	const colorScheme = useColorScheme()
 	const ref = useNavigationContainerRef()
+	const updates = useUpdates()
 
 	useEffect(() => {
 		if (ref) {
 			navigationIntegration.registerNavigationContainer(ref)
 		}
 	}, [ref])
+
+	// Log update information for debugging
+	useEffect(() => {
+		if (updates.error) {
+			console.error('Update error:', updates.error)
+		}
+	}, [updates.error])
 
 	return (
 		<QueryProvider>
