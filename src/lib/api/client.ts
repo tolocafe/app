@@ -148,5 +148,9 @@ export const api = {
 			apiClient<PosterApiResponse<PosterCategory[]>>('/menu/categories'),
 		getProducts: () =>
 			apiClient<PosterApiResponse<PosterProduct[]>>('/menu/products'),
+		getProduct: (productId: string) =>
+			apiClient<PosterApiResponse<PosterProduct>>(
+				`/menu/products/${productId}`,
+			),
 	},
 }

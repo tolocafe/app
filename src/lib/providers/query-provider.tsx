@@ -3,7 +3,7 @@ import { focusManager, onlineManager } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import React, { useEffect } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
-import { persister, queryClient } from '../query-client'
+import { persister, queryClient } from '@/lib/query-client'
 
 // Set up focus manager for React Native
 focusManager.setEventListener((handleFocus) => {

@@ -7,7 +7,6 @@ const preferencesStorage = new MMKV({
 })
 
 export interface UserPreferences {
-	favoriteItems: string[]
 	defaultStore: string | null
 	notificationsEnabled: boolean
 	language: 'en' | 'es'
@@ -17,9 +16,6 @@ export interface UserPreferences {
 const fetchPreferences = async (): Promise<UserPreferences> => {
 	// Read from MMKV
 	const preferences: UserPreferences = {
-		favoriteItems: JSON.parse(
-			preferencesStorage.getString('favoriteItems') ?? '[]',
-		),
 		defaultStore: JSON.parse(
 			preferencesStorage.getString('defaultStore') ?? 'null',
 		),
@@ -70,17 +66,6 @@ export const preferencesMutationOptions = mutationOptions({
 		console.error('Failed to save preferences:', error)
 	},
 })
-
-export const toggleFavoriteMutationOptions = (itemId: string) =>
-	mutationOptions({
-		mutationFn: async (currentPreferences: UserPreferences) => {
-			const favoriteItems = currentPreferences.favoriteItems.includes(itemId)
-				? currentPreferences.favoriteItems.filter((id) => id !== itemId)
-				: [...currentPreferences.favoriteItems, itemId]
-
-			return savePreferences({ favoriteItems })
-		},
-	})
 
 export const updateLanguageMutationOptions = mutationOptions({
 	mutationFn: async (language: 'en' | 'es') => {

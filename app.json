@@ -9,7 +9,8 @@
 			"package": "cafe.tolo.app"
 		},
 		"experiments": {
-			"typedRoutes": true
+			"typedRoutes": true,
+			"reactCompiler": true
 		},
 		"extra": {
 			"eas": {

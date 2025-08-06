@@ -18,6 +18,12 @@ function getMenuProducts(
 	)
 }
 
+function getProduct(token: string, productId: string) {
+	return fetch(
+		`${BASE_URL}/menu.getProduct?token=${token}&product_id=${productId}`,
+	).then((res) => res.json())
+}
+
 const defaultJsonHeaders = {
 	'Content-Type': 'application/json',
 	'Access-Control-Allow-Origin': '*',
@@ -47,6 +53,28 @@ app
 		})
 
 		return context.json(categories, 200, defaultJsonHeaders)
+	})
+	.get('/menu/products/:id', async (context) => {
+		const productId = context.req.param('id')
+
+		if (!productId) {
+			return context.json(
+				{ error: 'Product ID is required' },
+				400,
+				defaultJsonHeaders,
+			)
+		}
+
+		try {
+			const product = await getProduct(context.env.POSTER_TOKEN, productId)
+			return context.json(product, 200, defaultJsonHeaders)
+		} catch {
+			return context.json(
+				{ error: 'Failed to fetch product details' },
+				500,
+				defaultJsonHeaders,
+			)
+		}
 	})
 	.get('*', (context) => {
 		return context.json({ message: 'Not found :(' }, 404, defaultJsonHeaders)

@@ -1,14 +1,10 @@
-import { type MenuItem } from '@/lib/data/menu'
-import { menuQueryOptions } from '@/lib/queries/menu'
-import {
-	preferencesMutationOptions,
-	preferencesQueryOptions,
-	type UserPreferences,
-} from '@/lib/queries/preferences'
+import { categoriesQueryOptions, productsQueryOptions } from '@/lib/queries'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import Head from 'expo-router/head'
-import { useState } from 'react'
+import { Link, router } from 'expo-router'
+import { Image } from 'expo-image'
+import Animated from 'react-native-reanimated'
 import {
 	ActivityIndicator,
 	FlatList,
@@ -19,40 +15,15 @@ import {
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { useAuth } from '@/lib/hooks/use-auth'
-import SignInModal from '@/components/SignInModal'
+import { PosterCategory, PosterProduct } from '@/lib/api/client'
 
 export default function Menu() {
-	const [selectedCategory, setSelectedCategory] = useState('coffee')
-	const [modalVisible, setModalVisible] = useState(false)
-	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
 	const { t } = useLingui()
-	const queryClient = useQueryClient()
 	const { isAuthenticated } = useAuth()
 
 	// Fetch menu data using React Query
-	const { data: menuData, isLoading, error } = useQuery(menuQueryOptions)
-
-	// Fetch user preferences
-	const { data: preferences } = useQuery(preferencesQueryOptions)
-	const preferencesMutation = useMutation({
-		...preferencesMutationOptions,
-		onSuccess: (data) => {
-			// Invalidate any queries that depend on preferences
-			queryClient.invalidateQueries({
-				queryKey: preferencesQueryOptions.queryKey,
-			})
-
-			// Optionally update the cache directly
-			queryClient.setQueryData(
-				preferencesQueryOptions.queryKey,
-				(old: UserPreferences | undefined) =>
-					({
-						...old,
-						...data,
-					}) as UserPreferences,
-			)
-		},
-	})
+	const { data: menuData, isLoading, error } = useQuery(productsQueryOptions)
+	const { data: categoriesData } = useQuery(categoriesQueryOptions)
 
 	// Handle loading state
 	if (isLoading) {
@@ -73,101 +44,105 @@ export default function Menu() {
 				<Text style={styles.errorText}>
 					<Trans>Failed to load menu. Please try again.</Trans>
 				</Text>
-				<TouchableOpacity
-					style={styles.retryButton}
-					onPress={() => {
-						// Refetch the query
-						queryClient.invalidateQueries({ queryKey: ['menu'] })
-					}}
-				>
-					<Text style={styles.retryButtonText}>
-						<Trans>Retry</Trans>
-					</Text>
-				</TouchableOpacity>
 			</View>
 		)
 	}
 
-	const categories = menuData?.categories || []
-	const menuItems = menuData?.items || []
-	const filteredItems = menuItems.filter(
-		(item: MenuItem) => item.category === selectedCategory,
-	)
+	const categories = categoriesData?.response || []
+	const menuItems = menuData?.response || []
 
-	const toggleFavorite = (itemId: string) => {
-		const currentFavorites = preferences?.favoriteItems || []
-		const isFavorite = currentFavorites.includes(itemId)
-
-		const newFavorites = isFavorite
-			? currentFavorites.filter((id) => id !== itemId)
-			: [...currentFavorites, itemId]
-
-		preferencesMutation.mutate({ favoriteItems: newFavorites })
-	}
-
-	const handleAddToBag = (item: MenuItem) => {
+	const handleAddToBag = (item: PosterProduct) => {
 		if (!isAuthenticated) {
-			setSelectedItem(item)
-			setModalVisible(true)
+			router.push({
+				pathname: '/sign-in',
+				params: { itemName: item.product_name },
+			})
 		} else {
 			// TODO: Implement actual add to bag logic
-			console.log('Adding to bag:', item.name)
+			console.log('Adding to bag:', item.product_name)
 		}
 	}
 
-	const renderMenuItem = ({ item }: { item: MenuItem }) => {
-		const isFavorite = preferences?.favoriteItems?.includes(item.id) || false
+	const renderMenuItem = ({ item }: { item: PosterProduct }) => {
+		const firstPrice = item.price ? Object.values(item.price)[0] : '0'
 
 		return (
-			<View style={styles.menuItem}>
-				<View style={styles.menuItemContent}>
-					<View style={styles.menuItemHeader}>
-						<Text style={styles.menuItemName}>{item.name}</Text>
-						<View style={styles.badges}>
-							{isFavorite && (
-								<View style={[styles.badge, styles.favoriteBadge]}>
-									<Text style={styles.badgeText}>♥</Text>
-								</View>
-							)}
-							{item.isNew && (
-								<View style={styles.badge}>
-									<Text style={styles.badgeText}>
-										<Trans>NEW</Trans>
+			<Link href={`/(tabs)/(menu)/${item.product_id}`} asChild>
+				<View style={styles.menuItem}>
+					<Animated.View
+						sharedTransitionTag={`menu-item-${item.product_id}`}
+						style={styles.menuItemImageContainer}
+					>
+						{item.photo ? (
+							<Image
+								source={{ uri: item.photo }}
+								style={styles.menuItemImage}
+								contentFit="cover"
+								transition={200}
+							/>
+						) : (
+							<View style={styles.menuItemImage} />
+						)}
+					</Animated.View>
+					<View style={styles.menuItemContent}>
+						<View style={styles.menuItemHeader}>
+							<Text style={styles.menuItemName}>{item.product_name}</Text>
+							<View style={styles.badges}>
+								{item.group_modifications &&
+									item.group_modifications.length > 0 && (
+										<View style={[styles.badge, styles.popularBadge]}>
+											<Text style={styles.badgeText}>
+												<Trans>POPULAR</Trans>
+											</Text>
+										</View>
+									)}
+							</View>
+						</View>
+						<Text style={styles.menuItemDescription}>
+							{item.product_production_description}
+						</Text>
+						<View style={styles.menuItemFooter}>
+							<Text style={styles.menuItemPrice}>
+								${(parseFloat(firstPrice) / 100).toFixed(2)}
+							</Text>
+							<View style={styles.menuItemActions}>
+								<TouchableOpacity
+									style={styles.addToBagButton}
+									onPress={(e) => {
+										e.stopPropagation()
+										handleAddToBag(item)
+									}}
+								>
+									<Text style={styles.addToBagButtonText}>
+										<Trans>Add to Bag</Trans>
 									</Text>
-								</View>
-							)}
-							{item.isPopular && (
-								<View style={[styles.badge, styles.popularBadge]}>
-									<Text style={styles.badgeText}>
-										<Trans>POPULAR</Trans>
-									</Text>
-								</View>
-							)}
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
-					<Text style={styles.menuItemDescription}>{item.description}</Text>
 				</View>
-				<View style={styles.menuItemActions}>
-					<TouchableOpacity onPress={() => toggleFavorite(item.id)}>
-						<Text
-							style={[
-								styles.favoriteButton,
-								isFavorite && styles.favoriteActive,
-							]}
-						>
-							{isFavorite ? '♥' : '♡'}
-						</Text>
-					</TouchableOpacity>
-					<Text style={styles.menuItemPrice}>${item.price.toFixed(2)}</Text>
-					<TouchableOpacity
-						style={styles.addToBagButton}
-						onPress={() => handleAddToBag(item)}
-					>
-						<Text style={styles.addToBagButtonText}>
-							<Trans>Add to Bag</Trans>
-						</Text>
-					</TouchableOpacity>
-				</View>
+			</Link>
+		)
+	}
+
+	const renderCategorySection = (category: PosterCategory) => {
+		const categoryItems = menuItems.filter(
+			(item: PosterProduct) => item.menu_category_id === category.category_id,
+		)
+
+		if (categoryItems.length === 0) return null
+
+		return (
+			<View key={category.category_id} style={styles.categorySection}>
+				<Text style={styles.categoryTitle}>{category.category_name}</Text>
+				<FlatList
+					data={categoryItems}
+					renderItem={renderMenuItem}
+					keyExtractor={(item) => item.product_id}
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={styles.categoryItems}
+				/>
 			</View>
 		)
 	}
@@ -195,47 +170,8 @@ export default function Menu() {
 				contentInsetAdjustmentBehavior="automatic"
 				style={styles.container}
 			>
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					style={styles.categoriesContainer}
-					contentContainerStyle={styles.categoriesContent}
-				>
-					{categories.map((category: any) => (
-						<TouchableOpacity
-							key={category.id}
-							style={[
-								styles.categoryButton,
-								selectedCategory === category.id && styles.categoryButtonActive,
-							]}
-							onPress={() => setSelectedCategory(category.id)}
-						>
-							<Text
-								style={[
-									styles.categoryText,
-									selectedCategory === category.id && styles.categoryTextActive,
-								]}
-							>
-								{category.name}
-							</Text>
-						</TouchableOpacity>
-					))}
-				</ScrollView>
-
-				<FlatList
-					data={filteredItems}
-					renderItem={renderMenuItem}
-					keyExtractor={(item) => item.id}
-					contentContainerStyle={styles.menuList}
-					showsVerticalScrollIndicator={false}
-				/>
+				{categories.map((category) => renderCategorySection(category))}
 			</ScrollView>
-
-			<SignInModal
-				visible={modalVisible}
-				onClose={() => setModalVisible(false)}
-				itemName={selectedItem?.name}
-			/>
 		</>
 	)
 }
@@ -259,48 +195,43 @@ const styles = StyleSheet.create((theme, rt) => ({
 		color: theme.colors.textSecondary,
 		marginTop: theme.spacing.xs,
 	},
-	categoriesContainer: {
-		maxHeight: 50,
+	categorySection: {
+		marginBottom: theme.spacing.xl,
 	},
-	categoriesContent: {
-		paddingHorizontal: theme.spacing.md,
-		gap: theme.spacing.sm,
-	},
-	categoryButton: {
-		paddingHorizontal: theme.spacing.lg,
-		paddingVertical: theme.spacing.sm,
-		borderRadius: theme.borderRadius.full,
-		backgroundColor: theme.colors.surface,
-		borderWidth: 1,
-		borderColor: theme.colors.border,
-	},
-	categoryButtonActive: {
-		backgroundColor: theme.colors.primary,
-		borderColor: theme.colors.primary,
-	},
-	categoryText: {
-		fontSize: theme.typography.body.fontSize,
-		fontWeight: theme.typography.body.fontWeight,
+	categoryTitle: {
+		fontSize: theme.typography.h2.fontSize,
+		fontWeight: theme.typography.h2.fontWeight,
 		color: theme.colors.text,
+		paddingHorizontal: theme.spacing.md,
+		marginBottom: theme.spacing.md,
 	},
-	categoryTextActive: {
-		color: theme.colors.surface,
-	},
-	menuList: {
-		padding: theme.spacing.md,
+	categoryItems: {
+		paddingHorizontal: theme.spacing.md,
+		gap: theme.spacing.md,
 	},
 	menuItem: {
 		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.lg,
+		overflow: 'hidden',
+		width: 225,
+	},
+	menuItemImageContainer: {
+		width: '100%',
+		height: 225,
+		backgroundColor: theme.colors.border,
+	},
+	menuItemImage: {
+		width: '100%',
+		height: 225,
+	},
+	menuItemContent: {
 		padding: theme.spacing.md,
-		marginBottom: theme.spacing.sm,
+	},
+	menuItemFooter: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-	},
-	menuItemContent: {
-		flex: 1,
-		marginRight: theme.spacing.md,
+		marginTop: theme.spacing.md,
 	},
 	menuItemHeader: {
 		flexDirection: 'row',
@@ -375,26 +306,18 @@ const styles = StyleSheet.create((theme, rt) => ({
 		flexDirection: 'row',
 		gap: theme.spacing.xs,
 	},
-	favoriteBadge: {
-		backgroundColor: theme.colors.error,
-	},
+
 	menuItemActions: {
+		flexDirection: 'row',
 		alignItems: 'center',
 		gap: theme.spacing.sm,
 	},
-	favoriteButton: {
-		fontSize: 24,
-		color: theme.colors.textSecondary,
-	},
-	favoriteActive: {
-		color: theme.colors.error,
-	},
+
 	addToBagButton: {
 		backgroundColor: theme.colors.primary,
 		paddingHorizontal: theme.spacing.md,
 		paddingVertical: theme.spacing.sm,
 		borderRadius: theme.borderRadius.md,
-		marginTop: theme.spacing.xs,
 	},
 	addToBagButtonText: {
 		color: theme.colors.surface,

@@ -8,6 +8,10 @@ export default function MenuLayout() {
 	return (
 		<Stack screenOptions={defaultStackScreenOptions}>
 			<Stack.Screen name="index" options={{ title: t`Menu` }} />
+			<Stack.Screen
+				name="[id]"
+				options={{ title: '', headerTransparent: true }}
+			/>
 		</Stack>
 	)
 }

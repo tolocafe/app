@@ -15,9 +15,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"deploy": "wrangler deploy",
-		"update:publish": "eas update --auto",
-		"update:publish:preview": "eas update --channel preview --message",
-		"update:publish:production": "eas update --channel production --message"
+		"update:publish": "eas update --auto"
 	},
 	"dependencies": {
 		"@bottom-tabs/react-navigation": "^0.10.0",
@@ -65,6 +63,7 @@
 		"@cloudflare/vitest-pool-workers": "^0.8.60",
 		"@lingui/babel-plugin-lingui-macro": "^5.4.0",
 		"@types/react": "~19.0.10",
+		"babel-plugin-react-compiler": "^19.1.0-rc.2",
 		"eslint": "^9.32.0",
 		"eslint-config-expo": "~9.2.0",
 		"prettier": "^3.6.2",

@@ -1,11 +1,22 @@
 import { useLanguage } from '@/lib/contexts/language-context'
+import { clearAllCache } from '@/lib/queries'
 import { Trans } from '@lingui/react/macro'
 import Head from 'expo-router/head'
-import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { useState } from 'react'
+import {
+	Alert,
+	Linking,
+	ScrollView,
+	Text,
+	TouchableOpacity,
+	View,
+} from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 export default function More() {
 	const { currentLanguage, changeLanguage } = useLanguage()
+	const [isClearingCache, setIsClearingCache] = useState(false)
+
 	const handleCall = () => {
 		Linking.openURL('tel:+14155551234')
 	}
@@ -22,6 +33,41 @@ export default function More() {
 
 	const handleInstagram = () => {
 		Linking.openURL('https://instagram.com/tolocoffee')
+	}
+
+	const handleClearCache = () => {
+		Alert.alert(
+			'Clear Cache',
+			'This will clear all cached data including menu items and preferences. The app will reload fresh data from the server. Continue?',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Clear Cache',
+					style: 'destructive',
+					onPress: async () => {
+						setIsClearingCache(true)
+						try {
+							await clearAllCache()
+							Alert.alert(
+								'Cache Cleared',
+								'All cached data has been cleared successfully.',
+								[{ text: 'OK' }],
+							)
+						} catch (error) {
+							console.error('Failed to clear cache:', error)
+							Alert.alert('Error', 'Failed to clear cache. Please try again.', [
+								{ text: 'OK' },
+							])
+						} finally {
+							setIsClearingCache(false)
+						}
+					},
+				},
+			],
+		)
 	}
 
 	return (
@@ -49,7 +95,7 @@ export default function More() {
 			>
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
-						<Trans>Location</Trans>
+						<Trans>Visit Us</Trans>
 					</Text>
 					<View style={styles.card}>
 						<Text style={styles.cardTitle}>
@@ -57,6 +103,31 @@ export default function More() {
 						</Text>
 						<Text style={styles.cardText}>123 Coffee Street</Text>
 						<Text style={styles.cardText}>San Francisco, CA 94105</Text>
+
+						<View style={styles.hoursContainer}>
+							<Text style={styles.hoursTitle}>
+								<Trans>Hours</Trans>
+							</Text>
+							<View style={styles.hoursRow}>
+								<Text style={styles.dayText}>
+									<Trans>Monday - Friday</Trans>
+								</Text>
+								<Text style={styles.hoursText}>6:00 AM - 8:00 PM</Text>
+							</View>
+							<View style={styles.hoursRow}>
+								<Text style={styles.dayText}>
+									<Trans>Saturday</Trans>
+								</Text>
+								<Text style={styles.hoursText}>7:00 AM - 9:00 PM</Text>
+							</View>
+							<View style={styles.hoursRow}>
+								<Text style={styles.dayText}>
+									<Trans>Sunday</Trans>
+								</Text>
+								<Text style={styles.hoursText}>7:00 AM - 7:00 PM</Text>
+							</View>
+						</View>
+
 						<TouchableOpacity style={styles.button} onPress={handleDirections}>
 							<Text style={styles.buttonText}>
 								<Trans>Get Directions</Trans>
@@ -67,71 +138,43 @@ export default function More() {
 
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
-						<Trans>Hours</Trans>
+						<Trans>Connect</Trans>
 					</Text>
 					<View style={styles.card}>
-						<View style={styles.hoursRow}>
-							<Text style={styles.dayText}>
-								<Trans>Monday - Friday</Trans>
+						<TouchableOpacity style={styles.contactButton} onPress={handleCall}>
+							<Text style={styles.contactButtonText}>
+								<Trans>Call (415) 555-1234</Trans>
 							</Text>
-							<Text style={styles.hoursText}>6:00 AM - 8:00 PM</Text>
-						</View>
-						<View style={styles.hoursRow}>
-							<Text style={styles.dayText}>
-								<Trans>Saturday</Trans>
-							</Text>
-							<Text style={styles.hoursText}>7:00 AM - 9:00 PM</Text>
-						</View>
-						<View style={styles.hoursRow}>
-							<Text style={styles.dayText}>
-								<Trans>Sunday</Trans>
-							</Text>
-							<Text style={styles.hoursText}>7:00 AM - 7:00 PM</Text>
-						</View>
-					</View>
-				</View>
-
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>
-						<Trans>Contact</Trans>
-					</Text>
-					<View style={styles.card}>
-						<TouchableOpacity style={styles.contactRow} onPress={handleCall}>
-							<Text style={styles.contactLabel}>
-								<Trans>Phone</Trans>
-							</Text>
-							<Text style={styles.contactValue}>(415) 555-1234</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.contactRow} onPress={handleWebsite}>
-							<Text style={styles.contactLabel}>
-								<Trans>Website</Trans>
-							</Text>
-							<Text style={styles.contactValue}>tolocoffee.com</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
-							style={styles.contactRow}
+							style={styles.contactButton}
+							onPress={handleWebsite}
+						>
+							<Text style={styles.contactButtonText}>
+								<Trans>Visit tolocoffee.com</Trans>
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.contactButton}
 							onPress={handleInstagram}
 						>
-							<Text style={styles.contactLabel}>
-								<Trans>Instagram</Trans>
+							<Text style={styles.contactButtonText}>
+								<Trans>Follow @tolocoffee</Trans>
 							</Text>
-							<Text style={styles.contactValue}>@tolocoffee</Text>
 						</TouchableOpacity>
 					</View>
 				</View>
 
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
-						<Trans>Our Story</Trans>
+						<Trans>About TOLO</Trans>
 					</Text>
 					<View style={styles.card}>
-						<Text style={styles.storyText}>
+						<Text style={styles.aboutText}>
 							<Trans>
-								TOLO Coffee is a neighborhood coffee shop dedicated to serving
-								the finest locally-roasted coffee. We believe in creating a
-								warm, welcoming space where community comes together over
-								exceptional coffee and fresh, locally-sourced food. Every cup
-								tells a story, and we&apos;re here to make yours special.
+								A neighborhood coffee shop dedicated to serving the finest
+								locally-roasted coffee. We create a warm, welcoming space where
+								community comes together over exceptional coffee.
 							</Trans>
 						</Text>
 					</View>
@@ -139,83 +182,75 @@ export default function More() {
 
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
-						<Trans>Our Values</Trans>
+						<Trans>Settings</Trans>
 					</Text>
 					<View style={styles.card}>
-						<View style={styles.valueItem}>
-							<Text style={styles.valueTitle}>
-								<Trans>Quality First</Trans>
-							</Text>
-							<Text style={styles.valueText}>
-								<Trans>We source only the best beans and ingredients</Trans>
-							</Text>
+						<Text style={styles.settingLabel}>
+							<Trans>Language</Trans>
+						</Text>
+						<View style={styles.languageContainer}>
+							<TouchableOpacity
+								style={[
+									styles.languageButton,
+									currentLanguage === 'en' && styles.languageButtonActive,
+								]}
+								onPress={() => changeLanguage('en')}
+							>
+								<Text
+									style={[
+										styles.languageButtonText,
+										currentLanguage === 'en' && styles.languageButtonTextActive,
+									]}
+								>
+									English
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[
+									styles.languageButton,
+									currentLanguage === 'es' && styles.languageButtonActive,
+								]}
+								onPress={() => changeLanguage('es')}
+							>
+								<Text
+									style={[
+										styles.languageButtonText,
+										currentLanguage === 'es' && styles.languageButtonTextActive,
+									]}
+								>
+									Español
+								</Text>
+							</TouchableOpacity>
 						</View>
-						<View style={styles.valueItem}>
-							<Text style={styles.valueTitle}>
-								<Trans>Community Focus</Trans>
-							</Text>
-							<Text style={styles.valueText}>
-								<Trans>Building connections one cup at a time</Trans>
-							</Text>
-						</View>
-						<View style={styles.valueItem}>
-							<Text style={styles.valueTitle}>
-								<Trans>Sustainability</Trans>
-							</Text>
-							<Text style={styles.valueText}>
-								<Trans>Committed to eco-friendly practices</Trans>
-							</Text>
-						</View>
-					</View>
-				</View>
 
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>
-						<Trans>Language</Trans>
-					</Text>
-					<View style={styles.card}>
+						<View style={styles.settingDivider} />
+
 						<TouchableOpacity
 							style={[
-								styles.languageRow,
-								currentLanguage === 'en' && styles.languageRowActive,
+								styles.clearCacheButton,
+								isClearingCache && styles.clearCacheButtonDisabled,
 							]}
-							onPress={() => changeLanguage('en')}
+							onPress={handleClearCache}
+							disabled={isClearingCache}
 						>
 							<Text
 								style={[
-									styles.languageText,
-									currentLanguage === 'en' && styles.languageTextActive,
+									styles.clearCacheText,
+									isClearingCache && styles.clearCacheTextDisabled,
 								]}
 							>
-								English
+								{isClearingCache ? (
+									<Trans>Clearing Cache...</Trans>
+								) : (
+									<Trans>Clear Cache</Trans>
+								)}
 							</Text>
-							{currentLanguage === 'en' && (
-								<View style={styles.checkmark}>
-									<Text style={styles.checkmarkText}>✓</Text>
-								</View>
-							)}
 						</TouchableOpacity>
-						<TouchableOpacity
-							style={[
-								styles.languageRow,
-								currentLanguage === 'es' && styles.languageRowActive,
-							]}
-							onPress={() => changeLanguage('es')}
-						>
-							<Text
-								style={[
-									styles.languageText,
-									currentLanguage === 'es' && styles.languageTextActive,
-								]}
-							>
-								Español
-							</Text>
-							{currentLanguage === 'es' && (
-								<View style={styles.checkmark}>
-									<Text style={styles.checkmarkText}>✓</Text>
-								</View>
-							)}
-						</TouchableOpacity>
+						<Text style={styles.clearCacheDescription}>
+							<Trans>
+								Clear all cached data and reload fresh content from the server.
+							</Trans>
+						</Text>
 					</View>
 				</View>
 			</ScrollView>
@@ -224,21 +259,8 @@ export default function More() {
 }
 
 const styles = StyleSheet.create((theme, rt) => ({
-	container: {
-		flex: 1,
-		backgroundColor: theme.colors.background,
-	},
 	scrollContent: {
 		paddingBottom: theme.spacing.xl,
-	},
-	header: {
-		padding: theme.spacing.lg,
-		alignItems: 'center',
-	},
-	title: {
-		fontSize: theme.typography.h1.fontSize,
-		fontWeight: theme.typography.h1.fontWeight,
-		color: theme.colors.primary,
 	},
 	section: {
 		paddingHorizontal: theme.spacing.md,
@@ -253,7 +275,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	card: {
 		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.lg,
-		padding: theme.spacing.md,
+		padding: theme.spacing.lg,
 	},
 	cardTitle: {
 		fontSize: theme.typography.h3.fontSize,
@@ -265,11 +287,12 @@ const styles = StyleSheet.create((theme, rt) => ({
 		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
 		lineHeight: 22,
+		marginBottom: theme.spacing.xs,
 	},
 	button: {
-		marginTop: theme.spacing.md,
+		marginTop: theme.spacing.lg,
 		backgroundColor: theme.colors.primary,
-		paddingVertical: theme.spacing.sm,
+		paddingVertical: theme.spacing.md,
 		paddingHorizontal: theme.spacing.lg,
 		borderRadius: theme.borderRadius.md,
 		alignItems: 'center',
@@ -278,6 +301,16 @@ const styles = StyleSheet.create((theme, rt) => ({
 		color: theme.colors.surface,
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
+	},
+	hoursContainer: {
+		marginTop: theme.spacing.lg,
+		marginBottom: theme.spacing.sm,
+	},
+	hoursTitle: {
+		fontSize: theme.typography.h4.fontSize,
+		fontWeight: theme.typography.h4.fontWeight,
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
 	},
 	hoursRow: {
 		flexDirection: 'row',
@@ -291,75 +324,82 @@ const styles = StyleSheet.create((theme, rt) => ({
 	hoursText: {
 		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
-		fontWeight: theme.typography.body.fontWeight,
 	},
-	contactRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: theme.spacing.sm,
-		borderBottomWidth: 1,
-		borderBottomColor: theme.colors.border,
+	contactButton: {
+		paddingVertical: theme.spacing.md,
+		paddingHorizontal: theme.spacing.sm,
+		marginBottom: theme.spacing.xs,
+		borderRadius: theme.borderRadius.sm,
+		backgroundColor: theme.colors.background,
 	},
-	contactLabel: {
-		fontSize: theme.typography.body.fontSize,
-		color: theme.colors.text,
-	},
-	contactValue: {
+	contactButtonText: {
 		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.primary,
 		fontWeight: theme.typography.body.fontWeight,
+		textAlign: 'center',
 	},
-	storyText: {
+	aboutText: {
 		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
 		lineHeight: 24,
 	},
-	valueItem: {
-		marginBottom: theme.spacing.md,
-		paddingBottom: theme.spacing.md,
-		borderBottomWidth: 1,
-		borderBottomColor: theme.colors.border,
-	},
-	valueTitle: {
+	settingLabel: {
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
 		color: theme.colors.text,
-		marginBottom: theme.spacing.xs,
+		marginBottom: theme.spacing.sm,
 	},
-	valueText: {
+	languageContainer: {
+		flexDirection: 'row',
+		gap: theme.spacing.sm,
+	},
+	languageButton: {
+		flex: 1,
+		paddingVertical: theme.spacing.sm,
+		paddingHorizontal: theme.spacing.md,
+		borderRadius: theme.borderRadius.sm,
+		backgroundColor: theme.colors.background,
+		alignItems: 'center',
+	},
+	languageButtonActive: {
+		backgroundColor: theme.colors.primary,
+	},
+	languageButtonText: {
 		fontSize: theme.typography.body.fontSize,
+		color: theme.colors.text,
+	},
+	languageButtonTextActive: {
+		color: theme.colors.surface,
+		fontWeight: theme.typography.body.fontWeight,
+	},
+	settingDivider: {
+		height: 1,
+		backgroundColor: theme.colors.border,
+		marginVertical: theme.spacing.lg,
+	},
+	clearCacheButton: {
+		backgroundColor: theme.colors.error,
+		paddingVertical: theme.spacing.md,
+		paddingHorizontal: theme.spacing.lg,
+		borderRadius: theme.borderRadius.md,
+		alignItems: 'center',
+		marginBottom: theme.spacing.sm,
+	},
+	clearCacheButtonDisabled: {
+		backgroundColor: theme.colors.border,
+	},
+	clearCacheText: {
+		color: theme.colors.surface,
+		fontSize: theme.typography.body.fontSize,
+		fontWeight: theme.typography.body.fontWeight,
+	},
+	clearCacheTextDisabled: {
 		color: theme.colors.textSecondary,
 	},
-	languageRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingVertical: theme.spacing.md,
-		borderBottomWidth: 1,
-		borderBottomColor: theme.colors.border,
-	},
-	languageRowActive: {
-		backgroundColor: theme.colors.background,
-	},
-	languageText: {
-		fontSize: theme.typography.body.fontSize,
-		color: theme.colors.text,
-	},
-	languageTextActive: {
-		color: theme.colors.primary,
-		fontWeight: theme.typography.body.fontWeight,
-	},
-	checkmark: {
-		width: 24,
-		height: 24,
-		borderRadius: 12,
-		backgroundColor: theme.colors.primary,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	checkmarkText: {
-		color: theme.colors.surface,
-		fontSize: 14,
-		fontWeight: 'bold',
+	clearCacheDescription: {
+		fontSize: theme.typography.caption.fontSize,
+		color: theme.colors.textSecondary,
+		lineHeight: 18,
+		textAlign: 'center',
 	},
 }))

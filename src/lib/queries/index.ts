@@ -1,33 +1,38 @@
 // Menu queries and utilities
-export {
-	menuCategoryQueryOptions,
-	menuPrefetchOptions,
-	menuQueryOptions,
-	type CategoryData,
-	type MenuData,
-} from './menu'
+export { categoriesQueryOptions, productsQueryOptions } from './menu'
 
 export {
+	// Categories utilities
+	prefetchCategories,
+	invalidateCategories,
+	getCachedCategories,
+	setCachedCategories,
+	hasCategoriesCache,
+	ensureCategoriesData,
+	fetchCategoriesData,
+	// Products utilities
+	prefetchProducts,
+	invalidateProducts,
+	getCachedProducts,
+	setCachedProducts,
+	hasProductsCache,
+	ensureProductsData,
+	fetchProductsData,
+	// General utilities
 	cancelMenuQueries,
-	ensureMenuData,
-	fetchMenuData,
-	getCachedMenu,
-	hasMenuCache,
-	invalidateMenu,
-	invalidateMenuCategory,
-	prefetchMenu,
-	prefetchMenuCategory,
 	removeMenuCache,
 	resetMenuQueries,
-	setCachedMenu,
+	clearAllCache,
 } from './menu-utils'
+
+// Product queries
+export { productQueryOptions } from './product'
 
 // Preferences queries and mutations
 export {
 	preferencesMutationOptions,
 	preferencesQueryOptions,
 	setDefaultStoreMutationOptions,
-	toggleFavoriteMutationOptions,
 	updateLanguageMutationOptions,
 	updateNotificationsMutationOptions,
 	type UserPreferences,

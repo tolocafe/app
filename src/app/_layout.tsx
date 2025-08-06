@@ -15,10 +15,15 @@ import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import { useUpdates } from '@/lib/hooks/use-updates'
 import { QueryProvider } from '@/lib/providers/query-provider'
 import { useEffect } from 'react'
+import { Platform } from 'react-native'
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
 	enableTimeToInitialDisplay: true,
 })
+
+export const unstable_settings = {
+	initialRouteName: '(tabs)',
+}
 
 function RootLayout() {
 	const colorScheme = useColorScheme()
@@ -61,6 +66,15 @@ function RootLayout() {
 						<Stack>
 							<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 							<Stack.Screen name="+not-found" />
+							<Stack.Screen
+								name="sign-in"
+								options={{
+									presentation: Platform.select({
+										web: 'transparentModal',
+										default: 'modal',
+									}),
+								}}
+							/>
 						</Stack>
 					</ThemeProvider>
 				</I18nProvider>
