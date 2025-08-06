@@ -8,6 +8,7 @@ React Native app for TOLO Coffee Shop built with Expo.
 - **Store Info**: Location, hours, contact details
 - **Localization**: English/Spanish support
 - **Themes**: Light/dark mode
+- **OTA Updates**: Over-the-air updates with fingerprint runtime policy
 
 ## Quick Start
 
@@ -16,13 +17,18 @@ React Native app for TOLO Coffee Shop built with Expo.
 bun install
 
 # Run
-bun ios     # iOS
-bun android # Android
-bun web     # Web
+bun run ios     # iOS
+bun run android # Android
+bun run web     # Web
 
 # Translations
-bun lingui:extract  # Extract strings
-bun lingui:compile  # Compile
+bun run lingui:extract  # Extract strings
+bun run lingui:compile  # Compile
+
+# Updates
+bun run update:publish              # Publish update to all channels
+bun run update:publish:preview      # Publish to preview channel
+bun run update:publish:production   # Publish to production channel
 ```
 
 ## Stack
@@ -30,4 +36,15 @@ bun lingui:compile  # Compile
 - Expo Router for navigation
 - React Native Unistyles for styling
 - Lingui for internationalization
+- Expo Updates with fingerprint runtime policy
 - TypeScript
+
+## Updates
+
+OTA updates with fingerprint runtime policy. Updates are silent and errors are tracked in Sentry.
+
+```bash
+# Publish updates
+bun run update:publish:production "Bug fixes"
+bun run update:publish:preview "New features"
+```

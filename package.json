@@ -2,6 +2,7 @@
 	"name": "@tolo/app",
 	"main": "src/index.ts",
 	"version": "1.0.0",
+	"packageManager": "bun@1.2.19",
 	"scripts": {
 		"start": "expo start",
 		"android": "expo run:android",
@@ -12,7 +13,11 @@
 		"lingui:extract": "lingui extract",
 		"lingui:compile": "lingui compile",
 		"format": "prettier --write .",
-		"deploy": "wrangler deploy"
+		"format:check": "prettier --check .",
+		"deploy": "wrangler deploy",
+		"update:publish": "eas update --auto",
+		"update:publish:preview": "eas update --channel preview --message",
+		"update:publish:production": "eas update --channel production --message"
 	},
 	"dependencies": {
 		"@bottom-tabs/react-navigation": "^0.9.2",
@@ -38,6 +43,7 @@
 		"expo-splash-screen": "~0.30.10",
 		"expo-status-bar": "~2.2.3",
 		"expo-system-ui": "~5.0.10",
+		"expo-updates": "^0.28.17",
 		"hono": "4.8.12",
 		"react": "19.0.0",
 		"react-dom": "19.0.0",
