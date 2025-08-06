@@ -4,36 +4,140 @@ globs: ['src/**/*.tsx', 'src/**/*.ts']
 alwaysApply: true
 ---
 
-# Unistyles Usage Guidelines
+# React Native Unistyles Advanced Styling Guide
 
-Use react-native-unistyles for all styling in the app. Follow these patterns:
+Comprehensive styling guidelines using react-native-unistyles for scalable, performant, and maintainable React Native applications.
 
-## Setup and Theme
+## Core Styling Principles
 
-- Define theme in a central theme file with colors, spacing, typography
-- Use createUnistylesTheme for type-safe theme creation
-- Support light and dark themes
+- **Zero Inline Styles**: ALL styling must use Unistyles - never inline styles
+- **Theme-Driven Design**: Use theme values for all design tokens
+- **Type Safety**: Leverage TypeScript for theme and style definitions
+- **Performance First**: Optimize for runtime performance and memory usage
+- **Responsive Design**: Support multiple screen sizes and orientations
+- **Dark Mode Ready**: Full light/dark theme support
 
-## Creating Styles
+## Theme Architecture
 
-- Use StyleSheet.create() with theme and runtime parameters
-- Access theme values for all design tokens
-- Keep style definitions close to components
-- Use the styles object directly without hooks
+### Theme Structure
+- Define semantic colors (primary, secondary, accent)
+- Include neutral colors (background, surface, card)
+- Organize text colors by hierarchy (primary, secondary, tertiary, inverse)
+- Add status colors (success, warning, error, info)
+- Create interactive color states (default, hover, pressed, disabled)
+- Define border colors for different states
+
+### Spacing System
+- Use consistent spacing scale (xs, sm, md, lg, xl, xxl, xxxl)
+- Base spacing on 4px or 8px grid system
+- Apply spacing consistently across all components
+- Use semantic spacing names rather than pixel values
+
+### Typography Scale
+- Define font families (regular, medium, semiBold, bold)
+- Create consistent font size scale
+- Match line heights to font sizes appropriately
+- Use system fonts for better performance
+
+### Border Radius System
+- Create consistent border radius scale
+- Use semantic names (xs, sm, md, lg, xl, full)
+- Apply consistently across components
+- Consider platform-specific preferences
+
+### Shadow System
+- Define shadow levels (sm, md, lg)
+- Include both iOS and Android shadow properties
+- Use elevation for Android, shadow properties for iOS
+- Maintain visual consistency across platforms
+
+### Theme Configuration
+- Register themes with UnistylesRegistry
+- Support adaptive themes for system preference
+- Set appropriate initial theme
+- Enable theme switching capabilities
+
+## Styling Patterns
+
+### Component Styling Structure
+- Use createStyleSheet for component styles
+- Access theme and runtime parameters
+- Support component variants through style variants
+- Handle responsive design with runtime conditions
+- Use TypeScript interfaces for component props
+
+### Layout Components
+- Create reusable layout utilities (flex, alignment, containers)
+- Use semantic layout patterns (container, safeContainer, card, section)
+- Apply consistent spacing and sizing
+- Support responsive layout patterns
+
+## Advanced Patterns
+
+### Responsive Design
+- Use runtime screen width for breakpoint-based styling
+- Implement adaptive containers for different screen sizes
+- Create responsive grid systems
+- Handle orientation changes appropriately
+
+### Animation Support
+- Prepare styles for animations with transform and opacity
+- Support hover states for web platforms
+- Handle pressed states for touch interactions
+- Use appropriate animation-ready properties
+
+### Complex Component Styling
+- Structure styles for complex components logically
+- Use variants for different component states
+- Handle interactive states consistently
+- Apply proper accessibility considerations
+
+## Performance Optimization
+
+### Style Memoization
+- Memoize expensive style calculations
+- Use runtime conditions efficiently
+- Avoid unnecessary style recalculations
+- Cache complex style computations
+
+### Conditional Styling
+- Use variants instead of inline conditionals
+- Group related style variations together
+- Minimize runtime style calculations
+- Use efficient conditional patterns
 
 ## Best Practices
 
-- Never use inline styles - always use unistyles
-- Use theme values for all colors, spacing, and typography
-- Create reusable style utilities for common patterns
-- Use variants for conditional styling
-- Leverage runtime values when needed
-- Keep style definitions close to components
+### Theme Token Usage
+- Always use theme tokens instead of hardcoded values
+- Reference theme colors, spacing, and typography consistently
+- Avoid magic numbers in styles
+- Use semantic naming for theme values
 
-## Common Patterns
+### Component Composition
+- Create reusable style utilities
+- Use utility classes for common patterns
+- Compose styles efficiently
+- Avoid style duplication
 
-- Use theme.spacing for consistent spacing
-- Use theme.colors for all color values
-- Use theme.fontSizes for typography
-- Create semantic color names (primary, secondary, danger, etc.)
-- Use theme.borderRadius for consistent rounded corners
+### Platform-Specific Styling
+- Handle iOS-specific shadow properties
+- Use Android elevation appropriately
+- Apply web-specific styles when needed
+- Test across all target platforms
+
+## Testing Styles
+
+### Style Testing Utilities
+- Test theme color application
+- Verify responsive behavior
+- Test theme switching functionality
+- Validate accessibility properties
+
+### Testing Strategy
+- Unit test style calculations
+- Integration test theme changes
+- Visual regression testing
+- Cross-platform consistency testing
+
+This comprehensive Unistyles configuration ensures scalable, maintainable, and performant styling that adapts to different themes, screen sizes, and platforms while maintaining excellent developer experience.
