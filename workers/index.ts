@@ -34,27 +34,7 @@ const defaultJsonHeaders = {
 
 // -----------------------------------------------------------------------------
 // Auth utilities --------------------------------------------------------------
-const encoder = new TextEncoder()
-async function sha256(data: string): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', encoder.encode(data))
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('')
-}
-function generateSalt(length = 16): string {
-  const arr = new Uint8Array(length)
-  crypto.getRandomValues(arr)
-  return [...arr].map((b) => b.toString(16).padStart(2, '0')).join('')
-}
-async function hashPassword(password: string): Promise<string> {
-  const salt = generateSalt()
-  const hash = await sha256(salt + password)
-  return `${salt}:${hash}`
-}
-async function verifyPassword(password: string, stored: string): Promise<boolean> {
-  const [salt, hash] = stored.split(':')
-  if (!salt || !hash) return false
-  const newHash = await sha256(salt + password)
-  return newHash === hash
-}
+// Removed unused password hash utilities
 function secretKey(secret: string): Uint8Array {
   return encoder.encode(secret)
 }
