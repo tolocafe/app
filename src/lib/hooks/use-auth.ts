@@ -1,7 +1,7 @@
 import { api } from '../api'
 import { useMMKVString } from 'react-native-mmkv'
 import { useCallback, useMemo } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, mutationOptions } from '@tanstack/react-query'
 
 interface Session { token: string; client: any }
 const SESSION_KEY = 'auth_session'
@@ -20,17 +20,17 @@ export function useAuth() {
 	const isAuthenticated = !!session
 
 	// Mutations
-	const requestOtpMutation = useMutation({
+	const requestOtpMutation = useMutation(mutationOptions({
 		mutationFn: ({ phone, name, email }: { phone: string; name?: string; email?: string }) => api.requestOtp(phone, name, email),
-	})
-	const verifyOtpMutation = useMutation({
+	}))
+	const verifyOtpMutation = useMutation(mutationOptions({
 		mutationFn: async ({ phone, code, sessionName }: { phone: string; code: string; sessionName: string }) => {
 			const data = await api.verifyOtp(phone, code, sessionName)
 			setSessionStr(JSON.stringify(data))
 			queryClient.invalidateQueries({ queryKey: ['self'] })
 			return data
 		},
-	})
+	}))
 
 	// Self query (only when authenticated)
 	const selfQuery = useQuery({
