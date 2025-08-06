@@ -107,7 +107,7 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 #### Code Review Standards
 - **Self Review**: Check your own code before submission
 - **Documentation**: JSDoc for complex functions only (avoid trivial docs)
-- **Commit Messages**: Clear, descriptive commit messages
+- **Commit Messages**: Follow Conventional Commits v1.0.0 specification
 - **PR Size**: Keep changes focused and reviewable
 
 ### Accessibility Standards
