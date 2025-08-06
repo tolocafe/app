@@ -13,7 +13,11 @@ interface AddToBagModalProps {
 	itemName: string
 }
 
-export default function AddToBagModal({ visible, onClose, itemName }: AddToBagModalProps) {
+export default function AddToBagModal({
+	visible,
+	onClose,
+	itemName,
+}: AddToBagModalProps) {
 	const { i18n } = useLingui()
 	const { signIn } = useAuth()
 	const colorScheme = useColorScheme()
@@ -31,7 +35,7 @@ export default function AddToBagModal({ visible, onClose, itemName }: AddToBagMo
 				const authUser = {
 					id: credential.user,
 					email: credential.email,
-					fullName: credential.fullName 
+					fullName: credential.fullName
 						? `${credential.fullName.givenName || ''} ${credential.fullName.familyName || ''}`.trim()
 						: null,
 					identityToken: credential.identityToken,
@@ -57,24 +61,48 @@ export default function AddToBagModal({ visible, onClose, itemName }: AddToBagMo
 			onRequestClose={onClose}
 		>
 			<Pressable style={styles.overlay} onPress={onClose}>
-				<View style={[styles.modal, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
+				<View
+					style={[
+						styles.modal,
+						{ backgroundColor: Colors[colorScheme ?? 'light'].background },
+					]}
+				>
 					<Pressable onPress={(e) => e.stopPropagation()}>
 						<View style={styles.header}>
-							<Text style={[styles.title, { color: Colors[colorScheme ?? 'light'].text }]}>
+							<Text
+								style={[
+									styles.title,
+									{ color: Colors[colorScheme ?? 'light'].text },
+								]}
+							>
 								<Trans>Sign In Required</Trans>
 							</Text>
 							<TouchableOpacity onPress={onClose} style={styles.closeButton}>
-								<Text style={[styles.closeButtonText, { color: Colors[colorScheme ?? 'light'].text }]}>✕</Text>
+								<Text
+									style={[
+										styles.closeButtonText,
+										{ color: Colors[colorScheme ?? 'light'].text },
+									]}
+								>
+									✕
+								</Text>
 							</TouchableOpacity>
 						</View>
-						
+
 						<View style={styles.content}>
-							<Text style={[styles.message, { color: Colors[colorScheme ?? 'light'].text }]}>
+							<Text
+								style={[
+									styles.message,
+									{ color: Colors[colorScheme ?? 'light'].text },
+								]}
+							>
 								<Trans>Sign in to add "{itemName}" to your bag</Trans>
 							</Text>
-							
+
 							<AppleAuthentication.AppleAuthenticationButton
-								buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+								buttonType={
+									AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+								}
 								buttonStyle={
 									colorScheme === 'dark'
 										? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
@@ -84,9 +112,14 @@ export default function AddToBagModal({ visible, onClose, itemName }: AddToBagMo
 								style={styles.appleButton}
 								onPress={handleAppleSignIn}
 							/>
-							
+
 							<TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-								<Text style={[styles.cancelButtonText, { color: Colors[colorScheme ?? 'light'].text }]}>
+								<Text
+									style={[
+										styles.cancelButtonText,
+										{ color: Colors[colorScheme ?? 'light'].text },
+									]}
+								>
 									<Trans>Maybe Later</Trans>
 								</Text>
 							</TouchableOpacity>

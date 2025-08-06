@@ -158,7 +158,7 @@ export default function Menu() {
 						</Text>
 					</TouchableOpacity>
 					<Text style={styles.menuItemPrice}>${item.price.toFixed(2)}</Text>
-					<TouchableOpacity 
+					<TouchableOpacity
 						style={styles.addToBagButton}
 						onPress={() => handleAddToBag(item)}
 					>
@@ -229,7 +229,7 @@ export default function Menu() {
 					showsVerticalScrollIndicator={false}
 				/>
 			</ScrollView>
-			
+
 			<AddToBagModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}

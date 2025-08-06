@@ -20,23 +20,48 @@ export default function Orders() {
 			<Head>
 				<title>Orders</title>
 			</Head>
-			<ScrollView style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
+			<ScrollView
+				style={[
+					styles.container,
+					{ backgroundColor: Colors[colorScheme ?? 'light'].background },
+				]}
+			>
 				<View style={styles.header}>
-					<Text style={[styles.title, { color: Colors[colorScheme ?? 'light'].text }]}>
+					<Text
+						style={[
+							styles.title,
+							{ color: Colors[colorScheme ?? 'light'].text },
+						]}
+					>
 						<Trans>Your Orders</Trans>
 					</Text>
 					{user?.fullName && (
-						<Text style={[styles.subtitle, { color: Colors[colorScheme ?? 'light'].text }]}>
+						<Text
+							style={[
+								styles.subtitle,
+								{ color: Colors[colorScheme ?? 'light'].text },
+							]}
+						>
 							<Trans>Welcome back, {user.fullName}!</Trans>
 						</Text>
 					)}
 				</View>
-				
+
 				<View style={styles.ordersContainer}>
-					<Text style={[styles.emptyState, { color: Colors[colorScheme ?? 'light'].text }]}>
+					<Text
+						style={[
+							styles.emptyState,
+							{ color: Colors[colorScheme ?? 'light'].text },
+						]}
+					>
 						<Trans>No orders yet</Trans>
 					</Text>
-					<Text style={[styles.emptyStateSubtitle, { color: Colors[colorScheme ?? 'light'].text }]}>
+					<Text
+						style={[
+							styles.emptyStateSubtitle,
+							{ color: Colors[colorScheme ?? 'light'].text },
+						]}
+					>
 						<Trans>Your order history will appear here</Trans>
 					</Text>
 				</View>

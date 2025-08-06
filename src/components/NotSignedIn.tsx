@@ -25,7 +25,7 @@ export default function NotSignedIn() {
 				const authUser = {
 					id: credential.user,
 					email: credential.email,
-					fullName: credential.fullName 
+					fullName: credential.fullName
 						? `${credential.fullName.givenName || ''} ${credential.fullName.familyName || ''}`.trim()
 						: null,
 					identityToken: credential.identityToken,
@@ -40,7 +40,7 @@ export default function NotSignedIn() {
 			}
 			Alert.alert(
 				t(i18n)`Sign In Error`,
-				t(i18n)`There was an error signing in. Please try again.`
+				t(i18n)`There was an error signing in. Please try again.`,
 			)
 		}
 	}
@@ -48,10 +48,17 @@ export default function NotSignedIn() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.content}>
-				<Text style={[styles.title, { color: Colors[colorScheme ?? 'light'].text }]}>
+				<Text
+					style={[styles.title, { color: Colors[colorScheme ?? 'light'].text }]}
+				>
 					<Trans>Sign In Required</Trans>
 				</Text>
-				<Text style={[styles.subtitle, { color: Colors[colorScheme ?? 'light'].text }]}>
+				<Text
+					style={[
+						styles.subtitle,
+						{ color: Colors[colorScheme ?? 'light'].text },
+					]}
+				>
 					<Trans>Please sign in to access this feature</Trans>
 				</Text>
 				<AppleAuthentication.AppleAuthenticationButton

@@ -25,9 +25,12 @@ export function useAuth() {
 
 	const isAuthenticated = useMemo(() => !!user, [user])
 
-	const signIn = useCallback((authUser: AuthUser) => {
-		setUserString(JSON.stringify(authUser))
-	}, [setUserString])
+	const signIn = useCallback(
+		(authUser: AuthUser) => {
+			setUserString(JSON.stringify(authUser))
+		},
+		[setUserString],
+	)
 
 	const signOut = useCallback(() => {
 		setUserString(undefined)
