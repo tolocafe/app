@@ -34,37 +34,17 @@ bun run update:publish:production   # Publish to production channel
 ## Stack
 
 - Expo Router for navigation
-- React Native Unistyles for styling  
+- React Native Unistyles for styling
 - Lingui for internationalization
 - Expo Updates with fingerprint runtime policy
 - TypeScript
 
-## Expo Updates Configuration
+## Updates
 
-This app is configured with `expo-updates` using fingerprint as the runtime policy:
-
-- **Project ID**: `25e3751a-b837-480a-b9fc-ee67327f46e9`
-- **Runtime Policy**: `fingerprint` - Updates are only applied when the native runtime is compatible
-- **Update URL**: `https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9`
-- **Channels**: `development`, `preview`, `production`
-
-### How Updates Work
-
-1. **Automatic Checking**: The app checks for updates on launch (production builds only)
-2. **Fingerprint Validation**: Updates are only downloaded if the runtime fingerprint matches
-3. **Seamless Installation**: Updates are applied automatically and the app reloads
-4. **Error Handling**: Update errors are captured to Sentry with context and don't crash the app
-5. **Silent Updates**: No UI components - updates happen transparently in the background
-
-### Publishing Updates
+OTA updates with fingerprint runtime policy. Updates are silent and errors are tracked in Sentry.
 
 ```bash
-# Publish to all channels (matches git branch)
-eas update --auto
-
-# Publish to specific channel with message
-eas update --channel production --message "Bug fixes and performance improvements"
-
-# Publish to preview channel
-eas update --channel preview --message "Testing new features"
+# Publish updates
+bun run update:publish:production "Bug fixes"
+bun run update:publish:preview "New features"
 ```

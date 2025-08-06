@@ -23,44 +23,45 @@ export function useUpdates() {
 		}
 
 		try {
-			setState(prev => ({ ...prev, isChecking: true, error: null }))
-			
+			setState((prev) => ({ ...prev, isChecking: true, error: null }))
+
 			const update = await Updates.checkForUpdateAsync()
-			
-			setState(prev => ({ 
-				...prev, 
+
+			setState((prev) => ({
+				...prev,
 				isChecking: false,
-				isUpdateAvailable: update.isAvailable 
+				isUpdateAvailable: update.isAvailable,
 			}))
 
 			if (update.isAvailable) {
-				setState(prev => ({ ...prev, isDownloading: true }))
+				setState((prev) => ({ ...prev, isDownloading: true }))
 				await Updates.fetchUpdateAsync()
-				setState(prev => ({ ...prev, isDownloading: false }))
+				setState((prev) => ({ ...prev, isDownloading: false }))
 				// Automatically reload the app with the new update
 				await Updates.reloadAsync()
 			}
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-			
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error occurred'
+
 			// Capture error to Sentry
 			Sentry.captureException(error, {
 				tags: {
 					feature: 'expo-updates',
-					operation: 'checkForUpdates'
+					operation: 'checkForUpdates',
 				},
 				extra: {
 					runtimeVersion: Updates.runtimeVersion,
 					updateId: Updates.updateId,
-					channel: Updates.channel
-				}
+					channel: Updates.channel,
+				},
 			})
-			
-			setState(prev => ({ 
-				...prev, 
-				isChecking: false, 
+
+			setState((prev) => ({
+				...prev,
+				isChecking: false,
 				isDownloading: false,
-				error: errorMessage
+				error: errorMessage,
 			}))
 		}
 	}
@@ -69,24 +70,25 @@ export function useUpdates() {
 		try {
 			await Updates.reloadAsync()
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : 'Failed to reload app'
-			
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to reload app'
+
 			// Capture error to Sentry
 			Sentry.captureException(error, {
 				tags: {
 					feature: 'expo-updates',
-					operation: 'reloadApp'
+					operation: 'reloadApp',
 				},
 				extra: {
 					runtimeVersion: Updates.runtimeVersion,
 					updateId: Updates.updateId,
-					channel: Updates.channel
-				}
+					channel: Updates.channel,
+				},
 			})
-			
-			setState(prev => ({ 
-				...prev, 
-				error: errorMessage
+
+			setState((prev) => ({
+				...prev,
+				error: errorMessage,
 			}))
 		}
 	}
