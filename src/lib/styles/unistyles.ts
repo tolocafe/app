@@ -65,6 +65,10 @@ const lightTheme = {
 			fontSize: 20,
 			fontWeight: '600' as const,
 		},
+		h4: {
+			fontSize: 18,
+			fontWeight: '600' as const,
+		},
 	},
 } as const
 

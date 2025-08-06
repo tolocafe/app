@@ -307,8 +307,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 		marginBottom: theme.spacing.sm,
 	},
 	hoursTitle: {
-		fontSize: theme.typography.h4.fontSize,
-		fontWeight: theme.typography.h4.fontWeight,
+		...theme.typography.h4,
 		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},

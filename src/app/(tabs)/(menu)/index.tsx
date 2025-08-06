@@ -16,6 +16,7 @@ import {
 import { StyleSheet } from 'react-native-unistyles'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { PosterCategory, PosterProduct } from '@/lib/api/client'
+import { POSTER_BASE_URL } from '@/lib/config/api'
 
 export default function Menu() {
 	const { t } = useLingui()
@@ -66,17 +67,22 @@ export default function Menu() {
 	const renderMenuItem = ({ item }: { item: PosterProduct }) => {
 		const firstPrice = item.price ? Object.values(item.price)[0] : '0'
 
+		console.log('photo', item.photo)
+
 		return (
-			<Link href={`/(tabs)/(menu)/${item.product_id}`} asChild>
+			<Link href={`/(tabs)/(menu)/${item.product_id}`}>
 				<View style={styles.menuItem}>
 					<Animated.View
-						sharedTransitionTag={`menu-item-${item.product_id}`}
 						style={styles.menuItemImageContainer}
+						sharedTransitionTag={`menu-item-${item.product_id}`}
 					>
 						{item.photo ? (
 							<Image
-								source={{ uri: item.photo }}
-								style={styles.menuItemImage}
+								source={{
+									uri: `${POSTER_BASE_URL}${item.photo}`,
+								}}
+								// keep inline styles
+								style={{ width: '100%', height: '100%' }}
 								contentFit="cover"
 								transition={200}
 							/>

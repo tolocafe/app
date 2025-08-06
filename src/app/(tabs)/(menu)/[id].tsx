@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { productQueryOptions } from '@/lib/queries'
+import { POSTER_BASE_URL } from '@/lib/config/api'
 
 export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
@@ -87,7 +88,9 @@ export default function MenuItemDetail() {
 				>
 					{hasImage ? (
 						<Image
-							source={{ uri: product.photo_origin || product.photo }}
+							source={{
+								uri: `${POSTER_BASE_URL}${product.photo_origin || product.photo}`,
+							}}
 							style={styles.heroImage}
 							contentFit="cover"
 							transition={200}
