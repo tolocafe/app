@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { SignJWT } from 'jose'
+import { jwtVerify } from 'jose'
 
 const BASE_URL = 'https://joinposter.com/api'
 
@@ -63,6 +64,14 @@ async function signJwt(clientId: string, secret: string): Promise<string> {
     .setIssuedAt()
     .setExpirationTime('7d')
     .sign(secretKey(secret))
+}
+async function verifyJwt(token: string, secret: string): Promise<string | null> {
+  try {
+    const { payload } = await jwtVerify(token, secretKey(secret))
+    return typeof payload.sub === 'string' ? payload.sub : null
+  } catch {
+    return null
+  }
 }
 // Poster helpers --------------------------------------------------------------
 async function createPosterClient(token: string, body: Record<string, unknown>) {
@@ -197,7 +206,16 @@ app
    })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
+      const auth = c.req.header('Authorization') || ''
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
+      const clientIdFromToken = token ? await verifyJwt(token, c.env.JWT_SECRET) : null
+      if (!clientIdFromToken) {
+        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
+      }
       const id = c.req.param('id')
+      if (!id || id !== clientIdFromToken) {
+        return c.json({ error: 'Forbidden' }, 403, defaultJsonHeaders)
+      }
       if (!id) return c.json({ error: 'Client ID required' }, 400, defaultJsonHeaders)
       try {
         const body = await c.req.json<Record<string, unknown>>()
