@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { Trans } from '@lingui/react/macro'
-import NotSignedIn from '@/components/NotSignedIn'
+import { AuthPhone } from '@/components/AuthPhone'
 
 export default function SignInModal() {
 	const { itemName } = useLocalSearchParams<{ itemName?: string }>()
@@ -32,7 +32,7 @@ export default function SignInModal() {
 			)}
 
 			<View style={styles.content}>
-				<NotSignedIn onSignIn={handleSignInSuccess} />
+				<AuthPhone />
 			</View>
 		</View>
 	)

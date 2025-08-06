@@ -1,45 +1,34 @@
+import { api } from '../api'
 import { useMMKVString } from 'react-native-mmkv'
 import { useCallback, useMemo } from 'react'
 
-export interface AuthUser {
-	id: string
-	email: string | null
-	fullName: string | null
-	identityToken?: string
-	authorizationCode?: string
-}
-
-const AUTH_USER_KEY = 'auth_user'
+interface Session { token: string; client: any }
+const SESSION_KEY = 'auth_session'
 
 export function useAuth() {
-	const [userString, setUserString] = useMMKVString(AUTH_USER_KEY)
-
-	const user = useMemo<AuthUser | null>(() => {
-		if (!userString) return null
+	const [sessionStr, setSessionStr] = useMMKVString(SESSION_KEY)
+	const session = useMemo<Session | null>(() => {
+		if (!sessionStr) return null
 		try {
-			return JSON.parse(userString)
+			return JSON.parse(sessionStr)
 		} catch {
 			return null
 		}
-	}, [userString])
+	}, [sessionStr])
+	const isAuthenticated = !!session
 
-	const isAuthenticated = useMemo(() => !!user, [user])
-
-	const signIn = useCallback(
-		(authUser: AuthUser) => {
-			setUserString(JSON.stringify(authUser))
-		},
-		[setUserString],
-	)
-
-	const signOut = useCallback(() => {
-		setUserString(undefined)
-	}, [setUserString])
-
-	return {
-		user,
-		isAuthenticated,
-		signIn,
-		signOut,
-	}
+	const requestOtp = useCallback((phone: string, name?: string, email?: string) => api.requestOtp(phone, name, email), [])
+	const signIn = useCallback(async (phone: string, code: string, sessionName: string) => {
+		const data = await api.verifyOtp(phone, code, sessionName)
+		setSessionStr(JSON.stringify(data))
+	}, [setSessionStr])
+	const signOut = useCallback(() => setSessionStr(undefined), [setSessionStr])
+	const refreshSelf = useCallback(async () => {
+		if (!session) return null
+		const client = await api.self(session.token)
+		const updated: Session = { ...session, client }
+		setSessionStr(JSON.stringify(updated))
+		return client
+	}, [session, setSessionStr])
+	return { session, isAuthenticated, requestOtp, signIn, signOut, refreshSelf }
 }
