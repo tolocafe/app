@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { SignJWT } from 'jose'
-import { jwtVerify } from 'jose'
+import { SignJWT, jwtVerify } from 'jose'
+import { requestOtpSchema, verifyOtpSchema } from './utils/schemas'
 
 const BASE_URL = 'https://joinposter.com/api'
 
@@ -151,10 +151,15 @@ app
 	// Auth routes --------------------------------------------------------------
 	.post('/auth/request-otp', async (c) => {
      try {
-       const { phone, name, email } = await c.req.json<Record<string, string>>()
-       if (!phone) {
-         return c.json({ error: 'phone required' }, 400, defaultJsonHeaders)
+       const body = await c.req.json()
+       const parse = requestOtpSchema.safeParse(body)
+       if (!parse.success) {
+         return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
        }
+       const { phone, name, email } = parse.data
+       // phone and code validated by zod
+       //
+       //
        // ensure client exists
        let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
        if (!client) {
@@ -171,7 +176,14 @@ app
    })
    .post('/auth/verify-otp', async (c) => {
      try {
-       const { phone, code } = await c.req.json<Record<string, string>>()
+       const body = await c.req.json()
+       const parse = verifyOtpSchema.safeParse(body)
+       if (!parse.success) {
+         return c.json({ error: parse.error.flatten().fieldErrors }, 400, defaultJsonHeaders)
+       }
+       const { phone, code } = parse.data
+       // phone and code are already validated by zod
+       //
        if (!phone || !code) {
          return c.json({ error: 'phone and code required' }, 400, defaultJsonHeaders)
        }

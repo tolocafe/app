@@ -58,7 +58,8 @@
 		"react-native-screens": "~4.11.1",
 		"react-native-unistyles": "^3.0.8",
 		"react-native-web": "^0.20.0",
-		"jose": "^5.2.0"
+		"jose": "^5.2.0",
+		"zod": "^4.0.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.25.2",
