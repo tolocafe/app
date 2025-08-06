@@ -18,10 +18,15 @@ import {
 	View,
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useAuth } from '@/lib/hooks/use-auth'
+import SignInModal from '@/components/SignInModal'
 
 export default function Menu() {
 	const [selectedCategory, setSelectedCategory] = useState('coffee')
+	const [modalVisible, setModalVisible] = useState(false)
+	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
 	const queryClient = useQueryClient()
+	const { isAuthenticated } = useAuth()
 
 	// Fetch menu data using React Query
 	const { data: menuData, isLoading, error } = useQuery(menuQueryOptions)
@@ -99,6 +104,16 @@ export default function Menu() {
 		preferencesMutation.mutate({ favoriteItems: newFavorites })
 	}
 
+	const handleAddToBag = (item: MenuItem) => {
+		if (!isAuthenticated) {
+			setSelectedItem(item)
+			setModalVisible(true)
+		} else {
+			// TODO: Implement actual add to bag logic
+			console.log('Adding to bag:', item.name)
+		}
+	}
+
 	const renderMenuItem = ({ item }: { item: MenuItem }) => {
 		const isFavorite = preferences?.favoriteItems?.includes(item.id) || false
 
@@ -143,6 +158,14 @@ export default function Menu() {
 						</Text>
 					</TouchableOpacity>
 					<Text style={styles.menuItemPrice}>${item.price.toFixed(2)}</Text>
+					<TouchableOpacity
+						style={styles.addToBagButton}
+						onPress={() => handleAddToBag(item)}
+					>
+						<Text style={styles.addToBagButtonText}>
+							<Trans>Add to Bag</Trans>
+						</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
 		)
@@ -206,6 +229,12 @@ export default function Menu() {
 					showsVerticalScrollIndicator={false}
 				/>
 			</ScrollView>
+
+			<SignInModal
+				visible={modalVisible}
+				onClose={() => setModalVisible(false)}
+				itemName={selectedItem?.name}
+			/>
 		</>
 	)
 }
@@ -358,6 +387,18 @@ const styles = StyleSheet.create((theme, rt) => ({
 	},
 	favoriteActive: {
 		color: theme.colors.error,
+	},
+	addToBagButton: {
+		backgroundColor: theme.colors.primary,
+		paddingHorizontal: theme.spacing.md,
+		paddingVertical: theme.spacing.sm,
+		borderRadius: theme.borderRadius.md,
+		marginTop: theme.spacing.xs,
+	},
+	addToBagButtonText: {
+		color: theme.colors.surface,
+		fontSize: theme.typography.caption.fontSize,
+		fontWeight: theme.typography.caption.fontWeight,
 	},
 	theme: theme,
 }))

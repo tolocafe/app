@@ -28,6 +28,7 @@
 		"orientation": "portrait",
 		"plugins": [
 			"expo-updates",
+			"expo-apple-authentication",
 			"react-native-bottom-tabs",
 			[
 				"expo-router",
