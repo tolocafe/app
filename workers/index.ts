@@ -52,6 +52,8 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal Server Error' }, 500)
 })
 
+app.use('*', cors())
+
 app
 	.get('/', (context) => {
 		return context.json(
