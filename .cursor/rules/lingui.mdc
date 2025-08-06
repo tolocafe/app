@@ -26,125 +26,57 @@ Comprehensive guidelines for implementing robust internationalization in React N
 
 ## Lingui API Usage
 
+### Import Guidelines
+
+- Use `Trans`, `Plural`, `Select` from `@lingui/react/macro` for JSX components
+- Use `t` macro from `@lingui/core/macro` for string values
+- Use `useLingui` hook from `@lingui/react` to access i18n instance
+- Never import from deprecated `@lingui/macro` package
+
 ### Text Content Patterns
 
 #### Simple Text with Trans Component
-```typescript
-import { Trans } from '@lingui/react/macro';
-
-// For JSX text content
-<Trans>Welcome to TOLO</Trans>
-
-// With context for translators
-<Trans context="greeting">Welcome to TOLO</Trans>
-```
+- Use Trans component for JSX text content
+- Provide context for translators when terms are ambiguous
+- Support nested JSX elements within Trans components
 
 #### Dynamic Text with t Macro
-```typescript
-import { t } from '@lingui/core/macro';
-import { useLingui } from '@lingui/react';
-
-function Component() {
-  const { _ } = useLingui();
-  
-  // For string values and variables
-  const welcomeText = _(t`Welcome to TOLO`);
-  
-  // With variables
-  const greetingText = _(t`Hello, ${userName}!`);
-  
-  return <Text>{welcomeText}</Text>;
-}
-```
+- Use t macro for string values and placeholders
+- Always use useLingui hook to access the `_` function
+- Provide fallback values for dynamic content
 
 #### Complex Messages with Variables
-```typescript
-import { Trans, Plural } from '@lingui/react/macro';
-
-// With variables in JSX
-<Trans>
-  Welcome back, <Text style={styles.username}>{userName}</Text>!
-</Trans>
-
-// With pluralization
-<Plural
-  value={itemCount}
-  one="# item in cart"
-  other="# items in cart"
-/>
-```
-
-### Advanced Patterns
+- Use Trans component with embedded variables in JSX
+- Use Plural component for count-based messages
+- Support ICU message format for complex formatting
 
 #### Contextual Translations
-```typescript
-// Provide context for ambiguous terms
-<Trans context="navigation">Menu</Trans>  // Navigation menu
-<Trans context="food">Menu</Trans>       // Food menu
-
-// Context for different UI states
-<Trans context="button.primary">Save</Trans>
-<Trans context="button.secondary">Cancel</Trans>
-```
+- Provide context for ambiguous terms (navigation vs food menu)
+- Use context for different UI states (primary vs secondary buttons)
+- Include meaningful context comments for translators
 
 #### ICU Message Format Support
-```typescript
-// Complex formatting with ICU
-<Trans>
-  {customerName} ordered {itemCount, plural, 
-    one {# coffee} 
-    other {# coffees}
-  } for {totalPrice, number, currency}
-</Trans>
-
-// Date and time formatting
-<Trans>
-  Order placed on {orderDate, date, long} at {orderTime, time, short}
-</Trans>
-```
+- Use ICU format for complex pluralization rules
+- Support date and time formatting with ICU
+- Handle currency and number formatting appropriately
 
 #### Conditional Messages
-```typescript
-import { Select } from '@lingui/react/macro';
-
-// Gender-aware messages
-<Select
-  value={userGender}
-  male="He ordered a coffee"
-  female="She ordered a coffee"
-  other="They ordered a coffee"
-/>
-```
+- Use Select component for gender-aware messages
+- Handle conditional content based on user attributes
+- Provide fallback options for unknown values
 
 ## File Organization & Structure
 
 ### Translation Files Structure
-```
-src/
-  locales/
-    en/
-      messages.po     # Main translations
-      common.po       # Common UI elements
-      menu.po         # Menu-specific translations
-      errors.po       # Error messages
-    es/
-      messages.po
-      common.po
-      menu.po
-      errors.po
-```
+- Organize translations in `src/locales/` directory
+- Separate translations by feature (common, menu, errors)
+- Use `.po` files for each locale
+- Maintain consistent file naming across locales
 
 ### Message Extraction Workflow
-```bash
-# Extract all translatable strings
-bun run lingui:extract
-
-# Compile translations for production
-bun run lingui:compile
-
-# Development workflow
-bun run lingui:extract && bun run lingui:compile
-```
+- Use `bun run lingui:extract` to extract translatable strings
+- Use `bun run lingui:compile` to compile translations for production
+- Run extraction and compilation together in development workflow
 
 ## Translation Categories
 
@@ -182,65 +114,28 @@ bun run lingui:extract && bun run lingui:compile
 ## Best Practices
 
 ### Message ID Management
-```typescript
-// Use descriptive IDs for complex messages
-<Trans id="menu.item.description.with.allergens">
-  {itemName} - {description} (Contains: {allergens})
-</Trans>
-
-// Auto-generated IDs for simple messages (preferred)
-<Trans>Add to cart</Trans>  // Auto-generates ID
-```
+- Use descriptive IDs for complex messages
+- Prefer auto-generated IDs for simple messages
+- Include context in ID structure when helpful
+- Avoid changing IDs once translations are complete
 
 ### Variable Handling
-```typescript
-// Always provide fallback values
-const itemName = item?.name || _(t`Unknown item`);
-
-// Use proper typing for variables
-interface TranslationProps {
-  userName: string;
-  itemCount: number;
-  totalPrice: number;
-}
-
-<Trans>
-  Hello {userName}, you have {itemCount} items totaling ${totalPrice}
-</Trans>
-```
+- Always provide fallback values for dynamic content
+- Use proper TypeScript typing for variables
+- Handle undefined/null values gracefully
+- Format variables appropriately for locale
 
 ### Performance Optimization
-```typescript
-// Preload translations for critical paths
-import { loadCatalog } from '@lingui/core';
-
-// Load translations before component mounts
-useEffect(() => {
-  loadCatalog('es');
-}, []);
-
-// Use compiled catalogs in production
-import { messages as enMessages } from '../locales/en/messages';
-import { messages as esMessages } from '../locales/es/messages';
-```
+- Preload translations for critical paths
+- Use compiled catalogs in production
+- Load translations before component mounts
+- Cache translations efficiently
 
 ### Context for Translators
-```typescript
-// Provide helpful context comments
-<Trans 
-  comment="Button text for adding item to shopping cart"
-  context="ecommerce.cart"
->
-  Add to cart
-</Trans>
-
-// Explain variables and their format
-<Trans 
-  comment="Price format: ${amount} where amount is currency value"
->
-  Total: ${totalAmount}
-</Trans>
-```
+- Provide helpful context comments
+- Explain variables and their expected format
+- Include usage context for UI elements
+- Document any special formatting requirements
 
 ## Platform-Specific Considerations
 
@@ -260,18 +155,15 @@ import { messages as esMessages } from '../locales/es/messages';
 - Ensure proper HTML lang attributes
 - Support browser language detection
 - Handle SEO requirements for multilingual content
+- Implement proper meta tag localization
 
 ## Quality Assurance
 
 ### Translation Validation
-```typescript
-// Validate required translations exist
-const requiredKeys = ['menu.title', 'store.hours', 'contact.phone'];
-const missingTranslations = validateTranslations(requiredKeys);
-
-// Type-safe translation keys
-type TranslationKey = 'menu.title' | 'store.hours' | 'contact.phone';
-```
+- Validate required translations exist
+- Use type-safe translation keys
+- Check for missing translations in development
+- Implement fallback strategies
 
 ### Testing Strategies
 - **Unit Tests**: Test translation key extraction
@@ -280,98 +172,43 @@ type TranslationKey = 'menu.title' | 'store.hours' | 'contact.phone';
 - **Accessibility Tests**: Screen reader testing in multiple languages
 
 ### Pseudo-localization
-```typescript
-// Enable pseudo-localization for testing
-const pseudoMessages = {
-  'Welcome': '[!!! Wélçömé !!!]',
-  'Menu': '[!!! Ménü !!!]'
-};
-```
+- Enable pseudo-localization for testing
+- Test UI layout with longer text
+- Verify text expansion handling
+- Check for hardcoded strings
 
 ## Error Handling
 
 ### Missing Translations
-```typescript
-import { setupI18n } from '@lingui/core';
-
-const i18n = setupI18n({
-  locale: 'en',
-  missing: (locale, id) => {
-    // Log missing translations in development
-    if (__DEV__) {
-      console.warn(`Missing translation for ${id} in ${locale}`);
-    }
-    // Return fallback or key
-    return id;
-  }
-});
-```
+- Set up proper missing translation handlers
+- Log missing translations in development
+- Provide meaningful fallbacks
+- Return translation key as last resort
 
 ### Fallback Strategies
-```typescript
-// Language fallback chain
-const fallbackLocales = {
-  'es': ['en'],
-  'pt': ['es', 'en']
-};
-
-// Graceful degradation for missing translations
-const getText = (key: string) => {
-  return translations[currentLocale]?.[key] || 
-         translations['en']?.[key] || 
-         key;
-};
-```
+- Implement language fallback chains
+- Handle graceful degradation for missing translations
+- Provide English as ultimate fallback
+- Cache fallback results for performance
 
 ## Integration with App Features
 
 ### Dynamic Language Switching
-```typescript
-import { i18n } from '@lingui/core';
-
-const switchLanguage = async (locale: string) => {
-  // Load new catalog
-  await loadCatalog(locale);
-  
-  // Update i18n instance
-  i18n.activate(locale);
-  
-  // Persist user preference
-  await AsyncStorage.setItem('user-locale', locale);
-  
-  // Update app state
-  setCurrentLocale(locale);
-};
-```
+- Load new catalogs asynchronously
+- Update i18n instance properly
+- Persist user language preference
+- Update app state consistently
 
 ### User Preferences
-```typescript
-// Detect system language
-import * as Localization from 'expo-localization';
-
-const systemLocale = Localization.locale.split('-')[0];
-const supportedLocale = ['en', 'es'].includes(systemLocale) 
-  ? systemLocale 
-  : 'en';
-```
+- Detect system language on first launch
+- Validate supported locales
+- Handle unsupported language gracefully
+- Store user preference persistently
 
 ### SEO and Metadata
-```typescript
-import { t } from '@lingui/core/macro';
-import { useLingui } from '@lingui/react';
-
-// Dynamic meta tags for web
-function MetaTags() {
-  const { _ } = useLingui();
-  
-  return (
-    <Head>
-      <title>{_(t`TOLO - Buen Café`)}</title>
-      <meta name="description" content={_(t`Your neighborhood coffee shop`)} />
-      <html lang={currentLocale} />
-    </Head>
-  );
-}
-```
+- Use proper lang attributes for web
+- Localize meta tags and descriptions
+- Handle dynamic title updates
+- Support search engine indexing
 
 This comprehensive Lingui configuration ensures robust internationalization that scales with your app while maintaining excellent user experience across all supported languages.

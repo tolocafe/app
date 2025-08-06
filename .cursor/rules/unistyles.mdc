@@ -20,612 +20,124 @@ Comprehensive styling guidelines using react-native-unistyles for scalable, perf
 ## Theme Architecture
 
 ### Theme Structure
-```typescript
-// theme/index.ts
-import { createUnistylesTheme } from 'react-native-unistyles';
+- Define semantic colors (primary, secondary, accent)
+- Include neutral colors (background, surface, card)
+- Organize text colors by hierarchy (primary, secondary, tertiary, inverse)
+- Add status colors (success, warning, error, info)
+- Create interactive color states (default, hover, pressed, disabled)
+- Define border colors for different states
 
-export const lightTheme = createUnistylesTheme({
-  colors: {
-    // Semantic colors
-    primary: '#8B4513',      // Coffee brown
-    secondary: '#D2691E',    // Light brown
-    accent: '#F4A460',       // Sandy brown
-    
-    // Neutral colors
-    background: '#FFFFFF',
-    surface: '#F8F8F8',
-    card: '#FFFFFF',
-    
-    // Text colors
-    text: {
-      primary: '#1A1A1A',
-      secondary: '#666666',
-      tertiary: '#999999',
-      inverse: '#FFFFFF'
-    },
-    
-    // Status colors
-    success: '#4CAF50',
-    warning: '#FF9800',
-    error: '#F44336',
-    info: '#2196F3',
-    
-    // Interactive colors
-    interactive: {
-      default: '#8B4513',
-      hover: '#A0522D',
-      pressed: '#654321',
-      disabled: '#CCCCCC'
-    },
-    
-    // Border colors
-    border: {
-      default: '#E0E0E0',
-      focus: '#8B4513',
-      error: '#F44336'
-    }
-  },
-  
-  spacing: {
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 24,
-    xl: 32,
-    xxl: 48,
-    xxxl: 64
-  },
-  
-  typography: {
-    fontFamily: {
-      regular: 'System',
-      medium: 'System-Medium',
-      semiBold: 'System-SemiBold',
-      bold: 'System-Bold'
-    },
-    fontSize: {
-      xs: 12,
-      sm: 14,
-      md: 16,
-      lg: 18,
-      xl: 20,
-      xxl: 24,
-      xxxl: 32,
-      display: 48
-    },
-    lineHeight: {
-      xs: 16,
-      sm: 20,
-      md: 24,
-      lg: 28,
-      xl: 32,
-      xxl: 36,
-      xxxl: 48,
-      display: 64
-    }
-  },
-  
-  borderRadius: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
-    full: 9999
-  },
-  
-  shadows: {
-    sm: {
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2
-    },
-    md: {
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.15,
-      shadowRadius: 4,
-      elevation: 4
-    },
-    lg: {
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 8
-    }
-  }
-});
+### Spacing System
+- Use consistent spacing scale (xs, sm, md, lg, xl, xxl, xxxl)
+- Base spacing on 4px or 8px grid system
+- Apply spacing consistently across all components
+- Use semantic spacing names rather than pixel values
 
-export const darkTheme = createUnistylesTheme({
-  ...lightTheme,
-  colors: {
-    ...lightTheme.colors,
-    background: '#121212',
-    surface: '#1E1E1E',
-    card: '#2C2C2C',
-    text: {
-      primary: '#FFFFFF',
-      secondary: '#CCCCCC',
-      tertiary: '#999999',
-      inverse: '#1A1A1A'
-    },
-    border: {
-      default: '#333333',
-      focus: '#D2691E',
-      error: '#F44336'
-    }
-  }
-});
-```
+### Typography Scale
+- Define font families (regular, medium, semiBold, bold)
+- Create consistent font size scale
+- Match line heights to font sizes appropriately
+- Use system fonts for better performance
+
+### Border Radius System
+- Create consistent border radius scale
+- Use semantic names (xs, sm, md, lg, xl, full)
+- Apply consistently across components
+- Consider platform-specific preferences
+
+### Shadow System
+- Define shadow levels (sm, md, lg)
+- Include both iOS and Android shadow properties
+- Use elevation for Android, shadow properties for iOS
+- Maintain visual consistency across platforms
 
 ### Theme Configuration
-```typescript
-// unistyles.config.ts
-import { UnistylesRegistry } from 'react-native-unistyles';
-import { lightTheme, darkTheme } from './theme';
-
-UnistylesRegistry
-  .addThemes({
-    light: lightTheme,
-    dark: darkTheme
-  })
-  .addConfig({
-    adaptiveThemes: true,
-    initialTheme: 'light'
-  });
-```
+- Register themes with UnistylesRegistry
+- Support adaptive themes for system preference
+- Set appropriate initial theme
+- Enable theme switching capabilities
 
 ## Styling Patterns
 
 ### Component Styling Structure
-```typescript
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
-
-interface ComponentProps {
-  variant?: 'primary' | 'secondary';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-}
-
-export function StyledComponent({ variant = 'primary', size = 'md', disabled }: ComponentProps) {
-  const { styles } = useStyles(stylesheet, { variant, size, disabled });
-  
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Content</Text>
-    </View>
-  );
-}
-
-const stylesheet = createStyleSheet((theme, runtime) => ({
-  container: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    
-    // Responsive design
-    ...(runtime.screen.width < 768 && {
-      padding: theme.spacing.sm
-    }),
-    
-    // Variants
-    variants: {
-      variant: {
-        primary: {
-          backgroundColor: theme.colors.primary,
-        },
-        secondary: {
-          backgroundColor: theme.colors.secondary,
-        }
-      },
-      size: {
-        sm: {
-          padding: theme.spacing.sm,
-        },
-        md: {
-          padding: theme.spacing.md,
-        },
-        lg: {
-          padding: theme.spacing.lg,
-        }
-      },
-      disabled: {
-        true: {
-          opacity: 0.5,
-          backgroundColor: theme.colors.interactive.disabled,
-        }
-      }
-    }
-  },
-  
-  text: {
-    color: theme.colors.text.primary,
-    fontSize: theme.typography.fontSize.md,
-    lineHeight: theme.typography.lineHeight.md,
-    fontFamily: theme.typography.fontFamily.regular,
-    
-    variants: {
-      variant: {
-        primary: {
-          color: theme.colors.text.inverse,
-        },
-        secondary: {
-          color: theme.colors.text.primary,
-        }
-      }
-    }
-  }
-}));
-```
+- Use createStyleSheet for component styles
+- Access theme and runtime parameters
+- Support component variants through style variants
+- Handle responsive design with runtime conditions
+- Use TypeScript interfaces for component props
 
 ### Layout Components
-```typescript
-// Common layout patterns
-const layoutStyles = createStyleSheet((theme) => ({
-  // Flexbox utilities
-  flex1: { flex: 1 },
-  flexRow: { flexDirection: 'row' },
-  flexColumn: { flexDirection: 'column' },
-  
-  // Alignment
-  center: { 
-    justifyContent: 'center', 
-    alignItems: 'center' 
-  },
-  spaceBetween: { 
-    justifyContent: 'space-between' 
-  },
-  spaceAround: { 
-    justifyContent: 'space-around' 
-  },
-  
-  // Container patterns
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  
-  safeContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-    paddingHorizontal: theme.spacing.md,
-  },
-  
-  card: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    ...theme.shadows.sm,
-  },
-  
-  section: {
-    marginBottom: theme.spacing.lg,
-  }
-}));
-```
+- Create reusable layout utilities (flex, alignment, containers)
+- Use semantic layout patterns (container, safeContainer, card, section)
+- Apply consistent spacing and sizing
+- Support responsive layout patterns
 
 ## Advanced Patterns
 
 ### Responsive Design
-```typescript
-const responsiveStyles = createStyleSheet((theme, runtime) => ({
-  adaptiveContainer: {
-    padding: theme.spacing.md,
-    
-    // Breakpoint-based styling
-    ...(runtime.screen.width >= 768 && {
-      padding: theme.spacing.lg,
-      maxWidth: 1200,
-      alignSelf: 'center',
-    }),
-    
-    ...(runtime.screen.width >= 1024 && {
-      padding: theme.spacing.xl,
-    }),
-  },
-  
-  gridItem: {
-    // Mobile: single column
-    width: '100%',
-    
-    // Tablet: two columns
-    ...(runtime.screen.width >= 768 && runtime.screen.width < 1024 && {
-      width: '48%',
-    }),
-    
-    // Desktop: three columns
-    ...(runtime.screen.width >= 1024 && {
-      width: '31%',
-    }),
-  }
-}));
-```
+- Use runtime screen width for breakpoint-based styling
+- Implement adaptive containers for different screen sizes
+- Create responsive grid systems
+- Handle orientation changes appropriately
 
 ### Animation Support
-```typescript
-const animatedStyles = createStyleSheet((theme) => ({
-  animatedContainer: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    
-    // Prepare for animations
-    transform: [{ scale: 1 }],
-    opacity: 1,
-  },
-  
-  pressable: {
-    backgroundColor: theme.colors.interactive.default,
-    
-    // Hover state (web)
-    ':hover': {
-      backgroundColor: theme.colors.interactive.hover,
-    },
-    
-    // Pressed state
-    ':active': {
-      backgroundColor: theme.colors.interactive.pressed,
-      transform: [{ scale: 0.98 }],
-    },
-  }
-}));
-```
+- Prepare styles for animations with transform and opacity
+- Support hover states for web platforms
+- Handle pressed states for touch interactions
+- Use appropriate animation-ready properties
 
 ### Complex Component Styling
-```typescript
-// Menu item component example
-const menuItemStyles = createStyleSheet((theme, runtime) => ({
-  menuItem: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    ...theme.shadows.sm,
-    
-    // Interactive states
-    variants: {
-      pressed: {
-        true: {
-          backgroundColor: theme.colors.surface,
-          transform: [{ scale: 0.98 }],
-        }
-      },
-      available: {
-        false: {
-          opacity: 0.6,
-          backgroundColor: theme.colors.border.default,
-        }
-      }
-    }
-  },
-  
-  imageContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: theme.borderRadius.sm,
-    marginRight: theme.spacing.md,
-    overflow: 'hidden',
-  },
-  
-  contentContainer: {
-    flex: 1,
-  },
-  
-  title: {
-    fontSize: theme.typography.fontSize.md,
-    fontFamily: theme.typography.fontFamily.semiBold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  
-  description: {
-    fontSize: theme.typography.fontSize.sm,
-    color: theme.colors.text.secondary,
-    lineHeight: theme.typography.lineHeight.sm,
-    marginBottom: theme.spacing.xs,
-  },
-  
-  priceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  
-  price: {
-    fontSize: theme.typography.fontSize.lg,
-    fontFamily: theme.typography.fontFamily.bold,
-    color: theme.colors.primary,
-  },
-  
-  addButton: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.full,
-    
-    variants: {
-      disabled: {
-        true: {
-          backgroundColor: theme.colors.interactive.disabled,
-        }
-      }
-    }
-  },
-  
-  addButtonText: {
-    color: theme.colors.text.inverse,
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.fontFamily.medium,
-  }
-}));
-```
+- Structure styles for complex components logically
+- Use variants for different component states
+- Handle interactive states consistently
+- Apply proper accessibility considerations
 
 ## Performance Optimization
 
 ### Style Memoization
-```typescript
-// Memoize expensive style calculations
-const expensiveStyles = createStyleSheet((theme, runtime) => ({
-  complexGradient: {
-    // Complex calculations only run when theme changes
-    background: `linear-gradient(45deg, ${theme.colors.primary}, ${theme.colors.secondary})`,
-    
-    // Conditional styles based on runtime
-    ...(runtime.orientation === 'landscape' && {
-      flexDirection: 'row',
-    }),
-  }
-}));
-```
+- Memoize expensive style calculations
+- Use runtime conditions efficiently
+- Avoid unnecessary style recalculations
+- Cache complex style computations
 
 ### Conditional Styling
-```typescript
-// Efficient conditional styling
-const conditionalStyles = createStyleSheet((theme) => ({
-  button: {
-    backgroundColor: theme.colors.primary,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
-    
-    variants: {
-      // Use variants instead of inline conditionals
-      size: {
-        small: { padding: theme.spacing.sm },
-        medium: { padding: theme.spacing.md },
-        large: { padding: theme.spacing.lg },
-      },
-      variant: {
-        primary: { backgroundColor: theme.colors.primary },
-        secondary: { backgroundColor: theme.colors.secondary },
-        outline: { 
-          backgroundColor: 'transparent',
-          borderWidth: 1,
-          borderColor: theme.colors.primary,
-        },
-      }
-    }
-  }
-}));
-```
+- Use variants instead of inline conditionals
+- Group related style variations together
+- Minimize runtime style calculations
+- Use efficient conditional patterns
 
 ## Best Practices
 
 ### Theme Token Usage
-```typescript
-// GOOD: Use theme tokens
-const goodStyles = createStyleSheet((theme) => ({
-  container: {
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
-  }
-}));
-
-// BAD: Hardcoded values
-const badStyles = createStyleSheet(() => ({
-  container: {
-    backgroundColor: '#F8F8F8',  // ❌ Hardcoded
-    padding: 16,                 // ❌ Hardcoded
-    borderRadius: 12,            // ❌ Hardcoded
-  }
-}));
-```
+- Always use theme tokens instead of hardcoded values
+- Reference theme colors, spacing, and typography consistently
+- Avoid magic numbers in styles
+- Use semantic naming for theme values
 
 ### Component Composition
-```typescript
-// Reusable style utilities
-export const utilityStyles = createStyleSheet((theme) => ({
-  // Spacing utilities
-  mt_xs: { marginTop: theme.spacing.xs },
-  mt_sm: { marginTop: theme.spacing.sm },
-  mt_md: { marginTop: theme.spacing.md },
-  
-  // Text utilities
-  textCenter: { textAlign: 'center' },
-  textBold: { fontFamily: theme.typography.fontFamily.bold },
-  
-  // Layout utilities
-  fullWidth: { width: '100%' },
-  flex1: { flex: 1 },
-}));
-
-// Usage in components
-function Component() {
-  const { styles: utils } = useStyles(utilityStyles);
-  
-  return (
-    <View style={[styles.container, utils.mt_md]}>
-      <Text style={[styles.text, utils.textCenter, utils.textBold]}>
-        Content
-      </Text>
-    </View>
-  );
-}
-```
+- Create reusable style utilities
+- Use utility classes for common patterns
+- Compose styles efficiently
+- Avoid style duplication
 
 ### Platform-Specific Styling
-```typescript
-const platformStyles = createStyleSheet((theme, runtime) => ({
-  container: {
-    backgroundColor: theme.colors.surface,
-    
-    // iOS specific styles
-    ...(runtime.platform === 'ios' && {
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    }),
-    
-    // Android specific styles
-    ...(runtime.platform === 'android' && {
-      elevation: 4,
-    }),
-    
-    // Web specific styles
-    ...(runtime.platform === 'web' && {
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      cursor: 'pointer',
-    }),
-  }
-}));
-```
+- Handle iOS-specific shadow properties
+- Use Android elevation appropriately
+- Apply web-specific styles when needed
+- Test across all target platforms
 
 ## Testing Styles
 
 ### Style Testing Utilities
-```typescript
-// Test style application
-import { renderWithUnistyles } from '../test-utils';
+- Test theme color application
+- Verify responsive behavior
+- Test theme switching functionality
+- Validate accessibility properties
 
-describe('Component Styles', () => {
-  it('applies correct theme colors', () => {
-    const { getByTestId } = renderWithUnistyles(
-      <Component testID="component" />,
-      { theme: 'light' }
-    );
-    
-    const element = getByTestId('component');
-    expect(element).toHaveStyle({
-      backgroundColor: lightTheme.colors.surface,
-    });
-  });
-  
-  it('responds to theme changes', () => {
-    const { getByTestId, rerender } = renderWithUnistyles(
-      <Component testID="component" />,
-      { theme: 'light' }
-    );
-    
-    // Switch to dark theme
-    rerender(<Component testID="component" />, { theme: 'dark' });
-    
-    const element = getByTestId('component');
-    expect(element).toHaveStyle({
-      backgroundColor: darkTheme.colors.surface,
-    });
-  });
-});
-```
+### Testing Strategy
+- Unit test style calculations
+- Integration test theme changes
+- Visual regression testing
+- Cross-platform consistency testing
 
 This comprehensive Unistyles configuration ensures scalable, maintainable, and performant styling that adapts to different themes, screen sizes, and platforms while maintaining excellent developer experience.
