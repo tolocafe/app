@@ -89,9 +89,22 @@ async function updatePosterClient(token: string, id: string, body: Record<string
   })
   return (await res.json())?.response?.client
 }
+// OTP helpers --------------------------------------------------------------
+function generateOtp(length = 6): string {
+  return Array.from(crypto.getRandomValues(new Uint32Array(length)))
+    .map((v) => (v % 10).toString())
+    .join('')
+}
+async function storeOtp(kv: KVNamespace, phone: string, code: string, ttl = 300) {
+  await kv.put(`otp:${phone}`, code, { expirationTtl: ttl })
+}
+async function verifyOtp(kv: KVNamespace, phone: string, code: string): Promise<boolean> {
+  const stored = await kv.get(`otp:${phone}`)
+  return stored === code
+}
 // -----------------------------------------------------------------------------
 
-const app = new Hono<{ Bindings: { POSTER_TOKEN: string; USER_CREDENTIALS: KVNamespace; JWT_SECRET: string } }>().basePath('/api')
+const app = new Hono<{ Bindings: { POSTER_TOKEN: string; JWT_SECRET: string; OTP_CODES: KVNamespace } }>().basePath('/api')
 
 app.use('*', cors())
 
@@ -141,47 +154,47 @@ app
 		return context.json({ message: 'Not found :(' }, 404, defaultJsonHeaders)
 	})
 	// Auth routes --------------------------------------------------------------
-	.post('/auth/signup', async (c) => {
-		try {
-      const { name, phone, email, password } = await c.req.json<Record<string, string>>()
-      if (!phone || !password) {
-        return c.json({ error: 'phone and password required' }, 400, defaultJsonHeaders)
-      }
-      const existing = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-      if (existing) {
-        return c.json({ error: 'Client already exists' }, 409, defaultJsonHeaders)
-      }
-      const client = await createPosterClient(c.env.POSTER_TOKEN, { phone, name, email })
-      const hashed = await hashPassword(password)
-      // Persist hashed password keyed by client id
-      await c.env.USER_CREDENTIALS.put(String(client.client_id ?? client.id), hashed)
-      const token = await signJwt(String(client.client_id ?? client.id), c.env.JWT_SECRET)
-      return c.json({ token, client }, 201, defaultJsonHeaders)
-    } catch (err) {
-      return c.json({ error: 'Failed to sign up' }, 500, defaultJsonHeaders)
-    }
-	})
-	.post('/auth/signin', async (c) => {
-		try {
-      const { phone, password } = await c.req.json<Record<string, string>>()
-      if (!phone || !password) {
-        return c.json({ error: 'phone and password required' }, 400, defaultJsonHeaders)
-      }
-      const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-      if (!client) {
-        return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
-      }
-      const clientId = String(client.client_id ?? client.id)
-      const stored = await c.env.USER_CREDENTIALS.get(clientId)
-      if (!stored || !(await verifyPassword(password, stored))) {
-        return c.json({ error: 'Invalid credentials' }, 401, defaultJsonHeaders)
-      }
-      const token = await signJwt(clientId, c.env.JWT_SECRET)
-      return c.json({ token, client }, 200, defaultJsonHeaders)
-    } catch (err) {
-      return c.json({ error: 'Failed to sign in' }, 500, defaultJsonHeaders)
-    }
-	})
+	.post('/auth/request-otp', async (c) => {
+     try {
+       const { phone, name, email } = await c.req.json<Record<string, string>>()
+       if (!phone) {
+         return c.json({ error: 'phone required' }, 400, defaultJsonHeaders)
+       }
+       // ensure client exists
+       let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+       if (!client) {
+         client = await createPosterClient(c.env.POSTER_TOKEN, { phone, name, email })
+       }
+       const code = generateOtp()
+       await storeOtp(c.env.OTP_CODES, phone, code)
+       // TODO: integrate Poster SMS/e-mail send or other provider; placeholder logging
+       console.log('OTP code', code, 'sent to', phone)
+       return c.json({ success: true }, 200, defaultJsonHeaders)
+     } catch {
+       return c.json({ error: 'Failed to issue OTP' }, 500, defaultJsonHeaders)
+     }
+   })
+   .post('/auth/verify-otp', async (c) => {
+     try {
+       const { phone, code } = await c.req.json<Record<string, string>>()
+       if (!phone || !code) {
+         return c.json({ error: 'phone and code required' }, 400, defaultJsonHeaders)
+       }
+       const isValid = await verifyOtp(c.env.OTP_CODES, phone, code)
+       if (!isValid) {
+         return c.json({ error: 'Invalid or expired code' }, 401, defaultJsonHeaders)
+       }
+       const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+       if (!client) {
+         return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
+       }
+       const clientId = String(client.client_id ?? client.id)
+       const token = await signJwt(clientId, c.env.JWT_SECRET)
+       return c.json({ token, client }, 200, defaultJsonHeaders)
+     } catch {
+       return c.json({ error: 'OTP verification failed' }, 500, defaultJsonHeaders)
+     }
+   })
 	// Optional client update ---------------------------------------------------
 	.put('/clients/:id', async (c) => {
       const id = c.req.param('id')
