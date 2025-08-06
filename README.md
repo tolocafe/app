@@ -31,3 +31,37 @@ bun lingui:compile  # Compile
 - React Native Unistyles for styling
 - Lingui for internationalization
 - TypeScript
+- Expo Updates for OTA updates
+
+## Updates
+
+This app uses Expo Updates for over-the-air (OTA) updates with fingerprint runtime policy.
+
+### Configuration
+
+- **Project ID**: `25e3751a-b837-480a-b9fc-ee67327f46e9`
+- **Runtime Policy**: Fingerprint
+- **Update URL**: `https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9`
+
+### Usage
+
+The app automatically checks for updates on startup. You can also manually check for updates:
+
+```typescript
+import { checkForUpdates } from '@/lib/updates'
+
+// Check for updates
+await checkForUpdates()
+```
+
+### Publishing Updates
+
+To publish an update:
+
+```bash
+# For production
+eas update --branch production
+
+# For preview
+eas update --branch preview
+```

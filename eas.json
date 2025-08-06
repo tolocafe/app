@@ -17,5 +17,13 @@
 	},
 	"submit": {
 		"production": {}
+	},
+	"updates": {
+		"production": {
+			"url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9"
+		},
+		"preview": {
+			"url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9"
+		}
 	}
 }

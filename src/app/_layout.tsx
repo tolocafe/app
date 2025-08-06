@@ -8,11 +8,13 @@ import {
 import * as Sentry from '@sentry/react-native'
 import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import * as Updates from 'expo-updates'
 import 'react-native-reanimated'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import { QueryProvider } from '@/lib/providers/query-provider'
+import { checkForUpdates } from '@/lib/updates'
 import { useEffect } from 'react'
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -28,6 +30,10 @@ function RootLayout() {
 			navigationIntegration.registerNavigationContainer(ref)
 		}
 	}, [ref])
+
+	useEffect(() => {
+		checkForUpdates()
+	}, [])
 
 	return (
 		<QueryProvider>

@@ -54,7 +54,8 @@
           "resizeMode": "contain"
         }
       ],
-      "react-native-edge-to-edge"
+      "react-native-edge-to-edge",
+      "expo-updates"
     ],
     "scheme": "tolo",
     "slug": "tolo",
@@ -81,6 +82,12 @@
       "eas": {
         "projectId": "25e3751a-b837-480a-b9fc-ee67327f46e9"
       }
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/25e3751a-b837-480a-b9fc-ee67327f46e9",
+      "runtimePolicy": "fingerprint"
     },
     "owner": "tolo-cafe"
   }
