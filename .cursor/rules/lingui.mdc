@@ -11,6 +11,8 @@ Comprehensive guidelines for implementing robust internationalization in React N
 ## Core Principles
 
 - **Zero Hardcoded Strings**: ALL user-facing text must use Lingui
+- **Correct Imports**: Use `@lingui/core/macro` for t macro, `@lingui/react/macro` for Trans/Plural/Select
+- **No @lingui/macro**: Never import from deprecated `@lingui/macro` package
 - **Type Safety**: Leverage TypeScript for translation keys and parameters
 - **Performance First**: Use compile-time optimizations for minimal runtime overhead
 - **Context Awareness**: Provide meaningful context for translators
@@ -28,7 +30,7 @@ Comprehensive guidelines for implementing robust internationalization in React N
 
 #### Simple Text with Trans Component
 ```typescript
-import { Trans } from '@lingui/macro';
+import { Trans } from '@lingui/react/macro';
 
 // For JSX text content
 <Trans>Welcome to TOLO</Trans>
@@ -39,7 +41,7 @@ import { Trans } from '@lingui/macro';
 
 #### Dynamic Text with t Macro
 ```typescript
-import { t } from '@lingui/macro';
+import { t } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 
 function Component() {
@@ -57,7 +59,7 @@ function Component() {
 
 #### Complex Messages with Variables
 ```typescript
-import { Trans, Plural } from '@lingui/macro';
+import { Trans, Plural } from '@lingui/react/macro';
 
 // With variables in JSX
 <Trans>
@@ -103,7 +105,7 @@ import { Trans, Plural } from '@lingui/macro';
 
 #### Conditional Messages
 ```typescript
-import { Select } from '@lingui/macro';
+import { Select } from '@lingui/react/macro';
 
 // Gender-aware messages
 <Select
@@ -355,12 +357,21 @@ const supportedLocale = ['en', 'es'].includes(systemLocale)
 
 ### SEO and Metadata
 ```typescript
+import { t } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react';
+
 // Dynamic meta tags for web
-<Head>
-  <title>{_(t`TOLO - Buen Café`)}</title>
-  <meta name="description" content={_(t`Your neighborhood coffee shop`)} />
-  <html lang={currentLocale} />
-</Head>
+function MetaTags() {
+  const { _ } = useLingui();
+  
+  return (
+    <Head>
+      <title>{_(t`TOLO - Buen Café`)}</title>
+      <meta name="description" content={_(t`Your neighborhood coffee shop`)} />
+      <html lang={currentLocale} />
+    </Head>
+  );
+}
 ```
 
 This comprehensive Lingui configuration ensures robust internationalization that scales with your app while maintaining excellent user experience across all supported languages.
