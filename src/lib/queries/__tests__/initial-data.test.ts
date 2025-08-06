@@ -5,8 +5,8 @@
 
 import { QueryClient } from '@tanstack/react-query'
 import { PosterApiResponse, PosterProduct } from '@/lib/api/client'
-import { productQueryOptions } from '../product'
-import { productsQueryOptions } from '../menu'
+import { productQueryOptions } from '@/lib/queries/product'
+import { productsQueryOptions } from '@/lib/queries/menu'
 
 // Mock product data that would come from the products list
 const mockProducts: PosterProduct[] = [

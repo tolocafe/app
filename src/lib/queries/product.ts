@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query'
 import { api, PosterApiResponse, PosterProduct } from '@/lib/api/client'
-import { productsQueryOptions } from './menu'
-import { queryClient } from '../query-client'
+import { productsQueryOptions } from '@/lib/queries/menu'
+import { queryClient } from '@/lib/query-client'
 
 export const productQueryOptions = (productId: string) =>
 	queryOptions({
