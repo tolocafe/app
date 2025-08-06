@@ -2,13 +2,12 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
 
 jobs:
   format-and-lint:
-    name: Format and Lint
+    name: 🎨 Format and Lint
     runs-on: ubuntu-latest
 
     steps:
