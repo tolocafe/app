@@ -36,29 +36,38 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ## Technical Standards
 
 ### Core Technologies
+
 - **Styling**: React Native Unistyles for ALL styling (never inline styles)
 - **Internationalization**: Lingui for ALL user-facing text (never hardcoded strings)
 - **Type Safety**: TypeScript with strict mode enabled
 - **State Management**: TanStack Query for server state, React Context for client state
+- **TanStack Query**: ALWAYS use `queryOptions` and `mutationOptions` from `@tanstack/react-query` for type safety and reusability
+- **No Custom Query Hooks**: AVOID creating custom hooks that only wrap `useQuery` with `queryOptions`. Use `useQuery(queryOptions)` directly in components instead. Custom hooks should only be created when they add meaningful logic beyond the basic query call.
 - **Navigation**: Expo Router with typed routes
 - **Package Manager**: bun (never npm or yarn)
 - **React Imports**: Never import React default - import specific APIs only
+- **React Compiler**: AVOID using `useMemo`, `useCallback`, or `memo` since React Compiler handles optimizations automatically. Manual memoization can interfere with compiler optimizations.
 
 ### File Naming Conventions
+
 - **ALL files**: kebab-case naming (e.g., `language-context.tsx`, `use-color-scheme.ts`)
 - **Components**: PascalCase exports from kebab-case files
 - **Hooks**: camelCase exports starting with 'use' from kebab-case files
 - **Utilities**: camelCase exports from kebab-case files
 
 ### Code Organization
+
 - **Feature-based structure**: Group related components, hooks, and utilities
 - **Barrel exports**: Use index files for clean imports
 - **Single responsibility**: Each file should have one primary purpose
 - **Separation of concerns**: Logic, UI, and styling clearly separated
+- **Avoid Classes**: Prefer simple objects and functions over classes. Classes add unnecessary complexity when simple objects work just fine. Use factory functions or plain objects with methods instead.
+- **Absolute imports**: ALWAYS prefer absolute imports over relative imports when navigating one or more levels behind. Use `@/` prefix for imports from the src directory instead of relative paths like `../`. This improves code readability, makes refactoring easier, and prevents import path issues when moving files.
 
 ### Development Workflow Standards
 
 #### Package Management
+
 - **ALWAYS use bun**: Never npm or yarn for dependency installation
 - **Install bun first**: If bun not available, run `npm install -g bun` before proceeding
 - **Dependency installation**: ALWAYS use `bun install` or `bun add <package>` for installing dependencies
@@ -68,6 +77,7 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 - **Lint check**: Run `bun run lint` and fix errors after completing tasks
 
 #### Error Handling & Monitoring
+
 - **Sentry Integration**: Capture all errors with proper context
 - **Graceful Degradation**: App should handle network failures elegantly
 - **User Feedback**: Provide clear, actionable error messages
@@ -76,17 +86,20 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ### Performance Requirements
 
 #### Rendering Optimization
+
 - **Memoization**: Use React.memo for expensive components
 - **Virtualization**: FlatList for any lists with >10 items
 - **Code Splitting**: Lazy load non-critical screens
 - **Image Optimization**: Use Expo Image with proper sizing and formats
 
 #### Bundle Optimization
+
 - **Tree Shaking**: Ensure unused code is eliminated
 - **Dynamic Imports**: Load features on demand
 - **Asset Optimization**: Compress images and use appropriate formats
 
 #### Runtime Performance
+
 - **60fps Target**: Maintain smooth animations and scrolling
 - **Memory Management**: Avoid memory leaks in subscriptions and timers
 - **Battery Efficiency**: Minimize background processing
@@ -94,18 +107,21 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ### Quality Assurance
 
 #### Code Quality
+
 - **TypeScript Strict**: No `any` types, proper interfaces
 - **ESLint**: Follow configured rules without exceptions
 - **Prettier**: Consistent code formatting
 - **KISS Principle**: Keep implementations simple and straightforward
 
 #### Testing Strategy
+
 - **Unit Tests**: Critical business logic and utilities
 - **Integration Tests**: User flows and component interactions
 - **Accessibility Tests**: Screen reader and keyboard navigation
 - **Performance Tests**: Bundle size and runtime performance
 
 #### Code Review Standards
+
 - **Self Review**: Check your own code before submission
 - **Documentation**: JSDoc for complex functions only (avoid trivial docs)
 - **Commit Messages**: Follow Conventional Commits v1.0.0 specification
@@ -114,12 +130,14 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ### Accessibility Standards
 
 #### Screen Reader Support
+
 - **Accessibility Labels**: Meaningful labels for all interactive elements
 - **Semantic Structure**: Proper heading hierarchy and landmarks
 - **Focus Management**: Logical tab order and focus indicators
 - **Announcements**: Important state changes communicated to users
 
 #### Visual Accessibility
+
 - **Color Contrast**: WCAG AA compliance minimum
 - **Text Scaling**: Support for dynamic text sizing
 - **Touch Targets**: Minimum 44pt touch targets
@@ -128,16 +146,19 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ### Platform Considerations
 
 #### iOS Specific
+
 - **Safe Areas**: Proper handling of notches and home indicators
 - **Haptic Feedback**: Appropriate use of system haptics
 - **iOS Design Patterns**: Follow platform conventions
 
 #### Android Specific
+
 - **Edge-to-Edge**: Proper handling of system bars
 - **Material Design**: Follow Android design principles
 - **Back Button**: Proper back navigation handling
 
 #### Web (if applicable)
+
 - **Responsive Design**: Adapt to different screen sizes
 - **Keyboard Navigation**: Full keyboard accessibility
 - **SEO Optimization**: Proper meta tags and structure
@@ -145,12 +166,15 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ## AI Assistant Guidelines
 
 ### Development Efficiency
+
 - **Focused Responses**: Avoid verbose summaries unless requested
 - **Minimal Changes**: Only implement what's specifically requested
 - **Context Awareness**: Understand existing patterns before suggesting changes
 - **Token Efficiency**: Provide concise, actionable guidance
+- **No Task Summaries**: NEVER output summaries of changes after completing tasks unless explicitly requested
 
 ### Code Generation Preferences
+
 - **Follow Patterns**: Respect existing codebase patterns and conventions
 - **Modern Practices**: Use current React Native and Expo best practices
 - **Type Safety**: Always include proper TypeScript types
@@ -158,6 +182,7 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 - **Correct Imports**: Never import React default, use specific API imports only
 
 ### Documentation Standards
+
 - **Minimal JSDoc**: Only document complex or non-obvious functions
 - **Self-Documenting Code**: Prefer clear naming over extensive comments
 - **README Updates**: Keep project documentation current
@@ -166,22 +191,26 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 ## Common Patterns
 
 ### Import Patterns
+
 - **React Hooks**: `import { useState, useEffect, useCallback } from 'react'`
 - **React Native**: `import { View, Text, Pressable } from 'react-native'`
 - **Lingui**: `import { Trans } from '@lingui/react/macro'` and `import { t } from '@lingui/core/macro'`
 - **Never**: `import React from 'react'` (not needed in modern React Native)
 
 ### Component Structure
+
 - Use functional components with TypeScript interfaces
 - Import specific React hooks as needed
 - Export components with PascalCase names from kebab-case files
 
 ### Hook Pattern
+
 - Import specific hooks from React
 - Create custom hooks with clear return interfaces
 - Use proper dependency arrays
 
 ### Error Handling Pattern
+
 - Log errors to Sentry with proper context
 - Provide user-friendly feedback
 - Implement graceful fallbacks

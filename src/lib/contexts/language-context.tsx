@@ -36,11 +36,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
 				// Load messages based on language
 				if (language === 'es') {
-					const { messages } = await import('../locales/es/messages.js')
+					const { messages } = await import('@/lib/locales/es/messages.js')
 					i18n.load('es', messages)
 					i18n.activate('es')
 				} else {
-					const { messages } = await import('../locales/en/messages.js')
+					const { messages } = await import('@/lib/locales/en/messages.js')
 					i18n.load('en', messages)
 					i18n.activate('en')
 				}
@@ -50,7 +50,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 			} catch (error) {
 				console.error('Failed to initialize language:', error)
 				// Fallback to Spanish if something goes wrong
-				const { messages } = await import('../locales/es/messages.js')
+				const { messages } = await import('@/lib/locales/es/messages.js')
 				i18n.load('es', messages)
 				i18n.activate('es')
 				setCurrentLanguage('es')
@@ -66,11 +66,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 			storage.set(LANGUAGE_KEY, language)
 
 			if (language === 'es') {
-				const { messages } = await import('../locales/es/messages.js')
+				const { messages } = await import('@/lib/locales/es/messages.js')
 				i18n.load('es', messages)
 				i18n.activate('es')
 			} else {
-				const { messages } = await import('../locales/en/messages.js')
+				const { messages } = await import('@/lib/locales/en/messages.js')
 				i18n.load('en', messages)
 				i18n.activate('en')
 			}

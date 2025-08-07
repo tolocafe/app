@@ -3,54 +3,25 @@ import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { signJwt, authenticate } from './utils/jwt'
 import { generateOtp, storeOtp, verifyOtp } from './utils/otp'
-import { createPosterClient, getPosterClientByPhone, getPosterClientById, updatePosterClient, sendSms } from './utils/poster'
+import {
+	createPosterClient,
+	getPosterClientByPhone,
+	getPosterClientById,
+	updatePosterClient,
+	sendSms,
+} from './utils/poster'
 import { requestOtpSchema, verifyOtpSchema } from './utils/schemas'
+import { defaultJsonHeaders } from './utils/headers'
+import { getMenuCategories, getMenuProducts, getProduct } from './utils/menu'
 
-const BASE_URL = 'https://joinposter.com/api'
-
-function getMenuCategories(token: string) {
-	return fetch(`${BASE_URL}/menu.getCategories?token=${token}`).then((res) =>
-		res.json(),
-	)
-}
-
-function getMenuProducts(
-	token: string,
-	{ type = 'products' }: { type: 'products' | 'categories' },
-) {
-	return fetch(`${BASE_URL}/menu.getProducts?token=${token}`).then((res) =>
-		res.json(),
-	)
-}
-
-function getProduct(token: string, productId: string) {
-	return fetch(
-		`${BASE_URL}/menu.getProduct?token=${token}&product_id=${productId}`,
-	).then((res) => res.json())
-}
-
-const defaultJsonHeaders = {
-	'Content-Type': 'application/json',
-	'Access-Control-Allow-Origin': '*',
-	'Cache-Control': 'public, max-age=3600',
-}
-
-// -----------------------------------------------------------------------------
-// Auth utilities --------------------------------------------------------------
-
-// Poster helpers --------------------------------------------------------------
-
-// OTP helpers --------------------------------------------------------------
-
-const app = new Hono<{ Bindings: { POSTER_TOKEN: string; JWT_SECRET: string; OTP_CODES: KVNamespace; KV_SESSIONS: KVNamespace } }>().basePath('/api')
-
-app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    return err.getResponse()
-  }
-  console.error(err)
-  return c.json({ error: 'Internal Server Error' }, 500)
-})
+const app = new Hono<{
+	Bindings: {
+		POSTER_TOKEN: string
+		JWT_SECRET: string
+		OTP_CODES: KVNamespace
+		KV_SESSIONS: KVNamespace
+	}
+}>().basePath('/api')
 
 app.use('*', cors())
 
@@ -96,80 +67,111 @@ app
 			)
 		}
 	})
-	.get('*', (context) => {
-		return context.json({ message: 'Not found :(' }, 404, defaultJsonHeaders)
-	})
-	// Auth routes --------------------------------------------------------------
+
 	.post('/auth/request-otp', async (c) => {
-      const { phone, name, email } = requestOtpSchema.parse(await c.req.json())
-      let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-      if (!client) {
-        client = await createPosterClient(c.env.POSTER_TOKEN, { phone, name, email })
-      }
-      const code = generateOtp()
-      await storeOtp(c.env.OTP_CODES, phone, code)
-      await sendSms(c.env.POSTER_TOKEN, phone, `Your verification code: ${code}`)
-      return c.json({ success: true })
-    })
-   .post('/auth/verify-otp', async (c) => {
-      const { phone, code, sessionName } = verifyOtpSchema.parse(await c.req.json())
-      await verifyOtp(c.env.OTP_CODES, phone, code)
-      const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
-      if (!client) throw new HTTPException(404, { message: 'Client not found' })
-      const clientId = String(client.client_id ?? client.id)
-      const token = await signJwt(clientId, c.env.JWT_SECRET)
-      const key = clientId
-      const sessionsRaw = await c.env.KV_SESSIONS.get(key)
-      const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
-      sessions.push({ token, name: sessionName, createdAt: Date.now() })
-      await c.env.KV_SESSIONS.put(key, JSON.stringify(sessions))
-      return c.json({ token, client })
-    })
+		const { phone, name, email } = requestOtpSchema.parse(await c.req.json())
+
+		let client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+
+		if (!client) {
+			client = await createPosterClient(c.env.POSTER_TOKEN, {
+				phone,
+				client_name: name || 'anon',
+				email,
+				client_groups_id_client: 1,
+			})
+		}
+
+		const code = generateOtp()
+
+		await Promise.all([
+			storeOtp(c.env.OTP_CODES, phone, code),
+			sendSms(
+				c.env.POSTER_TOKEN,
+				phone,
+				`Your verification code: ${code}`,
+			).catch((err) => console.error(err)),
+			// TODO: remove catch
+		])
+
+		return c.json({ success: true })
+	})
+	.post('/auth/verify-otp', async (c) => {
+		const { phone, code, sessionName } = verifyOtpSchema.parse(
+			await c.req.json(),
+		)
+
+		await verifyOtp(c.env.OTP_CODES, phone, code)
+
+		const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
+
+		if (!client) throw new HTTPException(404, { message: 'Client not found' })
+
+		const clientId = String(client.client_id ?? client.id)
+
+		const [token, sessionsRaw] = await Promise.all([
+			signJwt(clientId, c.env.JWT_SECRET),
+			c.env.KV_SESSIONS.get(clientId),
+		])
+
+		const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
+
+		await Promise.all([
+			c.env.KV_SESSIONS.put(
+				clientId,
+				JSON.stringify([
+					...sessions,
+					{ token, name: sessionName, createdAt: Date.now() },
+				]),
+			),
+			updatePosterClient(c.env.POSTER_TOKEN, clientId, {
+				client_groups_id_client: 3,
+			}),
+		])
+
+		return c.json({ token, client })
+	})
 	.get('/auth/self', async (c) => {
-      let clientId: string
-      try {
-        clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      } catch {
-        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
-      }
-      const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
-      if (!client) {
-        return c.json({ error: 'Client not found' }, 404, defaultJsonHeaders)
-      }
-      return c.json(client, 200, defaultJsonHeaders)
-    })
-	.get('/auth/sessions', async (c) => {
-      let clientId: string
-      try {
-        clientId = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      } catch {
-        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
-      }
-      const key = clientId
-      const sessionsRaw = await c.env.KV_SESSIONS.get(key)
-      const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
-      return c.json(sessions, 200, defaultJsonHeaders)
-    })
-	// Optional client update ---------------------------------------------------
+		const clientId = await authenticate(
+			c.req.header('Authorization'),
+			c.env.JWT_SECRET,
+		)
+		const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
+		if (!client) throw new HTTPException(404, { message: 'Client not found' })
+		return c.json(client)
+	})
+	.get('/auth/self/sessions', async (c) => {
+		const clientId = await authenticate(
+			c.req.header('Authorization'),
+			c.env.JWT_SECRET,
+		)
+		const key = clientId
+		const sessionsRaw = await c.env.KV_SESSIONS.get(key)
+		const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
+		return c.json(sessions)
+	})
+
 	.put('/clients/:id', async (c) => {
-      let clientIdFromToken: string
-      try {
-        clientIdFromToken = await authenticate(c.req.header('Authorization'), c.env.JWT_SECRET)
-      } catch {
-        return c.json({ error: 'Unauthorized' }, 401, defaultJsonHeaders)
-      }
-      const id = c.req.param('id')
-      if (!id || id !== clientIdFromToken) {
-        return c.json({ error: 'Forbidden' }, 403, defaultJsonHeaders)
-      }
-      if (!id) return c.json({ error: 'Client ID required' }, 400, defaultJsonHeaders)
-      try {
-        const body = await c.req.json<Record<string, unknown>>()
-        const client = await updatePosterClient(c.env.POSTER_TOKEN, id, body)
-        return c.json(client, 200, defaultJsonHeaders)
-      } catch {
-        return c.json({ error: 'Failed to update client' }, 500, defaultJsonHeaders)
-      }
-    })
+		const clientIdFromToken = await authenticate(
+			c.req.header('Authorization'),
+			c.env.JWT_SECRET,
+		)
+		const id = c.req.param('id')
+
+		if (!id || id !== clientIdFromToken)
+			throw new HTTPException(403, { message: 'Forbidden' })
+
+		const body = await c.req.json<Record<string, unknown>>()
+		const client = await updatePosterClient(c.env.POSTER_TOKEN, id, body)
+		return c.json(client)
+	})
+
+app.onError((err, c) => {
+	if (err instanceof HTTPException) {
+		return err.getResponse()
+	}
+	console.error(err)
+	return c.json({ error: 'Internal Server Error' }, 500)
+})
 
 export default app

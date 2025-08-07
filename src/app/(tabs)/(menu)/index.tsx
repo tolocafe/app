@@ -1,10 +1,14 @@
-import { categoriesQueryOptions, productsQueryOptions } from '@/lib/queries'
+import {
+	categoriesQueryOptions,
+	productsQueryOptions,
+} from '@/lib/queries/menu'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
 import Head from 'expo-router/head'
 import { Link, router } from 'expo-router'
 import { Image } from 'expo-image'
 import Animated from 'react-native-reanimated'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import {
 	ActivityIndicator,
 	FlatList,
@@ -14,19 +18,18 @@ import {
 	View,
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { useAuth } from '@/lib/hooks/use-auth'
-import { PosterCategory, PosterProduct } from '@/lib/api/client'
-import { POSTER_BASE_URL } from '@/lib/config/api'
+import { useMMKVString } from 'react-native-mmkv'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
+import { POSTER_BASE_URL, PosterCategory, PosterProduct } from '@/lib/api'
 
 export default function Menu() {
 	const { t } = useLingui()
-	const { isAuthenticated } = useAuth()
+	const [token] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
+	const isAuthenticated = Boolean(token)
 
-	// Fetch menu data using React Query
 	const { data: menuData, isLoading, error } = useQuery(productsQueryOptions)
 	const { data: categoriesData } = useQuery(categoriesQueryOptions)
 
-	// Handle loading state
 	if (isLoading) {
 		return (
 			<View style={styles.loadingContainer}>
@@ -38,7 +41,6 @@ export default function Menu() {
 		)
 	}
 
-	// Handle error state
 	if (error) {
 		return (
 			<View style={styles.errorContainer}>
@@ -119,9 +121,7 @@ export default function Menu() {
 										handleAddToBag(item)
 									}}
 								>
-									<Text style={styles.addToBagButtonText}>
-										<Trans>Add to Bag</Trans>
-									</Text>
+									<Ionicons name="add" size={24} color="#E34530" />
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -320,15 +320,9 @@ const styles = StyleSheet.create((theme, rt) => ({
 	},
 
 	addToBagButton: {
-		backgroundColor: theme.colors.primary,
-		paddingHorizontal: theme.spacing.md,
-		paddingVertical: theme.spacing.sm,
-		borderRadius: theme.borderRadius.md,
-	},
-	addToBagButtonText: {
-		color: theme.colors.surface,
-		fontSize: theme.typography.caption.fontSize,
-		fontWeight: theme.typography.caption.fontWeight,
+		backgroundColor: theme.colors.surface,
+		padding: theme.spacing.sm,
+		borderRadius: theme.borderRadius.full,
 	},
 	theme: theme,
 }))
