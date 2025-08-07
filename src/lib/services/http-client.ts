@@ -17,7 +17,7 @@ function getAuthToken(): string | null {
  * Use for endpoints that don't require user authentication
  */
 export const publicClient = ky.create({
-	prefixUrl: BASE_URL,
+	prefixUrl: `${BASE_URL}/api`,
 	headers: { 'Content-Type': 'application/json' },
 })
 
@@ -26,7 +26,7 @@ export const publicClient = ky.create({
  * Use for endpoints that require user authentication
  */
 export const privateClient = ky.create({
-	prefixUrl: BASE_URL,
+	prefixUrl: `${BASE_URL}/api`,
 	headers: {
 		'Content-Type': 'application/json',
 	},
