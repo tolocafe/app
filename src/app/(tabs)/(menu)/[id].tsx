@@ -1,9 +1,10 @@
+import { useState } from 'react'
 import { Trans } from '@lingui/react/macro'
 import { useLocalSearchParams, router } from 'expo-router'
 import Head from 'expo-router/head'
 import { Image } from 'expo-image'
 import Animated from 'react-native-reanimated'
-import { useQuery } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import {
 	ActivityIndicator,
 	ScrollView,
@@ -14,20 +15,38 @@ import {
 import { StyleSheet } from 'react-native-unistyles'
 import { productQueryOptions } from '@/lib/queries/product'
 import { POSTER_BASE_URL } from '@/lib/api'
+import { useAddItem } from '@/lib/stores/order-store'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
+	const [quantity, setQuantity] = useState(1)
+	const addItem = useAddItem()
+	const queryClient = useQueryClient()
 
-	const {
-		data: productData,
-		isLoading,
-		error,
-	} = useQuery(productQueryOptions(id || ''))
+	// Get data from query cache
+	const productData = queryClient.getQueryData(
+		productQueryOptions(id || '').queryKey,
+	)
 	const product = productData?.response
+	const isLoading = false // Data is from cache, so no loading state
+	const error = null // Data is from cache, so no error state
 
 	const handleClose = () => {
 		router.back()
 	}
+
+	const handleAddToOrder = () => {
+		if (!product) return
+
+		addItem({
+			productId: product.product_id,
+			quantity,
+		})
+	}
+
+	const incrementQuantity = () => setQuantity((prev) => prev + 1)
+	const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1))
 
 	if (isLoading) {
 		return (
@@ -134,9 +153,36 @@ export default function MenuItemDetail() {
 						</View>
 					)}
 
-					<TouchableOpacity style={styles.addToBagButton}>
+					{/* Quantity Controls */}
+					<View style={styles.quantitySection}>
+						<Text style={styles.quantityLabel}>
+							<Trans>Quantity</Trans>
+						</Text>
+						<View style={styles.quantityControls}>
+							<TouchableOpacity
+								style={styles.quantityButton}
+								onPress={decrementQuantity}
+							>
+								<Ionicons name="remove" size={20} color="#333" />
+							</TouchableOpacity>
+							<Text style={styles.quantityText}>{quantity}</Text>
+							<TouchableOpacity
+								style={styles.quantityButton}
+								onPress={incrementQuantity}
+							>
+								<Ionicons name="add" size={20} color="#333" />
+							</TouchableOpacity>
+						</View>
+					</View>
+
+					<TouchableOpacity
+						style={styles.addToBagButton}
+						onPress={handleAddToOrder}
+					>
 						<Text style={styles.addToBagButtonText}>
-							<Trans>Add to Bag - ${parseFloat(price).toFixed(2)}</Trans>
+							<Trans>
+								Add to Order - ${(parseFloat(price) * quantity).toFixed(2)}
+							</Trans>
 						</Text>
 					</TouchableOpacity>
 				</View>
@@ -246,6 +292,38 @@ const styles = StyleSheet.create((theme) => ({
 		fontSize: theme.fontSizes.sm,
 		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.surface,
+	},
+	quantitySection: {
+		marginBottom: theme.spacing.lg,
+	},
+	quantityLabel: {
+		fontSize: theme.fontSizes.md,
+		fontWeight: theme.fontWeights.semibold,
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
+	},
+	quantityControls: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: theme.spacing.lg,
+	},
+	quantityButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		backgroundColor: theme.colors.surface,
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderWidth: 1,
+		borderColor: theme.colors.border,
+	},
+	quantityText: {
+		fontSize: theme.fontSizes.lg,
+		fontWeight: theme.fontWeights.semibold,
+		color: theme.colors.text,
+		minWidth: 40,
+		textAlign: 'center',
 	},
 	addToBagButton: {
 		backgroundColor: theme.colors.primary,

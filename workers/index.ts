@@ -9,8 +9,13 @@ import {
 	getPosterClientById,
 	updatePosterClient,
 	sendSms,
+	createPosterOrder,
 } from './utils/poster'
-import { requestOtpSchema, verifyOtpSchema } from './utils/schemas'
+import {
+	requestOtpSchema,
+	verifyOtpSchema,
+	createOrderSchema,
+} from './utils/schemas'
 import { defaultJsonHeaders } from './utils/headers'
 import { getMenuCategories, getMenuProducts, getProduct } from './utils/menu'
 
@@ -164,6 +169,34 @@ app
 		const body = await c.req.json<Record<string, unknown>>()
 		const client = await updatePosterClient(c.env.POSTER_TOKEN, id, body)
 		return c.json(client)
+	})
+	.post('/orders', async (c) => {
+		const clientId = await authenticate(
+			c.req.header('Authorization'),
+			c.env.JWT_SECRET,
+		)
+
+		const body = await c.req.json()
+		const validatedData = createOrderSchema.parse({
+			...body,
+			client_id: clientId,
+		})
+
+		try {
+			const order = await createPosterOrder(
+				c.env.POSTER_TOKEN,
+				validatedData,
+				c.req.header('Authorization') as string,
+				c.env.JWT_SECRET,
+			)
+			return c.json({ success: true, order }, 201, defaultJsonHeaders)
+		} catch (error) {
+			console.error('Failed to create order:', error)
+			throw new HTTPException(500, {
+				message:
+					error instanceof Error ? error.message : 'Failed to create order',
+			})
+		}
 	})
 
 app.onError((err, c) => {

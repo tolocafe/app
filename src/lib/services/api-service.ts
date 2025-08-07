@@ -5,6 +5,7 @@ import type {
 	ClientData,
 } from '@/lib/api'
 import { publicClient, privateClient } from './http-client'
+import { CreateOrderResponse } from '@/lib/queries/order'
 
 /**
  * API service object with methods for making HTTP requests
@@ -61,4 +62,20 @@ export const api = {
 				})
 				.json(),
 	},
+
+	// Order endpoints (private - requires authentication)
+	orders: {
+		create: (orderData: any) =>
+			privateClient
+				.post<CreateOrderResponse>('orders', {
+					json: orderData,
+				})
+				.json(),
+	},
+
+	// Generic methods for other endpoints
+	post: (endpoint: string, data: any) =>
+		privateClient.post(endpoint, { json: data }).json(),
+
+	get: (endpoint: string) => privateClient.get(endpoint).json(),
 }

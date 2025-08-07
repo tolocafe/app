@@ -5,18 +5,69 @@ import { userProfileQueryOptions } from '@/lib/queries/auth'
 import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { router } from 'expo-router'
-import { Text, View, ScrollView, TouchableOpacity } from 'react-native'
+import {
+	Text,
+	View,
+	ScrollView,
+	TouchableOpacity,
+	FlatList,
+} from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useOrderData, useOrderStats } from '@/lib/stores/order-store'
+import type { Order } from '@/lib/stores/order-store'
 
 export default function Orders() {
 	const [token] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
 	const isAuthenticated = Boolean(token)
 	const { data: user } = useQuery(userProfileQueryOptions)
 	const { t } = useLingui()
+	const { currentOrder, orders } = useOrderData()
+	const { totalItems } = useOrderStats()
 
 	const handleSignIn = () => {
 		router.push('/sign-in')
 	}
+
+	const handleOrderPress = (order: Order) => {
+		router.push(`/(tabs)/orders/${order.id}`)
+	}
+
+	const handleCurrentOrderPress = () => {
+		if (currentOrder) {
+			router.push(`/(tabs)/orders/${currentOrder.id}?current=true`)
+		}
+	}
+
+	const renderOrderItem = ({ item }: { item: Order }) => (
+		<TouchableOpacity
+			style={styles.orderCard}
+			onPress={() => handleOrderPress(item)}
+		>
+			<View style={styles.orderHeader}>
+				<Text style={styles.orderNumber}>
+					<Trans>Order #{item.id.slice(-6)}</Trans>
+				</Text>
+				<Text style={styles.orderStatus}>
+					{item.status === 'draft' && <Trans>Draft</Trans>}
+					{item.status === 'submitted' && <Trans>Submitted</Trans>}
+					{item.status === 'confirmed' && <Trans>Confirmed</Trans>}
+					{item.status === 'completed' && <Trans>Completed</Trans>}
+					{item.status === 'cancelled' && <Trans>Cancelled</Trans>}
+				</Text>
+			</View>
+			<Text style={styles.orderItems}>
+				<Trans>{item.items.length} items</Trans>
+			</Text>
+			<Text style={styles.orderAmount}>
+				{item.totalAmount > 0
+					? `$${item.totalAmount.toFixed(2)}`
+					: t`Total calculated at checkout`}
+			</Text>
+			<Text style={styles.orderDate}>
+				{new Date(item.createdAt).toLocaleDateString()}
+			</Text>
+		</TouchableOpacity>
+	)
 
 	if (!isAuthenticated) {
 		return (
@@ -69,13 +120,59 @@ export default function Orders() {
 					)}
 				</View>
 
+				{/* Current Order in Progress */}
+				{currentOrder && (
+					<View style={styles.currentOrderSection}>
+						<Text style={styles.sectionTitle}>
+							<Trans>Order in Progress</Trans>
+						</Text>
+						<TouchableOpacity
+							style={styles.currentOrderCard}
+							onPress={handleCurrentOrderPress}
+						>
+							<View style={styles.orderHeader}>
+								<Text style={styles.currentOrderTitle}>
+									<Trans>Current Order</Trans>
+								</Text>
+								<Text style={styles.orderBadge}>
+									<Trans>{totalItems} items</Trans>
+								</Text>
+							</View>
+							<Text style={styles.orderAmount}>
+								<Trans>Total calculated at checkout</Trans>
+							</Text>
+							<Text style={styles.tapToEdit}>
+								<Trans>Tap to view and edit</Trans>
+							</Text>
+						</TouchableOpacity>
+					</View>
+				)}
+
+				{/* Order History */}
 				<View style={styles.ordersContainer}>
-					<Text style={styles.emptyState}>
-						<Trans>No orders yet</Trans>
-					</Text>
-					<Text style={styles.emptyStateSubtitle}>
-						<Trans>Your order history will appear here</Trans>
-					</Text>
+					{orders.length > 0 ? (
+						<>
+							<Text style={styles.sectionTitle}>
+								<Trans>Order History</Trans>
+							</Text>
+							<FlatList
+								data={orders}
+								renderItem={renderOrderItem}
+								keyExtractor={(item) => item.id}
+								showsVerticalScrollIndicator={false}
+								contentContainerStyle={styles.ordersList}
+							/>
+						</>
+					) : (
+						<>
+							<Text style={styles.emptyState}>
+								<Trans>No orders yet</Trans>
+							</Text>
+							<Text style={styles.emptyStateSubtitle}>
+								<Trans>Your order history will appear here</Trans>
+							</Text>
+						</>
+					)}
 				</View>
 			</ScrollView>
 		</>
@@ -155,5 +252,78 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.surface,
 		fontSize: theme.fontSizes.md,
 		fontWeight: theme.fontWeights.semibold,
+	},
+	currentOrderSection: {
+		marginBottom: theme.spacing.xl,
+	},
+	sectionTitle: {
+		fontSize: theme.fontSizes.lg,
+		fontWeight: theme.fontWeights.semibold,
+		marginBottom: theme.spacing.md,
+		color: theme.colors.text,
+	},
+	currentOrderCard: {
+		backgroundColor: theme.colors.primary,
+		borderRadius: theme.borderRadius.md,
+		padding: theme.spacing.lg,
+	},
+	currentOrderTitle: {
+		fontSize: theme.fontSizes.md,
+		fontWeight: theme.fontWeights.semibold,
+		color: theme.colors.surface,
+	},
+	orderBadge: {
+		fontSize: theme.fontSizes.sm,
+		color: theme.colors.surface,
+		opacity: 0.9,
+	},
+	tapToEdit: {
+		fontSize: theme.fontSizes.sm,
+		color: theme.colors.surface,
+		opacity: 0.8,
+		marginTop: theme.spacing.xs,
+	},
+	ordersList: {
+		paddingBottom: theme.spacing.xl,
+	},
+	orderCard: {
+		backgroundColor: theme.colors.surface,
+		borderRadius: theme.borderRadius.md,
+		padding: theme.spacing.lg,
+		marginBottom: theme.spacing.md,
+		borderWidth: 1,
+		borderColor: theme.colors.border,
+	},
+	orderHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginBottom: theme.spacing.sm,
+	},
+	orderNumber: {
+		fontSize: theme.fontSizes.md,
+		fontWeight: theme.fontWeights.semibold,
+		color: theme.colors.text,
+	},
+	orderStatus: {
+		fontSize: theme.fontSizes.sm,
+		color: theme.colors.primary,
+		fontWeight: theme.fontWeights.medium,
+	},
+	orderItems: {
+		fontSize: theme.fontSizes.sm,
+		color: theme.colors.textSecondary,
+		marginBottom: theme.spacing.xs,
+	},
+	orderAmount: {
+		fontSize: theme.fontSizes.md,
+		fontWeight: theme.fontWeights.semibold,
+		color: theme.colors.primary,
+		marginBottom: theme.spacing.xs,
+	},
+	orderDate: {
+		fontSize: theme.fontSizes.sm,
+		color: theme.colors.textSecondary,
+		marginTop: theme.spacing.xs,
 	},
 }))

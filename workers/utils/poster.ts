@@ -1,4 +1,5 @@
 import { ClientData, PosterApiResponse } from '@/lib/api'
+import { extractToken, verifyJwt } from './jwt'
 
 const BASE_URL = 'https://joinposter.com/api'
 
@@ -67,4 +68,45 @@ export async function sendSms(token: string, phone: string, text: string) {
 	if (res?.response?.sms_id) return res.response
 
 	throw new Error('Failed to send SMS')
+}
+
+export async function createPosterOrder(
+	token: string,
+	orderData: Record<string, unknown>,
+	bearerToken: string,
+	jwtSecret: string,
+) {
+	// Extract customer ID from Bearer token - this is required
+	const jwt = extractToken(bearerToken)
+	if (!jwt) {
+		throw new Error('Invalid Bearer token format')
+	}
+
+	const customerId = await verifyJwt(jwt, jwtSecret)
+	if (!customerId) {
+		throw new Error('Invalid or expired Bearer token')
+	}
+
+	// Add customer ID to order data
+	const finalOrderData = {
+		...orderData,
+		client_id: customerId,
+	}
+
+	const res = await fetch(
+		`${BASE_URL}/transactions.createOrder?token=${token}`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(finalOrderData),
+		},
+	)
+
+	const json = await res.json()
+
+	if (res.ok && json.response) {
+		return json.response
+	}
+
+	throw new Error(json.error || 'Failed to create order')
 }

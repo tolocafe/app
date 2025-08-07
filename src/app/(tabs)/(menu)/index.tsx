@@ -21,11 +21,13 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useMMKVString } from 'react-native-mmkv'
 import { STORAGE_KEYS } from '@/lib/constants/storage'
 import { POSTER_BASE_URL, PosterCategory, PosterProduct } from '@/lib/api'
+import { useAddItem } from '@/lib/stores/order-store'
 
 export default function Menu() {
 	const { t } = useLingui()
 	const [token] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
 	const isAuthenticated = Boolean(token)
+	const addItem = useAddItem()
 
 	const { data: menuData, isLoading, error } = useQuery(productsQueryOptions)
 	const { data: categoriesData } = useQuery(categoriesQueryOptions)
@@ -61,15 +63,16 @@ export default function Menu() {
 				params: { itemName: item.product_name },
 			})
 		} else {
-			// TODO: Implement actual add to bag logic
-			console.log('Adding to bag:', item.product_name)
+			// Add item to order with default quantity of 1
+			addItem({
+				productId: item.product_id,
+				quantity: 1,
+			})
 		}
 	}
 
 	const renderMenuItem = ({ item }: { item: PosterProduct }) => {
 		const firstPrice = item.price ? Object.values(item.price)[0] : '0'
-
-		console.log('photo', item.photo)
 
 		return (
 			<Link href={`/(tabs)/(menu)/${item.product_id}`}>
@@ -121,7 +124,7 @@ export default function Menu() {
 										handleAddToBag(item)
 									}}
 								>
-									<Ionicons name="add" size={24} color="#E34530" />
+									<Ionicons name="add" size={24} color="#fff" />
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -320,7 +323,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	},
 
 	addToBagButton: {
-		backgroundColor: theme.colors.surface,
+		backgroundColor: theme.colors.accent,
 		padding: theme.spacing.sm,
 		borderRadius: theme.borderRadius.full,
 	},

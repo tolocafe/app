@@ -4,11 +4,13 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
+import { useOrderStats } from '@/lib/stores/order-store'
 import { Platform } from 'react-native'
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme()
 	const { t } = useLingui()
+	const { hasItems } = useOrderStats()
 
 	return (
 		<Tabs
@@ -47,7 +49,7 @@ export default function TabLayout() {
 				name="orders"
 				options={{
 					title: t`Orders`,
-					tabBarBadge: '1',
+					tabBarBadge: hasItems ? ' ' : undefined,
 					// @ts-ignore
 					tabBarIcon: ({ focused }: { focused: boolean }) => {
 						if (Platform.OS === 'ios') {
