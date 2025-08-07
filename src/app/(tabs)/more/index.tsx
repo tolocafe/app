@@ -1,7 +1,12 @@
 import { useLanguage } from '@/lib/contexts/language-context'
-import { clearAllCache } from '@/lib/queries'
+import { clearAllCache } from '@/lib/queries/cache-utils'
+import { useMMKVString } from 'react-native-mmkv'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
+import { useQuery } from '@tanstack/react-query'
+import { userProfileQueryOptions } from '@/lib/queries/auth'
 import { Trans } from '@lingui/react/macro'
 import Head from 'expo-router/head'
+import { router } from 'expo-router'
 import { useState } from 'react'
 import {
 	Alert,
@@ -12,10 +17,40 @@ import {
 	View,
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import * as DropdownMenu from 'zeego/dropdown-menu'
 
 export default function More() {
 	const { currentLanguage, changeLanguage } = useLanguage()
+	const [token, setToken] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
+	const isAuthenticated = Boolean(token)
+	const { data: user, isLoading: isLoadingUser } = useQuery(
+		userProfileQueryOptions,
+	)
 	const [isClearingCache, setIsClearingCache] = useState(false)
+
+	const handleSignIn = () => {
+		router.push('/sign-in')
+	}
+
+	const handleSignOut = () => {
+		Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+			{
+				text: 'Cancel',
+				style: 'cancel',
+			},
+			{
+				text: 'Sign Out',
+				style: 'destructive',
+				onPress: async () => {
+					// Clear token storage
+					setToken(undefined)
+
+					// Clear query cache
+					await clearAllCache()
+				},
+			},
+		])
+	}
 
 	const handleCall = () => {
 		Linking.openURL('tel:+14155551234')
@@ -38,7 +73,7 @@ export default function More() {
 	const handleClearCache = () => {
 		Alert.alert(
 			'Clear Cache',
-			'This will clear all cached data including menu items and preferences. The app will reload fresh data from the server. Continue?',
+			'This will clear all cached data including menu items. The app will reload fresh data from the server. Continue?',
 			[
 				{
 					text: 'Cancel',
@@ -93,6 +128,94 @@ export default function More() {
 				contentContainerStyle={styles.scrollContent}
 				contentInsetAdjustmentBehavior="automatic"
 			>
+				{/* User Information Section */}
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>
+						<Trans>Account</Trans>
+					</Text>
+					<View style={styles.card}>
+						{isAuthenticated ? (
+							<>
+								{isLoadingUser ? (
+									<View style={styles.userInfoLoading}>
+										<Text style={styles.userInfoText}>
+											<Trans>Loading user information...</Trans>
+										</Text>
+									</View>
+								) : user ? (
+									<>
+										<View style={styles.userInfo}>
+											<Text style={styles.userInfoLabel}>
+												<Trans>Phone</Trans>
+											</Text>
+											<Text style={styles.userInfoValue}>
+												{user.phone || <Trans>Not provided</Trans>}
+											</Text>
+										</View>
+
+										{user.name && (
+											<>
+												<View style={styles.userInfoDivider} />
+												<View style={styles.userInfo}>
+													<Text style={styles.userInfoLabel}>
+														<Trans>Name</Trans>
+													</Text>
+													<Text style={styles.userInfoValue}>{user.name}</Text>
+												</View>
+											</>
+										)}
+
+										{user.email && (
+											<>
+												<View style={styles.userInfoDivider} />
+												<View style={styles.userInfo}>
+													<Text style={styles.userInfoLabel}>
+														<Trans>Email</Trans>
+													</Text>
+													<Text style={styles.userInfoValue}>{user.email}</Text>
+												</View>
+											</>
+										)}
+
+										<View style={styles.userInfoDivider} />
+										<TouchableOpacity
+											style={styles.signOutButton}
+											onPress={handleSignOut}
+										>
+											<Text style={styles.signOutButtonText}>
+												<Trans>Sign Out</Trans>
+											</Text>
+										</TouchableOpacity>
+									</>
+								) : (
+									<View style={styles.userInfoError}>
+										<Text style={styles.userInfoText}>
+											<Trans>Unable to load user information</Trans>
+										</Text>
+									</View>
+								)}
+							</>
+						) : (
+							<>
+								<Text style={styles.signInPrompt}>
+									<Trans>
+										Sign in to view your account information and access
+										personalized features.
+									</Trans>
+								</Text>
+								<TouchableOpacity
+									style={styles.signInButton}
+									onPress={handleSignIn}
+								>
+									<Text style={styles.signInButtonText}>
+										<Trans>Sign In</Trans>
+									</Text>
+								</TouchableOpacity>
+							</>
+						)}
+					</View>
+				</View>
+
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
 						<Trans>Visit Us</Trans>
@@ -167,60 +290,37 @@ export default function More() {
 
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>
-						<Trans>About TOLO</Trans>
-					</Text>
-					<View style={styles.card}>
-						<Text style={styles.aboutText}>
-							<Trans>
-								A neighborhood coffee shop dedicated to serving the finest
-								locally-roasted coffee. We create a warm, welcoming space where
-								community comes together over exceptional coffee.
-							</Trans>
-						</Text>
-					</View>
-				</View>
-
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>
 						<Trans>Settings</Trans>
 					</Text>
 					<View style={styles.card}>
-						<Text style={styles.settingLabel}>
-							<Trans>Language</Trans>
-						</Text>
-						<View style={styles.languageContainer}>
-							<TouchableOpacity
-								style={[
-									styles.languageButton,
-									currentLanguage === 'en' && styles.languageButtonActive,
-								]}
-								onPress={() => changeLanguage('en')}
-							>
-								<Text
-									style={[
-										styles.languageButtonText,
-										currentLanguage === 'en' && styles.languageButtonTextActive,
-									]}
-								>
-									English
-								</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={[
-									styles.languageButton,
-									currentLanguage === 'es' && styles.languageButtonActive,
-								]}
-								onPress={() => changeLanguage('es')}
-							>
-								<Text
-									style={[
-										styles.languageButtonText,
-										currentLanguage === 'es' && styles.languageButtonTextActive,
-									]}
-								>
-									Español
-								</Text>
-							</TouchableOpacity>
+						<View style={styles.settingRow}>
+							<Text style={styles.settingLabel}>
+								<Trans>Language</Trans>
+							</Text>
+							<DropdownMenu.Root>
+								<DropdownMenu.Trigger>
+									<View style={styles.languageDropdownTrigger}>
+										<Text style={styles.languageDropdownText}>
+											{currentLanguage === 'en' ? 'English' : 'Español'}
+										</Text>
+										<Text style={styles.languageDropdownArrow}>▼</Text>
+									</View>
+								</DropdownMenu.Trigger>
+								<DropdownMenu.Content>
+									<DropdownMenu.Item
+										key="en"
+										onSelect={() => changeLanguage('en')}
+									>
+										<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
+									</DropdownMenu.Item>
+									<DropdownMenu.Item
+										key="es"
+										onSelect={() => changeLanguage('es')}
+									>
+										<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
+									</DropdownMenu.Item>
+								</DropdownMenu.Content>
+							</DropdownMenu.Root>
 						</View>
 
 						<View style={styles.settingDivider} />
@@ -337,39 +437,38 @@ const styles = StyleSheet.create((theme, rt) => ({
 		fontWeight: theme.typography.body.fontWeight,
 		textAlign: 'center',
 	},
-	aboutText: {
-		fontSize: theme.typography.body.fontSize,
-		color: theme.colors.textSecondary,
-		lineHeight: 24,
-	},
+
 	settingLabel: {
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
 		color: theme.colors.text,
+	},
+	settingRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
 		marginBottom: theme.spacing.sm,
 	},
-	languageContainer: {
+	languageDropdownTrigger: {
 		flexDirection: 'row',
-		gap: theme.spacing.sm,
-	},
-	languageButton: {
-		flex: 1,
+		alignItems: 'center',
 		paddingVertical: theme.spacing.sm,
 		paddingHorizontal: theme.spacing.md,
-		borderRadius: theme.borderRadius.sm,
 		backgroundColor: theme.colors.background,
-		alignItems: 'center',
+		borderRadius: theme.borderRadius.sm,
+		borderWidth: 1,
+		borderColor: theme.colors.border,
+		minWidth: 120,
 	},
-	languageButtonActive: {
-		backgroundColor: theme.colors.primary,
-	},
-	languageButtonText: {
+	languageDropdownText: {
 		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.text,
+		flex: 1,
 	},
-	languageButtonTextActive: {
-		color: theme.colors.surface,
-		fontWeight: theme.typography.body.fontWeight,
+	languageDropdownArrow: {
+		fontSize: 12,
+		color: theme.colors.textSecondary,
+		marginLeft: theme.spacing.sm,
 	},
 	settingDivider: {
 		height: 1,
@@ -400,5 +499,74 @@ const styles = StyleSheet.create((theme, rt) => ({
 		color: theme.colors.textSecondary,
 		lineHeight: 18,
 		textAlign: 'center',
+	},
+	// User Information Styles
+	userInfo: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingVertical: theme.spacing.sm,
+	},
+	userInfoLabel: {
+		fontSize: theme.typography.body.fontSize,
+		color: theme.colors.text,
+		fontWeight: theme.typography.body.fontWeight,
+		flex: 1,
+	},
+	userInfoValue: {
+		fontSize: theme.typography.body.fontSize,
+		color: theme.colors.textSecondary,
+		textAlign: 'right',
+		flex: 2,
+	},
+	userInfoDivider: {
+		height: 1,
+		backgroundColor: theme.colors.border,
+		marginVertical: theme.spacing.xs,
+	},
+	userInfoLoading: {
+		paddingVertical: theme.spacing.lg,
+		alignItems: 'center',
+	},
+	userInfoError: {
+		paddingVertical: theme.spacing.lg,
+		alignItems: 'center',
+	},
+	userInfoText: {
+		fontSize: theme.typography.body.fontSize,
+		color: theme.colors.textSecondary,
+		textAlign: 'center',
+	},
+	signInPrompt: {
+		fontSize: theme.typography.body.fontSize,
+		color: theme.colors.textSecondary,
+		lineHeight: 22,
+		textAlign: 'center',
+		marginBottom: theme.spacing.lg,
+	},
+	signInButton: {
+		backgroundColor: theme.colors.primary,
+		paddingVertical: theme.spacing.md,
+		paddingHorizontal: theme.spacing.lg,
+		borderRadius: theme.borderRadius.md,
+		alignItems: 'center',
+	},
+	signInButtonText: {
+		color: theme.colors.surface,
+		fontSize: theme.typography.body.fontSize,
+		fontWeight: theme.typography.body.fontWeight,
+	},
+	signOutButton: {
+		backgroundColor: theme.colors.error,
+		paddingVertical: theme.spacing.md,
+		paddingHorizontal: theme.spacing.lg,
+		borderRadius: theme.borderRadius.md,
+		alignItems: 'center',
+		marginTop: theme.spacing.sm,
+	},
+	signOutButtonText: {
+		color: theme.colors.surface,
+		fontSize: theme.typography.body.fontSize,
+		fontWeight: theme.typography.body.fontWeight,
 	},
 }))

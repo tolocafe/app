@@ -1,4 +1,7 @@
-import { useAuth } from '@/lib/hooks/use-auth'
+import { useMMKVString } from 'react-native-mmkv'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
+import { useQuery } from '@tanstack/react-query'
+import { userProfileQueryOptions } from '@/lib/queries/auth'
 import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { router } from 'expo-router'
@@ -6,7 +9,9 @@ import { Text, View, ScrollView, TouchableOpacity } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 export default function Orders() {
-	const { isAuthenticated, user } = useAuth()
+	const [token] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
+	const isAuthenticated = Boolean(token)
+	const { data: user } = useQuery(userProfileQueryOptions)
 	const { t } = useLingui()
 
 	const handleSignIn = () => {

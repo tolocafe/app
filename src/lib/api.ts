@@ -1,28 +1,6 @@
-import { API_BASE_URL } from '@/lib/config/api'
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+export const POSTER_BASE_URL = process.env.EXPO_PUBLIC_POSTER_API_URL
 
-// Helper function for API calls
-export async function apiClient<T>(
-	endpoint: string,
-	options?: RequestInit,
-): Promise<T> {
-	const url = `${API_BASE_URL}${endpoint}`
-
-	const response = await fetch(url, {
-		...options,
-		headers: {
-			'Content-Type': 'application/json',
-			...options?.headers,
-		},
-	})
-
-	if (!response.ok) {
-		throw new Error(`API Error: ${response.status} ${response.statusText}`)
-	}
-
-	return response.json()
-}
-
-// Types for Poster API responses based on actual API data
 export interface PosterCategory {
 	category_id: string
 	category_name: string
@@ -141,16 +119,11 @@ export interface PosterApiResponse<T> {
 	error?: string
 }
 
-// API endpoints
-export const api = {
-	menu: {
-		getCategories: () =>
-			apiClient<PosterApiResponse<PosterCategory[]>>('/menu/categories'),
-		getProducts: () =>
-			apiClient<PosterApiResponse<PosterProduct[]>>('/menu/products'),
-		getProduct: (productId: string) =>
-			apiClient<PosterApiResponse<PosterProduct>>(
-				`/menu/products/${productId}`,
-			),
-	},
+export interface ClientData {
+	client_id?: string
+	id?: string
+	phone: string
+	name?: string
+	email?: string
+	[key: string]: any
 }

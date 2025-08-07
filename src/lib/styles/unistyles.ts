@@ -11,7 +11,7 @@ const lightTheme = {
 	},
 	colors: {
 		accent: '#728C70',
-		background: '#F2F2F2',
+		background: '#F8F8F1',
 		border: '#E0E0E0',
 		error: '#D32F2F',
 		primary: '#E34530',

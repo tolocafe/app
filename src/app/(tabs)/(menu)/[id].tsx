@@ -12,13 +12,12 @@ import {
 	View,
 } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { productQueryOptions } from '@/lib/queries'
-import { POSTER_BASE_URL } from '@/lib/config/api'
+import { productQueryOptions } from '@/lib/queries/product'
+import { POSTER_BASE_URL } from '@/lib/api'
 
 export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
 
-	// Fetch product details from API
 	const {
 		data: productData,
 		isLoading,
@@ -30,7 +29,6 @@ export default function MenuItemDetail() {
 		router.back()
 	}
 
-	// Loading state
 	if (isLoading) {
 		return (
 			<ScrollView
@@ -45,7 +43,6 @@ export default function MenuItemDetail() {
 		)
 	}
 
-	// Error or not found state
 	if (error || !product) {
 		return (
 			<ScrollView
@@ -78,10 +75,7 @@ export default function MenuItemDetail() {
 			<Head>
 				<title>{product.product_name} - TOLO Good Coffee</title>
 			</Head>
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={styles.container}
-			>
+			<ScrollView style={styles.container}>
 				<Animated.View
 					sharedTransitionTag={`menu-item-${product.product_id}`}
 					style={styles.heroImageContainer}
@@ -98,16 +92,12 @@ export default function MenuItemDetail() {
 					) : (
 						<View style={styles.heroImage} />
 					)}
+					<View style={styles.titleOverlay}>
+						<Text style={styles.titleOverlayText}>{product.product_name}</Text>
+					</View>
 				</Animated.View>
 
-				<View style={styles.header}>
-					<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-						<Text style={styles.closeButtonText}>✕</Text>
-					</TouchableOpacity>
-				</View>
-
 				<View style={styles.content}>
-					<Text style={styles.title}>{product.product_name}</Text>
 					<Text style={styles.price}>${parseFloat(price).toFixed(2)}</Text>
 
 					{product.product_production_description && (
@@ -164,17 +154,31 @@ const styles = StyleSheet.create((theme) => ({
 		width: '100%',
 		height: 300,
 		backgroundColor: theme.colors.border,
+		position: 'relative',
 	},
 	heroImage: {
 		width: '100%',
 		height: 300,
+	},
+	titleOverlay: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		backgroundColor: 'rgba(0, 0, 0, 0.4)',
+		padding: theme.spacing.lg,
+	},
+	titleOverlayText: {
+		fontSize: theme.fontSizes.xxxl,
+		fontWeight: theme.fontWeights.bold,
+		color: '#FFFFFF',
 	},
 	placeholderImage: {
 		backgroundColor: theme.colors.border,
 	},
 	header: {
 		position: 'absolute',
-		top: 0,
+		top: 40,
 		right: 0,
 		flexDirection: 'row',
 		justifyContent: 'flex-end',

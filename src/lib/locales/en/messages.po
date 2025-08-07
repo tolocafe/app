@@ -13,64 +13,122 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/app/(tabs)/(menu)/index.tsx:167
+#. placeholder {0}: product.cooking_time
+#: src/app/(tabs)/(menu)/[id].tsx:128
+msgid "{0} min"
+msgstr ""
+
+#: src/components/AuthPhone.tsx:136
+msgid "← Change phone number"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:174
+msgid "A neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We create a warm, welcoming space where community comes together over exceptional coffee."
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:170
+msgid "About TOLO"
+msgstr ""
+
+#: src/app/(tabs)/(menu)/index.tsx:123
 msgid "Add to Bag"
 msgstr "Add to Bag"
 
+#. placeholder {0}: parseFloat(price).toFixed(2)
+#: src/app/(tabs)/(menu)/[id].tsx:149
+msgid "Add to Bag - ${0}"
+msgstr ""
+
 #: src/app/(tabs)/more/index.tsx:158
-msgid "Building connections one cup at a time"
-msgstr "Building connections one cup at a time"
+#~ msgid "Building connections one cup at a time"
+#~ msgstr "Building connections one cup at a time"
+
+#: src/app/(tabs)/more/index.tsx:146
+msgid "Call (415) 555-1234"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:250
+msgid "Clear all cached data and reload fresh content from the server."
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:245
+msgid "Clear Cache"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:243
+msgid "Clearing Cache..."
+msgstr ""
 
 #: src/app/(tabs)/more/index.tsx:166
-msgid "Committed to eco-friendly practices"
-msgstr "Committed to eco-friendly practices"
+#~ msgid "Committed to eco-friendly practices"
+#~ msgstr "Committed to eco-friendly practices"
 
 #: src/app/(tabs)/more/index.tsx:155
-msgid "Community Focus"
-msgstr "Community Focus"
+#~ msgid "Community Focus"
+#~ msgstr "Community Focus"
+
+#: src/app/(tabs)/more/index.tsx:141
+msgid "Connect"
+msgstr ""
 
 #: src/app/(tabs)/more/index.tsx:96
-msgid "Contact"
-msgstr "Contact"
+#~ msgid "Contact"
+#~ msgstr "Contact"
 
-#: src/app/(tabs)/(menu)/index.tsx:74
+#: src/components/AuthPhone.tsx:95
+msgid "Enter verification code"
+msgstr ""
+
+#: src/app/(tabs)/(menu)/index.tsx:46
 msgid "Failed to load menu. Please try again."
 msgstr "Failed to load menu. Please try again."
 
-#: src/app/(tabs)/more/index.tsx:62
+#: src/app/(tabs)/more/index.tsx:162
+msgid "Follow @tolocoffee"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:133
 msgid "Get Directions"
 msgstr "Get Directions"
 
-#: src/app/(tabs)/more/index.tsx:70
+#: src/app/(tabs)/more/index.tsx:109
 msgid "Hours"
 msgstr "Hours"
 
-#: src/app/(tabs)/more/index.tsx:116
-msgid "Instagram"
-msgstr "Instagram"
+#: src/app/(tabs)/(menu)/[id].tsx:137
+msgid "Ingredients"
+msgstr ""
 
-#: src/app/(tabs)/more/index.tsx:174
+#: src/app/(tabs)/more/index.tsx:116
+#~ msgid "Instagram"
+#~ msgstr "Instagram"
+
+#: src/app/(tabs)/more/index.tsx:189
 msgid "Language"
 msgstr "Language"
 
-#: src/app/(tabs)/(menu)/index.tsx:63
+#: src/app/(tabs)/(menu)/index.tsx:35
 msgid "Loading menu..."
 msgstr "Loading menu..."
 
+#: src/app/(tabs)/(menu)/[id].tsx:42
+msgid "Loading product details..."
+msgstr ""
+
 #: src/app/(tabs)/more/index.tsx:52
-msgid "Location"
-msgstr "Location"
+#~ msgid "Location"
+#~ msgstr "Location"
 
 #: src/app/(tabs)/_layout.tsx:23
 #: src/app/(tabs)/(menu)/_layout.tsx:10
 msgid "Menu"
 msgstr "Menu"
 
-#: src/app/(tabs)/(menu)/index.tsx:178
+#: src/app/(tabs)/(menu)/index.tsx:159
 msgid "Menu - TOLO Good Coffee"
 msgstr "Menu - TOLO Good Coffee"
 
-#: src/app/(tabs)/more/index.tsx:75
+#: src/app/(tabs)/more/index.tsx:113
 msgid "Monday - Friday"
 msgstr "Monday - Friday"
 
@@ -80,100 +138,166 @@ msgid "More"
 msgstr "More"
 
 #: src/app/(tabs)/(menu)/index.tsx:135
-msgid "NEW"
-msgstr "NEW"
+#~ msgid "NEW"
+#~ msgstr "NEW"
 
-#: src/app/(tabs)/orders/index.tsx:58
+#: src/app/(tabs)/orders/index.tsx:69
 msgid "No orders yet"
 msgstr "No orders yet"
 
 #: src/app/(tabs)/_layout.tsx:32
 #: src/app/(tabs)/orders/_layout.tsx:10
-#: src/app/(tabs)/orders/index.tsx:22
+#: src/app/(tabs)/orders/index.tsx:20
+#: src/app/(tabs)/orders/index.tsx:50
 msgid "Orders"
 msgstr "Orders"
 
 #: src/app/(tabs)/more/index.tsx:125
-msgid "Our Story"
-msgstr "Our Story"
+#~ msgid "Our Story"
+#~ msgstr "Our Story"
 
 #: src/app/(tabs)/more/index.tsx:142
-msgid "Our Values"
-msgstr "Our Values"
+#~ msgid "Our Values"
+#~ msgstr "Our Values"
 
 #: src/app/(tabs)/more/index.tsx:101
-msgid "Phone"
-msgstr "Phone"
+#~ msgid "Phone"
+#~ msgstr "Phone"
 
-#: src/components/NotSignedIn.tsx:66
+#: src/components/AuthPhone.tsx:62
+msgid "Phone number"
+msgstr ""
+
+#: src/components/NotSignedIn.tsx:57
 msgid "Please sign in to access this feature"
 msgstr "Please sign in to access this feature"
 
-#: src/app/(tabs)/(menu)/index.tsx:142
+#: src/app/(tabs)/orders/index.tsx:31
+msgid "Please sign in to view your order history"
+msgstr ""
+
+#: src/app/(tabs)/(menu)/index.tsx:101
 msgid "POPULAR"
 msgstr "POPULAR"
 
+#: src/app/(tabs)/(menu)/[id].tsx:62
+msgid "Product not found"
+msgstr ""
+
 #: src/app/(tabs)/more/index.tsx:147
-msgid "Quality First"
-msgstr "Quality First"
+#~ msgid "Quality First"
+#~ msgstr "Quality First"
 
 #: src/app/(tabs)/(menu)/index.tsx:84
-msgid "Retry"
-msgstr "Retry"
+#~ msgid "Retry"
+#~ msgstr "Retry"
 
-#: src/app/(tabs)/more/index.tsx:81
+#: src/app/(tabs)/more/index.tsx:119
 msgid "Saturday"
 msgstr "Saturday"
 
-#: src/components/NotSignedIn.tsx:46
+#: src/components/AuthPhone.tsx:87
+msgid "Send Code"
+msgstr ""
+
+#: src/components/AuthPhone.tsx:85
+msgid "Sending..."
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:185
+msgid "Settings"
+msgstr ""
+
+#: src/app/(tabs)/orders/index.tsx:38
+msgid "Sign In"
+msgstr ""
+
+#: src/components/NotSignedIn.tsx:44
 msgid "Sign In Error"
 msgstr "Sign In Error"
 
-#: src/components/NotSignedIn.tsx:58
+#: src/app/(tabs)/orders/index.tsx:28
+#: src/components/NotSignedIn.tsx:54
 msgid "Sign In Required"
 msgstr "Sign In Required"
 
-#: src/components/SignInModal.tsx:57
+#: src/app/sign-in.tsx:29
 msgid "Sign in to add “{itemName}” to your bag"
 msgstr "Sign in to add “{itemName}” to your bag"
 
-#: src/app/(tabs)/more/index.tsx:87
+#: src/components/AuthPhone.tsx:54
+msgid "Sign in with your phone"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:125
 msgid "Sunday"
 msgstr "Sunday"
 
 #: src/app/(tabs)/more/index.tsx:163
-msgid "Sustainability"
-msgstr "Sustainability"
+#~ msgid "Sustainability"
+#~ msgstr "Sustainability"
 
-#: src/components/NotSignedIn.tsx:47
+#: src/app/(tabs)/(menu)/[id].tsx:65
+msgid "The requested product could not be loaded."
+msgstr ""
+
+#: src/components/NotSignedIn.tsx:45
 msgid "There was an error signing in. Please try again."
 msgstr "There was an error signing in. Please try again."
 
 #: src/app/(tabs)/more/index.tsx:129
-msgid "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
-msgstr "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
+#~ msgid "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
+#~ msgstr "TOLO Coffee is a neighborhood coffee shop dedicated to serving the finest locally-roasted coffee. We believe in creating a warm, welcoming space where community comes together over exceptional coffee and fresh, locally-sourced food. Every cup tells a story, and we're here to make yours special."
 
-#: src/app/(tabs)/more/index.tsx:56
+#: src/app/(tabs)/more/index.tsx:102
 msgid "TOLO Coffee Shop"
 msgstr "TOLO Coffee Shop"
 
+#: src/components/AuthPhone.tsx:103
+msgid "Verification code"
+msgstr ""
+
+#: src/components/AuthPhone.tsx:129
+msgid "Verify"
+msgstr ""
+
+#: src/components/AuthPhone.tsx:127
+msgid "Verifying..."
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:154
+msgid "Visit tolocoffee.com"
+msgstr ""
+
+#: src/app/(tabs)/more/index.tsx:98
+msgid "Visit Us"
+msgstr ""
+
+#: src/components/AuthPhone.tsx:98
+msgid "We sent a code to {phone}"
+msgstr ""
+
 #: src/app/(tabs)/more/index.tsx:150
-msgid "We source only the best beans and ingredients"
-msgstr "We source only the best beans and ingredients"
+#~ msgid "We source only the best beans and ingredients"
+#~ msgstr "We source only the best beans and ingredients"
+
+#: src/components/AuthPhone.tsx:57
+msgid "We'll send you a verification code"
+msgstr ""
 
 #: src/app/(tabs)/more/index.tsx:107
-msgid "Website"
-msgstr "Website"
+#~ msgid "Website"
+#~ msgstr "Website"
 
 #. placeholder {0}: user.fullName
-#: src/app/(tabs)/orders/index.tsx:46
+#: src/app/(tabs)/orders/index.tsx:62
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/app/(tabs)/orders/index.tsx:66
+#: src/app/(tabs)/orders/index.tsx:72
 msgid "Your order history will appear here"
 msgstr "Your order history will appear here"
 
-#: src/app/(tabs)/orders/index.tsx:37
+#: src/app/(tabs)/orders/index.tsx:58
 msgid "Your Orders"
 msgstr "Your Orders"

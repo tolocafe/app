@@ -1,5 +1,6 @@
 import Tabs from '@/components/Tabs'
 import { useLingui } from '@lingui/react/macro'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
@@ -13,35 +14,80 @@ export default function TabLayout() {
 		<Tabs
 			screenOptions={{
 				tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-				// @ts-ignore valid type
+				// @ts-ignore
 				headerShown: false,
+				minimizeBehavior: 'automatic',
 			}}
 		>
 			<Tabs.Screen
 				name="(menu)"
 				options={{
 					title: t`Menu`,
-					tabBarIcon: Platform.select({
-						ios: () => ({ sfSymbol: 'house' }),
-					}),
+
+					// @ts-ignore
+					tabBarIcon: ({ focused }: { focused: boolean }) => {
+						if (Platform.OS === 'ios') {
+							return { sfSymbol: 'house' }
+						}
+						return (
+							<Ionicons
+								name={focused ? 'restaurant' : 'restaurant-outline'}
+								size={24}
+								color={
+									focused
+										? Colors[colorScheme ?? 'light'].tint
+										: Colors[colorScheme ?? 'light'].tabIconDefault
+								}
+							/>
+						)
+					},
 				}}
 			/>
 			<Tabs.Screen
 				name="orders"
 				options={{
 					title: t`Orders`,
-					tabBarIcon: Platform.select({
-						ios: () => ({ sfSymbol: 'bag' }),
-					}),
+					tabBarBadge: '1',
+					// @ts-ignore
+					tabBarIcon: ({ focused }: { focused: boolean }) => {
+						if (Platform.OS === 'ios') {
+							return { sfSymbol: 'bag' }
+						}
+						return (
+							<Ionicons
+								name={focused ? 'receipt' : 'receipt-outline'}
+								size={24}
+								color={
+									focused
+										? Colors[colorScheme ?? 'light'].tint
+										: Colors[colorScheme ?? 'light'].tabIconDefault
+								}
+							/>
+						)
+					},
 				}}
 			/>
 			<Tabs.Screen
 				name="more"
 				options={{
 					title: t`More`,
-					tabBarIcon: Platform.select({
-						ios: () => ({ sfSymbol: 'ellipsis' }),
-					}),
+					// @ts-ignore
+					tabBarIcon: ({ focused }: { focused: boolean }) => {
+						if (Platform.OS === 'ios') {
+							return { sfSymbol: 'ellipsis' }
+						}
+						return (
+							<Ionicons
+								name="ellipsis-horizontal"
+								size={24}
+								color={
+									focused
+										? Colors[colorScheme ?? 'light'].tint
+										: Colors[colorScheme ?? 'light'].tabIconDefault
+								}
+							/>
+						)
+					},
 				}}
 			/>
 		</Tabs>

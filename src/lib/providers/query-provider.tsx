@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo'
 import { focusManager, onlineManager } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import React, { useEffect } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
 import { persister, queryClient } from '@/lib/query-client'
 
@@ -27,7 +27,7 @@ onlineManager.setEventListener((setOnline) => {
 })
 
 interface QueryProviderProps {
-	children: React.ReactNode
+	children: ReactNode
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
@@ -43,7 +43,6 @@ export function QueryProvider({ children }: QueryProviderProps) {
 			client={queryClient}
 			persistOptions={{ persister }}
 			onSuccess={() => {
-				// Optional: Log when cache is restored
 				console.log('Query cache restored from MMKV')
 			}}
 		>
