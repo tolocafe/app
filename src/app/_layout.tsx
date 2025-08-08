@@ -73,6 +73,10 @@ function RootLayout() {
 										web: 'transparentModal',
 										default: 'modal',
 									}),
+									animation: Platform.select({
+										web: 'fade',
+										default: undefined,
+									}),
 								}}
 							/>
 						</Stack>

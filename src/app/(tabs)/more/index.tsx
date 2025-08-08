@@ -3,7 +3,7 @@ import { clearAllCache } from '@/lib/queries/cache-utils'
 import { useMMKVString } from 'react-native-mmkv'
 import { STORAGE_KEYS } from '@/lib/constants/storage'
 import { useQuery } from '@tanstack/react-query'
-import { userProfileQueryOptions } from '@/lib/queries/auth'
+import { selfQueryOptions } from '@/lib/queries/auth'
 import { Trans } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { router } from 'expo-router'
@@ -23,9 +23,7 @@ export default function More() {
 	const { currentLanguage, changeLanguage } = useLanguage()
 	const [token, setToken] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
 	const isAuthenticated = Boolean(token)
-	const { data: user, isLoading: isLoadingUser } = useQuery(
-		userProfileQueryOptions,
-	)
+	const { data: user, isLoading: isLoadingUser } = useQuery(selfQueryOptions)
 	const [isClearingCache, setIsClearingCache] = useState(false)
 
 	const handleSignIn = () => {
@@ -358,7 +356,7 @@ export default function More() {
 	)
 }
 
-const styles = StyleSheet.create((theme, rt) => ({
+const styles = StyleSheet.create((theme) => ({
 	scrollContent: {
 		paddingBottom: theme.spacing.xl,
 	},

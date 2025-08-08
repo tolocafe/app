@@ -8,7 +8,7 @@ export function getMenuCategories(token: string) {
 
 export function getMenuProducts(
 	token: string,
-	{ type = 'products' }: { type: 'products' | 'categories' },
+	_opts: { type: 'products' | 'categories' } = { type: 'products' },
 ) {
 	return fetch(`${BASE_URL}/menu.getProducts?token=${token}`).then((res) =>
 		res.json(),

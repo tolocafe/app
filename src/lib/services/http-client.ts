@@ -35,9 +35,11 @@ export const privateClient = ky.create({
 			(request) => {
 				const token = getAuthToken()
 
-				if (token) {
-					request.headers.set('Authorization', `Bearer ${token}`)
+				if (!token) {
+					throw new Error('No auth token found')
 				}
+
+				request.headers.set('Authorization', `Bearer ${token}`)
 			},
 		],
 	},

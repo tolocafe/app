@@ -16,7 +16,7 @@ export default function TabLayout() {
 		<Tabs
 			screenOptions={{
 				tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-				// @ts-ignore
+				// @ts-ignore - bottom-tabs library has incomplete type definitions
 				headerShown: false,
 				minimizeBehavior: 'automatic',
 			}}
@@ -25,8 +25,7 @@ export default function TabLayout() {
 				name="(menu)"
 				options={{
 					title: t`Menu`,
-
-					// @ts-ignore
+					// @ts-ignore - bottom-tabs library has incomplete type definitions
 					tabBarIcon: ({ focused }: { focused: boolean }) => {
 						if (Platform.OS === 'ios') {
 							return { sfSymbol: 'house' }
@@ -50,7 +49,7 @@ export default function TabLayout() {
 				options={{
 					title: t`Orders`,
 					tabBarBadge: hasItems ? ' ' : undefined,
-					// @ts-ignore
+					// @ts-ignore - bottom-tabs library has incomplete type definitions
 					tabBarIcon: ({ focused }: { focused: boolean }) => {
 						if (Platform.OS === 'ios') {
 							return { sfSymbol: 'bag' }
@@ -73,7 +72,7 @@ export default function TabLayout() {
 				name="more"
 				options={{
 					title: t`More`,
-					// @ts-ignore
+					// @ts-ignore - bottom-tabs library has incomplete type definitions
 					tabBarIcon: ({ focused }: { focused: boolean }) => {
 						if (Platform.OS === 'ios') {
 							return { sfSymbol: 'ellipsis' }

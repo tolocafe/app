@@ -43,4 +43,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# testing
+coverage/
+
 app-example

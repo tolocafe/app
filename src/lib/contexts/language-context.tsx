@@ -1,6 +1,7 @@
 import { i18n } from '@lingui/core'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { MMKV } from 'react-native-mmkv'
+import * as Sentry from '@sentry/react-native'
 
 type Language = 'en' | 'es'
 
@@ -17,7 +18,34 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 const storage = new MMKV()
 const LANGUAGE_KEY = 'tolo_language'
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
+/**
+ * Loads and activates language messages
+ */
+async function loadLanguageMessages(language: Language): Promise<void> {
+	try {
+		if (language === 'es') {
+			const { messages } = await import('@/lib/locales/es/messages.js')
+			i18n.load('es', messages)
+			i18n.activate('es')
+		} else {
+			const { messages } = await import('@/lib/locales/en/messages.js')
+			i18n.load('en', messages)
+			i18n.activate('en')
+		}
+	} catch (error) {
+		Sentry.captureException(error, {
+			tags: { feature: 'i18n', operation: 'loadLanguageMessages' },
+			extra: { language },
+		})
+		throw error
+	}
+}
+
+interface LanguageProviderProps {
+	children: React.ReactNode
+}
+
+export function LanguageProvider({ children }: LanguageProviderProps) {
 	const [currentLanguage, setCurrentLanguage] = useState<Language>('es')
 	const [isReady, setIsReady] = useState(false)
 
@@ -34,26 +62,23 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 						? storedLanguage
 						: 'es'
 
-				// Load messages based on language
-				if (language === 'es') {
-					const { messages } = await import('@/lib/locales/es/messages.js')
-					i18n.load('es', messages)
-					i18n.activate('es')
-				} else {
-					const { messages } = await import('@/lib/locales/en/messages.js')
-					i18n.load('en', messages)
-					i18n.activate('en')
-				}
-
+				await loadLanguageMessages(language)
 				setCurrentLanguage(language)
 				setIsReady(true)
 			} catch (error) {
-				console.error('Failed to initialize language:', error)
+				Sentry.captureException(error, {
+					tags: { feature: 'i18n', operation: 'initializeLanguage' },
+				})
+
 				// Fallback to Spanish if something goes wrong
-				const { messages } = await import('@/lib/locales/es/messages.js')
-				i18n.load('es', messages)
-				i18n.activate('es')
-				setCurrentLanguage('es')
+				try {
+					await loadLanguageMessages('es')
+					setCurrentLanguage('es')
+				} catch (fallbackError) {
+					Sentry.captureException(fallbackError, {
+						tags: { feature: 'i18n', operation: 'initializeLanguageFallback' },
+					})
+				}
 				setIsReady(true)
 			}
 		}
@@ -64,20 +89,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	const changeLanguage = async (language: Language) => {
 		try {
 			storage.set(LANGUAGE_KEY, language)
-
-			if (language === 'es') {
-				const { messages } = await import('@/lib/locales/es/messages.js')
-				i18n.load('es', messages)
-				i18n.activate('es')
-			} else {
-				const { messages } = await import('@/lib/locales/en/messages.js')
-				i18n.load('en', messages)
-				i18n.activate('en')
-			}
-
+			await loadLanguageMessages(language)
 			setCurrentLanguage(language)
 		} catch (error) {
-			console.error('Failed to change language:', error)
+			Sentry.captureException(error, {
+				tags: { feature: 'i18n', operation: 'changeLanguage' },
+				extra: { targetLanguage: language, currentLanguage },
+			})
 		}
 	}
 

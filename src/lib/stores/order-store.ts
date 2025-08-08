@@ -1,6 +1,7 @@
-import { create } from 'zustand'
+import { create } from 'zustand/react'
 import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
+import * as Sentry from '@sentry/react-native'
 import { api } from '@/lib/services/api-service'
 import { convertOrderToApiFormat } from '@/lib/queries/order'
 
@@ -175,8 +176,8 @@ export const useOrderStore = create<OrderStore>()(
 						...currentOrder,
 						status: 'submitted' as const,
 						updatedAt: new Date(),
-						// Store the API response for reference
-						apiOrderId: (response as any)?.order?.order_id,
+						// Store the API response for reference with proper typing
+						apiOrderId: response?.order?.order_id,
 					}
 
 					// Add to orders history and clear current order
@@ -187,7 +188,14 @@ export const useOrderStore = create<OrderStore>()(
 
 					return response
 				} catch (error) {
-					console.error('Failed to submit order:', error)
+					// Use Sentry for error logging instead of console.error
+					Sentry.captureException(error, {
+						tags: { feature: 'orders', operation: 'submitOrder' },
+						extra: {
+							orderId: currentOrder.id,
+							itemCount: currentOrder.items.length,
+						},
+					})
 					throw error
 				}
 			},
@@ -241,16 +249,12 @@ export const useOrderStats = () =>
 		})),
 	)
 
-// Individual selectors for single values (already optimized)
+// Individual selectors for single values
 export const useCurrentOrder = () =>
 	useOrderStore((state) => state.currentOrder)
 export const useOrders = () => useOrderStore((state) => state.orders)
-export const useHasItems = () => useOrderStore((state) => state.hasItems())
-export const useTotalItems = () =>
-	useOrderStore((state) => state.getTotalItems())
-export const useTotalAmount = () =>
-	useOrderStore((state) => state.getTotalAmount())
 
+// Action selectors
 export const useAddItem = () => useOrderStore((state) => state.addItem)
 export const useUpdateItem = () => useOrderStore((state) => state.updateItem)
 export const useRemoveItem = () => useOrderStore((state) => state.removeItem)

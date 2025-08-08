@@ -59,13 +59,15 @@ export async function updatePosterClient(
 }
 
 export async function sendSms(token: string, phone: string, text: string) {
-	const res = await fetch(`${BASE_URL}/clients.sendSms?token=${token}`, {
+	const res = (await fetch(`${BASE_URL}/clients.sendSms?token=${token}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ phone, text }),
-	}).then((res) => res.json())
+	}).then((res) => res.json())) as PosterApiResponse<true>
 
-	if (res?.response?.sms_id) return res.response
+	if (res?.response) {
+		return res.response
+	}
 
 	throw new Error('Failed to send SMS')
 }

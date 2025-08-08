@@ -1,10 +1,21 @@
 {
-	"extends": "expo/tsconfig.base",
 	"compilerOptions": {
-		"strict": true,
+		"allowSyntheticDefaultImports": true,
+		"allowUnreachableCode": false,
+		"alwaysStrict": true,
+		"incremental": true,
+		"noImplicitAny": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"paths": {
 			"@/*": ["./src/*"]
-		}
+		},
+		"removeComments": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"types": ["jest"]
 	},
+	"extends": "expo/tsconfig.base",
 	"include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

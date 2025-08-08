@@ -33,6 +33,17 @@ Modern React Native coffee shop app with focus on simplicity, performance, and e
 - **Consistent Experience**: Uniform spacing, typography, and interaction patterns
 - **Mobile Optimized**: Touch-friendly interface with proper gesture handling
 
+## Code Priorities
+
+The codebase should prioritize the following qualities in order of importance:
+
+1. **Simplicity**: Code should be straightforward and easy to understand. Avoid over-engineering and complex abstractions when simple solutions suffice.
+2. **Modernity**: Use current best practices, modern APIs, and up-to-date patterns. Stay current with React Native, TypeScript, and ecosystem standards.
+3. **Legibility**: Code should be self-documenting with clear naming, proper structure, and logical organization. Prioritize readability over cleverness.
+4. **Elegance**: Solutions should be graceful and well-crafted. Seek clean, efficient implementations that feel natural and well-designed.
+
+These priorities guide all technical decisions and ensure the codebase remains maintainable, approachable, and future-ready.
+
 ## Technical Standards
 
 ### Core Technologies

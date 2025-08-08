@@ -1,14 +1,14 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query'
 import { api } from '@/lib/services/api-service'
 
-type RequestOptMutationOptions = {
+type RequestOtpMutationOptions = {
 	phone: string
 	name?: string
 	email?: string
 }
 
 export const requestOtpMutationOptions = mutationOptions({
-	mutationFn: ({ phone, name, email }: RequestOptMutationOptions) => {
+	mutationFn: ({ phone, name, email }: RequestOtpMutationOptions) => {
 		return api.auth.requestOtp(phone, name, email)
 	},
 })
@@ -25,7 +25,7 @@ export const verifyOtpMutationOptions = mutationOptions({
 	},
 })
 
-export const userProfileQueryOptions = queryOptions({
+export const selfQueryOptions = queryOptions({
 	queryKey: ['self'],
 	queryFn: () => api.auth.self(),
 })

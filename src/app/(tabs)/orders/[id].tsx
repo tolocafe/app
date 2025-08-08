@@ -51,7 +51,7 @@ export default function OrderDetail() {
 
 	const isCurrentOrder = current === 'true'
 	const order: Order | undefined = isCurrentOrder
-		? currentOrder
+		? (currentOrder ?? undefined)
 		: orders.find((o) => o.id === id)
 
 	useEffect(() => {
@@ -93,7 +93,7 @@ export default function OrderDetail() {
 					},
 				],
 			)
-		} catch (error) {
+		} catch {
 			Alert.alert(t`Error`, t`Failed to submit order. Please try again.`)
 		} finally {
 			setIsSubmitting(false)
@@ -320,7 +320,7 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.text,
 	},
 	orderItem: {
-		backgroundColor: theme.colors.card,
+		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.md,
 		padding: theme.spacing.md,
 		marginBottom: theme.spacing.md,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.spacing.lg,
 	},
 	noteInput: {
-		backgroundColor: theme.colors.card,
+		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.md,
 		padding: theme.spacing.md,
 		fontSize: theme.fontSizes.md,
