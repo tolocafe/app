@@ -1,5 +1,5 @@
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
-export const POSTER_BASE_URL = process.env.EXPO_PUBLIC_POSTER_API_URL
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL as string
+export const POSTER_BASE_URL = process.env.EXPO_PUBLIC_POSTER_API_URL as string
 
 export type ClientAddress = {
 	address1: string

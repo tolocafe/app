@@ -25,5 +25,8 @@ jobs:
       - name: 🎨 Check formatting
         run: bun run format:check
 
-      - name: 🔍 Run linting
+      - name: ✅ Check types
+        run: bun run typecheck
+
+      - name: 🔍 Check linting
         run: bun run lint
