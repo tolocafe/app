@@ -1,5 +1,6 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query'
 import { api } from '@/lib/services/api-service'
+import type { ClientData } from '@/lib/api'
 
 type RequestOtpMutationOptions = {
 	phone: string
@@ -29,3 +30,8 @@ export const selfQueryOptions = queryOptions({
 	queryKey: ['self'],
 	queryFn: () => api.auth.self(),
 })
+
+export const updateClientMutationOptions = (clientId: string) =>
+	mutationOptions<ClientData, Error, Record<string, unknown>>({
+		mutationFn: (data) => api.client.update(clientId, data),
+	})

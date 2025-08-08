@@ -55,7 +55,7 @@ export const api = {
 
 	// Client endpoints (private - requires authentication)
 	client: {
-		update: (clientId: string, data: Partial<ClientData>) =>
+		update: (clientId: string, data: Record<string, unknown>) =>
 			privateClient
 				.put<ClientData>(`clients/${clientId}`, {
 					json: data,

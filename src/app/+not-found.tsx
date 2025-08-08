@@ -1,6 +1,7 @@
 import { Link, Stack } from 'expo-router'
 import Head from 'expo-router/head'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
+import { H1, Text } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
 
 import '@/lib/styles/unistyles'
@@ -18,7 +19,7 @@ export default function NotFoundScreen() {
 			</Head>
 			<Stack.Screen options={{ title: 'Oops!' }} />
 			<View style={styles.container}>
-				<Text style={styles.title}>This screen does not exist.</Text>
+				<H1 style={styles.title}>This screen does not exist.</H1>
 				<Link href="/" style={styles.link}>
 					<Text style={styles.linkText}>Go to home screen!</Text>
 				</Link>
@@ -32,7 +33,7 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 		backgroundColor: theme.colors.background,
 	},
 	title: {

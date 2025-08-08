@@ -2,21 +2,18 @@ import { StyleSheet } from 'react-native-unistyles'
 
 const lightTheme = {
 	borderRadius: {
-		xs: 2,
-		sm: 4,
-		md: 8,
+		xs: 4,
+		sm: 8,
+		md: 12,
 		lg: 16,
-		xl: 20,
+		xl: 24,
 		full: 9999,
-	},
+	} as const,
 	colors: {
-		accent: '#728C70',
 		background: '#F8F8F1',
 		border: '#E0E0E0',
 		error: '#D32F2F',
-		primary: '#E34530',
-		secondary: '#728C70',
-		success: '#388E3C',
+		primary: '#3D6039',
 		surface: '#FFFFFF',
 		text: '#0C0C0C',
 		textSecondary: '#666666',
@@ -29,64 +26,68 @@ const lightTheme = {
 		xl: 20,
 		xxl: 24,
 		xxxl: 32,
-	},
+	} as const,
 	fontWeights: {
-		regular: '400' as const,
-		medium: '500' as const,
-		semibold: '600' as const,
-		bold: '700' as const,
-	},
+		regular: '400',
+		medium: '500',
+		semibold: '600',
+		bold: '700',
+	} as const,
 	spacing: {
 		xs: 4,
 		sm: 8,
-		md: 16,
-		lg: 24,
-		xl: 32,
-		xxl: 48,
-	},
+		md: 12,
+		lg: 16,
+		xl: 24,
+		xxl: 32,
+	} as const,
+	layout: {
+		screenPadding: 16,
+	} as const,
 	typography: {
 		body: {
 			fontSize: 16,
-			fontWeight: '400' as const,
+			fontWeight: '400',
 		},
 		caption: {
 			fontSize: 14,
-			fontWeight: '400' as const,
+			fontWeight: '400',
 		},
 		h1: {
 			fontSize: 32,
-			fontWeight: '700' as const,
+			fontWeight: '700',
 		},
 		h2: {
 			fontSize: 24,
-			fontWeight: '600' as const,
+			fontWeight: '600',
 		},
 		h3: {
 			fontSize: 20,
-			fontWeight: '600' as const,
+			fontWeight: '600',
 		},
 		h4: {
 			fontSize: 18,
-			fontWeight: '600' as const,
+			fontWeight: '600',
 		},
-	},
-} as const
+		button: {
+			fontSize: 14,
+			fontWeight: '600',
+			letterSpacing: 0.5,
+		},
+	} as const,
+}
 
 const darkTheme = {
 	...lightTheme,
 	colors: {
-		accent: '#728C70',
 		background: '#121212',
 		border: '#333333',
-		darkBackground: '#DBD8D7',
 		error: '#EF5350',
-		primary: '#E34530',
-		secondary: '#728C70',
-		success: '#66BB6A',
+		primary: '#8BC34A',
 		surface: '#1E1E1E',
 		text: '#FFFFFF',
 		textSecondary: '#B0B0B0',
-	},
+	} satisfies (typeof lightTheme)['colors'],
 }
 
 const breakpoints = {

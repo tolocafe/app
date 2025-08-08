@@ -33,7 +33,6 @@ describe('useOrderStats hook', () => {
 
 		expect(result.current.totalItems).toBe(0)
 		expect(result.current.totalAmount).toBe(0)
-		expect(result.current.hasItems).toBe(false)
 	})
 
 	it('updates stats when items are added', () => {
@@ -42,7 +41,6 @@ describe('useOrderStats hook', () => {
 
 		// Initially no items
 		expect(statsResult.current.totalItems).toBe(0)
-		expect(statsResult.current.hasItems).toBe(false)
 
 		// Add an item
 		act(() => {
@@ -54,7 +52,6 @@ describe('useOrderStats hook', () => {
 
 		// Stats should update
 		expect(statsResult.current.totalItems).toBe(2)
-		expect(statsResult.current.hasItems).toBe(true)
 	})
 
 	it('updates stats when multiple items are added', () => {
@@ -78,7 +75,6 @@ describe('useOrderStats hook', () => {
 
 		// Total should be sum of all quantities
 		expect(statsResult.current.totalItems).toBe(4)
-		expect(statsResult.current.hasItems).toBe(true)
 	})
 
 	it('updates stats when same product is added multiple times', () => {
@@ -102,7 +98,6 @@ describe('useOrderStats hook', () => {
 
 		// Should accumulate quantities for same product
 		expect(statsResult.current.totalItems).toBe(3)
-		expect(statsResult.current.hasItems).toBe(true)
 	})
 
 	it('resets stats when order is cleared', () => {
@@ -119,7 +114,6 @@ describe('useOrderStats hook', () => {
 		})
 
 		expect(statsResult.current.totalItems).toBe(2)
-		expect(statsResult.current.hasItems).toBe(true)
 
 		// Clear the order
 		act(() => {
@@ -128,6 +122,5 @@ describe('useOrderStats hook', () => {
 
 		// Stats should reset
 		expect(statsResult.current.totalItems).toBe(0)
-		expect(statsResult.current.hasItems).toBe(false)
 	})
 })

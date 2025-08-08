@@ -2,16 +2,10 @@ import { useState, useEffect } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { router, useLocalSearchParams } from 'expo-router'
-import {
-	Text,
-	View,
-	ScrollView,
-	TouchableOpacity,
-	TextInput,
-	Alert,
-} from 'react-native'
+import { View, TouchableOpacity, TextInput, Alert } from 'react-native'
+import { Text, H2, Paragraph } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
 	useOrderData,
 	useUpdateItem,
@@ -23,6 +17,9 @@ import {
 import type { Order, OrderItem } from '@/lib/stores/order-store'
 import { productQueryOptions } from '@/lib/queries/product'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { selfQueryOptions } from '@/lib/queries/auth'
+import { Button } from '@/components/Button'
+import { ScreenContainer } from '@/components/ScreenContainer'
 
 export default function OrderDetail() {
 	const { t } = useLingui()
@@ -37,13 +34,31 @@ export default function OrderDetail() {
 	const submitOrder = useSubmitOrder()
 	const clearOrder = useClearOrder()
 	const queryClient = useQueryClient()
+	const { data: user } = useQuery(selfQueryOptions)
 
-	// Helper function to get product name from cache
+	// Helpers to get product details from query cache
 	const getProductName = (productId: string): string => {
 		const productData = queryClient.getQueryData(
 			productQueryOptions(productId).queryKey,
 		)
 		return productData?.response?.product_name || `Product ID: ${productId}`
+	}
+
+	const getProductCategory = (productId: string): string | null => {
+		const productData = queryClient.getQueryData(
+			productQueryOptions(productId).queryKey,
+		)
+		return productData?.response?.category_name || null
+	}
+
+	const getProductPrice = (productId: string): string | null => {
+		const productData = queryClient.getQueryData(
+			productQueryOptions(productId).queryKey,
+		)
+		const product = productData?.response
+		if (!product) return null
+		const priceRaw = Object.values(product.price)[0] || '0'
+		return `$${parseFloat(priceRaw).toFixed(2)}`
 	}
 
 	const [customerNote, setCustomerNoteLocal] = useState('')
@@ -123,7 +138,9 @@ export default function OrderDetail() {
 	const renderOrderItem = (item: OrderItem, index: number) => (
 		<View key={`${item.productId}-${index}`} style={styles.orderItem}>
 			<View style={styles.itemHeader}>
-				<Text style={styles.itemName}>{getProductName(item.productId)}</Text>
+				<Paragraph style={styles.itemName}>
+					{getProductName(item.productId)}
+				</Paragraph>
 				{isCurrentOrder && (
 					<TouchableOpacity
 						onPress={() => handleRemoveItem(item.productId)}
@@ -162,19 +179,28 @@ export default function OrderDetail() {
 							</TouchableOpacity>
 						</>
 					) : (
-						<Text style={styles.quantityLabel}>
+						<Paragraph style={styles.quantityLabel}>
 							<Trans>Qty: {item.quantity}</Trans>
-						</Text>
+						</Paragraph>
 					)}
 				</View>
+				<Paragraph style={styles.itemPrice}>
+					{getProductPrice(item.productId) ?? t`Unavailable`}
+				</Paragraph>
 			</View>
+
+			{getProductCategory(item.productId) && (
+				<Paragraph style={styles.itemMeta}>
+					{getProductCategory(item.productId)}
+				</Paragraph>
+			)}
 
 			{item.modifications && item.modifications.length > 0 && (
 				<View style={styles.modifications}>
 					{item.modifications.map((mod, modIndex) => (
-						<Text key={modIndex} style={styles.modificationText}>
+						<Paragraph key={modIndex} style={styles.modificationText}>
 							+ {mod.name} (+${mod.price.toFixed(2)})
-						</Text>
+						</Paragraph>
 					))}
 				</View>
 			)}
@@ -189,9 +215,9 @@ export default function OrderDetail() {
 				</Head>
 				<View style={styles.container}>
 					<View style={styles.emptyContainer}>
-						<Text style={styles.emptyText}>
+						<Paragraph style={styles.emptyText}>
 							<Trans>The requested order could not be found.</Trans>
-						</Text>
+						</Paragraph>
 					</View>
 				</View>
 			</>
@@ -205,34 +231,41 @@ export default function OrderDetail() {
 					{isCurrentOrder ? t`Current Order` : t`Order #${order.id.slice(-6)}`}
 				</title>
 			</Head>
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={styles.container}
-			>
+			<ScreenContainer>
 				<View style={styles.orderInfo}>
-					<Text style={styles.orderDate}>
+					<Paragraph style={styles.orderDate}>
 						{new Date(order.createdAt).toLocaleDateString()}
-					</Text>
-					<Text style={styles.orderStatus}>
+					</Paragraph>
+					<Paragraph style={styles.orderStatus}>
 						{order.status === 'draft' && <Trans>Draft</Trans>}
 						{order.status === 'submitted' && <Trans>Submitted</Trans>}
 						{order.status === 'confirmed' && <Trans>Confirmed</Trans>}
 						{order.status === 'completed' && <Trans>Completed</Trans>}
 						{order.status === 'cancelled' && <Trans>Cancelled</Trans>}
-					</Text>
+					</Paragraph>
 				</View>
+				{user && (
+					<View style={styles.walletBar}>
+						<Paragraph style={styles.walletLabel}>
+							<Trans>Wallet Balance</Trans>
+						</Paragraph>
+						<Paragraph style={styles.walletValue}>
+							${(Number(user.ewallet ?? '0') / 100).toFixed(2)}
+						</Paragraph>
+					</View>
+				)}
 
 				<View style={styles.itemsSection}>
-					<Text style={styles.sectionTitle}>
+					<H2 style={styles.sectionTitle}>
 						<Trans>Order Items</Trans>
-					</Text>
+					</H2>
 					{order.items.map(renderOrderItem)}
 				</View>
 
 				<View style={styles.noteSection}>
-					<Text style={styles.sectionTitle}>
+					<H2 style={styles.sectionTitle}>
 						<Trans>Customer Note</Trans>
-					</Text>
+					</H2>
 					<TextInput
 						style={styles.noteInput}
 						multiline
@@ -246,46 +279,34 @@ export default function OrderDetail() {
 
 				<View style={styles.totalSection}>
 					<View style={styles.totalRow}>
-						<Text style={styles.totalLabel}>
+						<Paragraph style={styles.totalLabel}>
 							<Trans>Total</Trans>
-						</Text>
-						<Text style={styles.totalAmount}>
+						</Paragraph>
+						<Paragraph style={styles.totalAmount}>
 							<Trans>Calculated at checkout</Trans>
-						</Text>
+						</Paragraph>
 					</View>
 				</View>
 
 				{isCurrentOrder && (
 					<View style={styles.actionButtons}>
-						<TouchableOpacity
-							onPress={handleClearOrder}
-							style={styles.clearButton}
-						>
-							<Text style={styles.clearButtonText}>
-								<Trans>Clear Order</Trans>
-							</Text>
-						</TouchableOpacity>
+						<Button onPress={handleClearOrder} variant="surface">
+							<Trans>Clear Order</Trans>
+						</Button>
 
-						<TouchableOpacity
+						<Button
 							onPress={handleSubmitOrder}
-							style={[
-								styles.submitButton,
-								(isSubmitting || order.items.length === 0) &&
-									styles.submitButtonDisabled,
-							]}
 							disabled={isSubmitting || order.items.length === 0}
 						>
-							<Text style={styles.submitButtonText}>
-								{isSubmitting ? (
-									<Trans>Submitting...</Trans>
-								) : (
-									<Trans>Submit Order</Trans>
-								)}
-							</Text>
-						</TouchableOpacity>
+							{isSubmitting ? (
+								<Trans>Submitting...</Trans>
+							) : (
+								<Trans>Submit Order</Trans>
+							)}
+						</Button>
 					</View>
 				)}
-			</ScrollView>
+			</ScreenContainer>
 		</>
 	)
 }
@@ -293,25 +314,39 @@ export default function OrderDetail() {
 const styles = StyleSheet.create((theme) => ({
 	container: {
 		flex: 1,
-		backgroundColor: theme.colors.background,
 	},
 	orderInfo: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 	},
 	orderDate: {
-		fontSize: theme.fontSizes.sm,
 		color: theme.colors.textSecondary,
 	},
 	orderStatus: {
-		fontSize: theme.fontSizes.sm,
 		color: theme.colors.primary,
-		fontWeight: theme.fontWeights.medium,
+	},
+	walletBar: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingHorizontal: theme.layout.screenPadding,
+		paddingVertical: theme.spacing.sm,
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
+		borderColor: theme.colors.border,
+		backgroundColor: theme.colors.surface,
+	},
+	walletLabel: {
+		color: theme.colors.textSecondary,
+	},
+	walletValue: {
+		color: theme.colors.primary,
+		fontWeight: theme.fontWeights.semibold,
 	},
 	itemsSection: {
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 	},
 	sectionTitle: {
 		fontSize: theme.fontSizes.lg,
@@ -324,8 +359,6 @@ const styles = StyleSheet.create((theme) => ({
 		borderRadius: theme.borderRadius.md,
 		padding: theme.spacing.md,
 		marginBottom: theme.spacing.md,
-		borderWidth: 1,
-		borderColor: theme.colors.border,
 	},
 	itemHeader: {
 		flexDirection: 'row',
@@ -347,6 +380,10 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
+	itemMeta: {
+		marginTop: theme.spacing.xs,
+		color: theme.colors.textSecondary,
+	},
 	quantityContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -362,20 +399,15 @@ const styles = StyleSheet.create((theme) => ({
 		borderColor: theme.colors.border,
 	},
 	quantity: {
-		fontSize: theme.fontSizes.md,
-		fontWeight: theme.fontWeights.medium,
 		marginHorizontal: theme.spacing.md,
 		minWidth: 30,
 		textAlign: 'center',
 		color: theme.colors.text,
 	},
 	quantityLabel: {
-		fontSize: theme.fontSizes.sm,
 		color: theme.colors.textSecondary,
 	},
 	itemPrice: {
-		fontSize: theme.fontSizes.md,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.text,
 	},
 	modifications: {
@@ -385,12 +417,11 @@ const styles = StyleSheet.create((theme) => ({
 		borderTopColor: theme.colors.border,
 	},
 	modificationText: {
-		fontSize: theme.fontSizes.sm,
 		color: theme.colors.textSecondary,
 		marginBottom: theme.spacing.xs,
 	},
 	noteSection: {
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 	},
 	noteInput: {
 		backgroundColor: theme.colors.surface,
@@ -404,7 +435,7 @@ const styles = StyleSheet.create((theme) => ({
 		textAlignVertical: 'top',
 	},
 	totalSection: {
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 		borderTopWidth: 1,
 		borderTopColor: theme.colors.border,
 	},
@@ -414,50 +445,17 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: 'center',
 	},
 	totalLabel: {
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.text,
 	},
 	totalAmount: {
-		fontSize: theme.fontSizes.xl,
-		fontWeight: theme.fontWeights.bold,
 		color: theme.colors.primary,
 	},
 	actionButtons: {
 		flexDirection: 'row',
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 		gap: theme.spacing.md,
 	},
-	clearButton: {
-		flex: 1,
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.md,
-		paddingVertical: theme.spacing.md,
-		alignItems: 'center',
-		borderWidth: 1,
-		borderColor: theme.colors.border,
-	},
-	clearButtonText: {
-		fontSize: theme.fontSizes.md,
-		fontWeight: theme.fontWeights.medium,
-		color: theme.colors.text,
-	},
-	submitButton: {
-		flex: 2,
-		backgroundColor: theme.colors.primary,
-		borderRadius: theme.borderRadius.md,
-		paddingVertical: theme.spacing.md,
-		alignItems: 'center',
-	},
-	submitButtonDisabled: {
-		backgroundColor: theme.colors.textSecondary,
-		opacity: 0.5,
-	},
-	submitButtonText: {
-		fontSize: theme.fontSizes.md,
-		fontWeight: theme.fontWeights.semibold,
-		color: theme.colors.surface,
-	},
+
 	emptyContainer: {
 		flex: 1,
 		justifyContent: 'center',
@@ -465,7 +463,6 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.spacing.xl,
 	},
 	emptyText: {
-		fontSize: theme.fontSizes.lg,
 		color: theme.colors.textSecondary,
 		textAlign: 'center',
 	},

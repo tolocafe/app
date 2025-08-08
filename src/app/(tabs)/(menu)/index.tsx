@@ -12,22 +12,22 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import {
 	ActivityIndicator,
 	FlatList,
-	ScrollView,
-	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native'
+import { H2, H3, Paragraph } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
-import { useMMKVString } from 'react-native-mmkv'
-import { STORAGE_KEYS } from '@/lib/constants/storage'
+import { selfQueryOptions } from '@/lib/queries/auth'
 import { POSTER_BASE_URL, PosterCategory, PosterProduct } from '@/lib/api'
 import { useAddItem } from '@/lib/stores/order-store'
+import { Button } from '@/components/Button'
+import { ScreenContainer } from '@/components/ScreenContainer'
 
 export default function Menu() {
 	const { t } = useLingui()
-	const [token] = useMMKVString(STORAGE_KEYS.AUTH_SESSION)
-	const isAuthenticated = Boolean(token)
 	const addItem = useAddItem()
+	const { data: user } = useQuery(selfQueryOptions)
+	const isAuthenticated = Boolean(user)
 
 	const { data: menuData, isLoading, error } = useQuery(productsQueryOptions)
 	const { data: categoriesData } = useQuery(categoriesQueryOptions)
@@ -36,9 +36,9 @@ export default function Menu() {
 		return (
 			<View style={styles.loadingContainer}>
 				<ActivityIndicator size="large" />
-				<Text style={styles.loadingText}>
+				<Paragraph style={styles.loadingText}>
 					<Trans>Loading menu...</Trans>
-				</Text>
+				</Paragraph>
 			</View>
 		)
 	}
@@ -46,9 +46,12 @@ export default function Menu() {
 	if (error) {
 		return (
 			<View style={styles.errorContainer}>
-				<Text style={styles.errorText}>
+				<Paragraph style={styles.errorText}>
 					<Trans>Failed to load menu. Please try again.</Trans>
-				</Text>
+				</Paragraph>
+				<Button>
+					<Trans>Retry</Trans>
+				</Button>
 			</View>
 		)
 	}
@@ -97,25 +100,15 @@ export default function Menu() {
 					</Animated.View>
 					<View style={styles.menuItemContent}>
 						<View style={styles.menuItemHeader}>
-							<Text style={styles.menuItemName}>{item.product_name}</Text>
-							<View style={styles.badges}>
-								{item.group_modifications &&
-									item.group_modifications.length > 0 && (
-										<View style={[styles.badge, styles.popularBadge]}>
-											<Text style={styles.badgeText}>
-												<Trans>POPULAR</Trans>
-											</Text>
-										</View>
-									)}
-							</View>
+							<H3>{item.product_name}</H3>
 						</View>
-						<Text style={styles.menuItemDescription}>
+						<Paragraph style={styles.menuItemDescription}>
 							{item.product_production_description}
-						</Text>
+						</Paragraph>
 						<View style={styles.menuItemFooter}>
-							<Text style={styles.menuItemPrice}>
+							<Paragraph style={styles.menuItemPrice}>
 								${(parseFloat(firstPrice) / 100).toFixed(2)}
-							</Text>
+							</Paragraph>
 							<View style={styles.menuItemActions}>
 								<TouchableOpacity
 									style={styles.addToBagButton}
@@ -143,7 +136,7 @@ export default function Menu() {
 
 		return (
 			<View key={category.category_id} style={styles.categorySection}>
-				<Text style={styles.categoryTitle}>{category.category_name}</Text>
+				<H2 style={styles.categoryTitle}>{category.category_name}</H2>
 				<FlatList
 					data={categoryItems}
 					renderItem={renderMenuItem}
@@ -162,45 +155,35 @@ export default function Menu() {
 				<title>{t`Menu - TOLO Good Coffee`}</title>
 				<meta
 					name="description"
-					content="Descubre nuestro menú de café casero con espresso, lattes, cappuccinos y deliciosos acompañamientos. TOLO - donde el buen café se encuentra contigo."
+					content={t`Discover our homemade coffee menu with espresso, lattes, cappuccinos and delicious sides. TOLO - where good coffee meets you.`}
 				/>
 				<meta
 					name="keywords"
-					content="menú TOLO, buen café, espresso, latte, cappuccino, café casero, menú cafetería"
+					content={t`TOLO menu, good coffee, espresso, latte, cappuccino, coffee shop menu`}
 				/>
-				<meta property="og:title" content="Menú - TOLO Buen Café" />
+				<meta property="og:title" content={t`Menu - TOLO Good Coffee`} />
 				<meta
 					property="og:description"
-					content="Descubre nuestro menú de café casero con espresso, lattes, cappuccinos y deliciosos acompañamientos."
+					content={t`Discover our homemade coffee menu with espresso, lattes, cappuccinos and delicious sides.`}
 				/>
 				<meta property="og:url" content="/" />
 			</Head>
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={styles.container}
-			>
+			<ScreenContainer>
 				{categories.map((category) => renderCategorySection(category))}
-			</ScrollView>
+			</ScreenContainer>
 		</>
 	)
 }
 
 const styles = StyleSheet.create((theme) => ({
-	container: {
-		flex: 1,
-		backgroundColor: theme.colors.background,
-	},
 	header: {
 		padding: theme.spacing.lg,
 		alignItems: 'center',
 	},
 	title: {
-		fontSize: theme.typography.h1.fontSize,
-		fontWeight: theme.typography.h1.fontWeight,
 		color: theme.colors.primary,
 	},
 	subtitle: {
-		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
 		marginTop: theme.spacing.xs,
 	},
@@ -208,14 +191,12 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.xl,
 	},
 	categoryTitle: {
-		fontSize: theme.typography.h2.fontSize,
-		fontWeight: theme.typography.h2.fontWeight,
 		color: theme.colors.text,
-		paddingHorizontal: theme.spacing.md,
+		paddingHorizontal: theme.layout.screenPadding,
 		marginBottom: theme.spacing.md,
 	},
 	categoryItems: {
-		paddingHorizontal: theme.spacing.md,
+		paddingHorizontal: theme.layout.screenPadding,
 		gap: theme.spacing.md,
 	},
 	menuItem: {
@@ -248,32 +229,21 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.spacing.sm,
 		marginBottom: theme.spacing.xs,
 	},
-	menuItemName: {
-		fontSize: theme.typography.h3.fontSize,
-		fontWeight: theme.typography.h3.fontWeight,
-		color: theme.colors.text,
-	},
+
 	menuItemDescription: {
-		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
 	},
 	menuItemPrice: {
-		fontSize: theme.typography.h3.fontSize,
-		fontWeight: theme.typography.h3.fontWeight,
 		color: theme.colors.primary,
 	},
 	badge: {
-		backgroundColor: theme.colors.secondary,
+		backgroundColor: theme.colors.primary,
 		paddingHorizontal: theme.spacing.sm,
 		paddingVertical: 2,
 		borderRadius: theme.borderRadius.sm,
 	},
-	popularBadge: {
-		backgroundColor: theme.colors.success,
-	},
+
 	badgeText: {
-		fontSize: theme.typography.caption.fontSize,
-		fontWeight: theme.typography.caption.fontWeight,
 		color: theme.colors.surface,
 	},
 	loadingContainer: {
@@ -284,7 +254,6 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.spacing.md,
 	},
 	loadingText: {
-		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.textSecondary,
 	},
 	errorContainer: {
@@ -296,21 +265,10 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.spacing.lg,
 	},
 	errorText: {
-		fontSize: theme.typography.body.fontSize,
 		color: theme.colors.error,
 		textAlign: 'center',
 	},
-	retryButton: {
-		backgroundColor: theme.colors.primary,
-		paddingHorizontal: theme.spacing.xl,
-		paddingVertical: theme.spacing.md,
-		borderRadius: theme.borderRadius.md,
-	},
-	retryButtonText: {
-		fontSize: theme.typography.body.fontSize,
-		fontWeight: theme.typography.body.fontWeight,
-		color: theme.colors.surface,
-	},
+
 	badges: {
 		flexDirection: 'row',
 		gap: theme.spacing.xs,
@@ -323,7 +281,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 
 	addToBagButton: {
-		backgroundColor: theme.colors.accent,
+		backgroundColor: theme.colors.primary,
 		padding: theme.spacing.sm,
 		borderRadius: theme.borderRadius.full,
 	},

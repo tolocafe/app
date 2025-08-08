@@ -1,5 +1,10 @@
 import { ClientData, PosterApiResponse } from '@/lib/api'
-import { extractToken, verifyJwt } from './jwt'
+// import { AwsClient } from 'aws4fetch'
+
+// const aws = new AwsClient({
+// 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+// 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// })
 
 const BASE_URL = 'https://joinposter.com/api'
 
@@ -21,10 +26,10 @@ export async function createPosterClient(
 
 export async function getPosterClientByPhone(token: string, phone: string) {
 	const res = (await fetch(
-		`${BASE_URL}/clients.getClients?token=${token}&phone=${encodeURIComponent(phone)}`,
+		`${BASE_URL}/clients.getClients?token=${token}&phone=${encodeURIComponent(phone)}&num=1`,
 	).then((res) => res.json())) as PosterApiResponse<ClientData[]>
 
-	if (res?.response?.length) return res.response[0]
+	if (res?.response?.at(0)) return res.response.at(0)
 
 	return null
 }
@@ -41,58 +46,54 @@ export async function getPosterClientById(token: string, id: string) {
 
 export async function updatePosterClient(
 	token: string,
-	id: string,
+	clientId: string,
 	body: Record<string, unknown>,
 ) {
-	const res = (await fetch(
-		`${BASE_URL}/clients.updateClient?token=${token}&client_id=${id}`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(body),
-		},
-	).then((res) => res.json())) as PosterApiResponse<number>
+	const res = (await fetch(`${BASE_URL}/clients.updateClient?token=${token}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ ...body, client_id: clientId }),
+	}).then((res) => res.json())) as PosterApiResponse<number>
 
 	if (res?.response) return res.response
 
 	throw new Error('Failed to update client')
 }
 
-export async function sendSms(token: string, phone: string, text: string) {
-	const res = (await fetch(`${BASE_URL}/clients.sendSms?token=${token}`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ phone, text }),
-	}).then((res) => res.json())) as PosterApiResponse<true>
+export async function sendSms(token: string, phone: string, message: string) {
+	// TODO: use real service
 
-	if (res?.response) {
-		return res.response
-	}
+	/**
+	 * https://sns.us-west-2.amazonaws.com/?Action=Publish
+&TargetArn=arn%3Aaws%3Asns%3Aus-west-2%3A803981987763%3Aendpoint%2FAPNS_SANDBOX%2Fpushapp%2F98e9ced9-f136-3893-9d60-776547eafebb
+&Message=%7B%22default%22%3A%22This+is+the+default+Message%22%2C%22APNS_SANDBOX%22%3A%22%7B+%5C%22aps%5C%22+%3A+%7B+%5C%22alert%5C%22+%3A+%5C%22You+have+got+email.%5C%22%2C+%5C%22badge%5C%22+%3A+9%2C%5C%22sound%5C%22+%3A%5C%22default%5C%22%7D%7D%22%7D
+&Version=2010-03-31
+&AUTHPARAMS
+	 */
 
-	throw new Error('Failed to send SMS')
+	console.log({ token, phone, message })
+
+	// await aws.fetch(`https://sns.us-west-2.amazonaws.com/?Action=Publish`, {
+	// 	body: JSON.stringify({
+	// 		TargetArn:
+	// 			'arn:aws:sns:us-west-2:803981987763:endpoint/APNS_SANDBOX/pushapp/98e9ced9-f136-3893-9d60-776547eafebb',
+	// 		Message: JSON.stringify({
+	// 			Message: 'Hello',
+	// 		}),
+	// 	}),
+	// })
+
+	return true
 }
 
 export async function createPosterOrder(
 	token: string,
 	orderData: Record<string, unknown>,
-	bearerToken: string,
-	jwtSecret: string,
+	clientId: string,
 ) {
-	// Extract customer ID from Bearer token - this is required
-	const jwt = extractToken(bearerToken)
-	if (!jwt) {
-		throw new Error('Invalid Bearer token format')
-	}
-
-	const customerId = await verifyJwt(jwt, jwtSecret)
-	if (!customerId) {
-		throw new Error('Invalid or expired Bearer token')
-	}
-
-	// Add customer ID to order data
 	const finalOrderData = {
 		...orderData,
-		client_id: customerId,
+		client_id: clientId,
 	}
 
 	const res = await fetch(

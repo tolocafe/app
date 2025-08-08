@@ -28,11 +28,11 @@
 				"webcredentials:app.tolo.cafe"
 			],
 			"bundleIdentifier": "cafe.tolo.app",
-			"infoPlist": {
-				"ITSAppUsesNonExemptEncryption": false
-			},
 			"supportsTablet": true,
-			"usesAppleSignIn": true
+			"usesAppleSignIn": true,
+			"config": {
+				"usesNonExemptEncryption": false
+			}
 		},
 		"name": "TOLO",
 		"newArchEnabled": true,
@@ -42,6 +42,13 @@
 			"expo-updates",
 			"expo-apple-authentication",
 			"react-native-bottom-tabs",
+			[
+				"expo-secure-store",
+				{
+					"configureAndroidBackup": true,
+					"faceIDPermission": "Sign in and access your account"
+				}
+			],
 			[
 				"expo-router",
 				{

@@ -22,7 +22,7 @@ export const persister = createAsyncStoragePersister({
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: 1000 * 60 * 5, // 5 minutes - data is fresh for 5 minutes
+			staleTime: 0, // 5 minutes - data is fresh for 5 minutes
 			gcTime: 1000 * 60 * 60, // 1 hour - keep in cache for 1 hour when unused
 			retry: 3,
 			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),

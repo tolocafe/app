@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { signJwt, authenticate } from './utils/jwt'
+import { setCookie } from 'hono/cookie'
 import { generateOtp, storeOtp, verifyOtp } from './utils/otp'
 import {
 	createPosterClient,
@@ -28,7 +29,13 @@ const app = new Hono<{
 	}
 }>().basePath('/api')
 
-app.use('*', cors())
+app.use(
+	'*',
+	cors({
+		origin: (origin) => origin,
+		credentials: true,
+	}),
+)
 
 app
 	.get('/', (context) => {
@@ -112,7 +119,7 @@ app
 
 		if (!client) throw new HTTPException(404, { message: 'Client not found' })
 
-		const clientId = String(client.client_id ?? client.id)
+		const { client_id: clientId } = client
 
 		const [token, sessionsRaw] = await Promise.all([
 			signJwt(clientId, c.env.JWT_SECRET),
@@ -134,22 +141,32 @@ app
 			}),
 		])
 
-		return c.json({ token, client })
+		// For web: set HttpOnly cookie. For native: client uses token from body
+		const isWeb = (c.req.header('User-Agent') || '').includes('Mozilla')
+
+		const responseBody = { token, client }
+
+		if (isWeb) {
+			setCookie(c, 'tolo_session', token, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'Lax',
+				// 30 days
+				maxAge: 60 * 60 * 24 * 30,
+				secure: true,
+			})
+		}
+
+		return c.json(responseBody)
 	})
 	.get('/auth/self', async (c) => {
-		const clientId = await authenticate(
-			c.req.header('Authorization'),
-			c.env.JWT_SECRET,
-		)
+		const clientId = await authenticate(c, c.env.JWT_SECRET)
 		const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
 		if (!client) throw new HTTPException(404, { message: 'Client not found' })
 		return c.json(client)
 	})
 	.get('/auth/self/sessions', async (c) => {
-		const clientId = await authenticate(
-			c.req.header('Authorization'),
-			c.env.JWT_SECRET,
-		)
+		const clientId = await authenticate(c, c.env.JWT_SECRET)
 		const key = clientId
 		const sessionsRaw = await c.env.KV_SESSIONS.get(key)
 		const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : []
@@ -157,10 +174,7 @@ app
 	})
 
 	.put('/clients/:id', async (c) => {
-		const clientIdFromToken = await authenticate(
-			c.req.header('Authorization'),
-			c.env.JWT_SECRET,
-		)
+		const clientIdFromToken = await authenticate(c, c.env.JWT_SECRET)
 		const id = c.req.param('id')
 
 		if (!id || id !== clientIdFromToken)
@@ -171,10 +185,7 @@ app
 		return c.json(client)
 	})
 	.post('/orders', async (c) => {
-		const clientId = await authenticate(
-			c.req.header('Authorization'),
-			c.env.JWT_SECRET,
-		)
+		const clientId = await authenticate(c, c.env.JWT_SECRET)
 
 		const body = await c.req.json()
 		const validatedData = createOrderSchema.parse({
@@ -186,8 +197,7 @@ app
 			const order = await createPosterOrder(
 				c.env.POSTER_TOKEN,
 				validatedData,
-				c.req.header('Authorization') as string,
-				c.env.JWT_SECRET,
+				clientId,
 			)
 			return c.json({ success: true, order }, 201, defaultJsonHeaders)
 		} catch (error) {

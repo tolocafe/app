@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { HTTPException } from 'hono/http-exception'
+import type { Context } from 'hono'
+import { getCookie } from 'hono/cookie'
 
 const encoder = new TextEncoder()
 const secretKey = (secret: string) => encoder.encode(secret)
@@ -36,10 +38,12 @@ export function extractToken(
 }
 
 export async function authenticate(
-	authorizationHeader: string | null | undefined,
+	c: Context,
 	secret: string,
 ): Promise<string> {
-	const token = extractToken(authorizationHeader)
+	const authorizationHeader = c.req.header('Authorization')
+	const token =
+		extractToken(authorizationHeader) ?? getCookie(c, 'tolo_session') ?? null
 	if (!token) throw new HTTPException(401, { message: 'Unauthorized' })
 
 	const clientId = await verifyJwt(token, secret)

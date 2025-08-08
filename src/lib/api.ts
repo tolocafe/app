@@ -119,11 +119,51 @@ export interface PosterApiResponse<T> {
 	error?: string
 }
 
+export interface ClientAddress {
+	id: number
+	delivery_zone_id: number
+	country: string
+	city: string
+	address1: string
+	address2: string
+	comment: string
+	lat: string
+	lng: string
+	zip_code: string
+	sort_order: number
+}
+
 export interface ClientData {
-	client_id?: string
-	id?: string
+	client_id: string
 	phone: string
+	/** E.g. 527224067201 */
+	phone_number?: string
+	/** Poster fields for granular name support */
+	firstname: string
+	lastname: string
+	patronymic?: string
+	/** Optional combined name if available */
 	name?: string
 	email?: string
-	[key: string]: any
+	country?: string
+	city?: string
+	address?: string
+	addresses?: ClientAddress[]
+	/** String in cents, e.g. "500" -> $5.00 */
+	ewallet?: string
+	// Additional Poster client fields returned by API (kept optional)
+	discount_per?: string
+	bonus?: string
+	total_payed_sum?: string
+	date_activale?: string
+	birthday?: string
+	card_number?: string
+	client_sex?: string
+	comment?: string
+	client_groups_id?: string
+	client_groups_name?: string
+	client_groups_discount?: string
+	loyalty_type?: string
+	birthday_bonus?: string
+	government_id?: string | null
 }

@@ -42,7 +42,6 @@ interface OrderStore {
 	// Getters
 	getTotalItems: () => number
 	getTotalAmount: () => number
-	hasItems: () => boolean
 }
 
 export const useOrderStore = create<OrderStore>()(
@@ -245,7 +244,6 @@ export const useOrderStats = () =>
 		useShallow((state) => ({
 			totalItems: state.getTotalItems(),
 			totalAmount: state.getTotalAmount(),
-			hasItems: state.hasItems(),
 		})),
 	)
 

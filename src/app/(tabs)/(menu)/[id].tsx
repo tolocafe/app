@@ -5,18 +5,15 @@ import Head from 'expo-router/head'
 import { Image } from 'expo-image'
 import Animated from 'react-native-reanimated'
 import { useQueryClient } from '@tanstack/react-query'
-import {
-	ActivityIndicator,
-	ScrollView,
-	Text,
-	TouchableOpacity,
-	View,
-} from 'react-native'
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
+import { Text, H1, H2, H3, Paragraph, Label } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
 import { productQueryOptions } from '@/lib/queries/product'
 import { POSTER_BASE_URL } from '@/lib/api'
 import { useAddItem } from '@/lib/stores/order-store'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { Button } from '@/components/Button'
+import { ScreenContainer } from '@/components/ScreenContainer'
 
 export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
@@ -50,38 +47,32 @@ export default function MenuItemDetail() {
 
 	if (isLoading) {
 		return (
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={styles.loadingContainer}
-			>
+			<ScreenContainer>
 				<ActivityIndicator size="large" />
-				<Text style={styles.loadingText}>
+				<Paragraph style={styles.loadingText}>
 					<Trans>Loading product details...</Trans>
-				</Text>
-			</ScrollView>
+				</Paragraph>
+			</ScreenContainer>
 		)
 	}
 
 	if (error || !product) {
 		return (
-			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				style={styles.container}
-			>
+			<ScreenContainer>
 				<View style={styles.header}>
 					<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
 						<Text style={styles.closeButtonText}>✕</Text>
 					</TouchableOpacity>
 				</View>
 				<View style={styles.content}>
-					<Text style={styles.title}>
+					<H1 style={styles.title}>
 						<Trans>Product not found</Trans>
-					</Text>
-					<Text style={styles.description}>
+					</H1>
+					<Paragraph style={styles.description}>
 						<Trans>The requested product could not be loaded.</Trans>
-					</Text>
+					</Paragraph>
 				</View>
-			</ScrollView>
+			</ScreenContainer>
 		)
 	}
 
@@ -94,7 +85,7 @@ export default function MenuItemDetail() {
 			<Head>
 				<title>{product.product_name} - TOLO Good Coffee</title>
 			</Head>
-			<ScrollView style={styles.container}>
+			<ScreenContainer>
 				<Animated.View
 					sharedTransitionTag={`menu-item-${product.product_id}`}
 					style={styles.heroImageContainer}
@@ -112,17 +103,17 @@ export default function MenuItemDetail() {
 						<View style={styles.heroImage} />
 					)}
 					<View style={styles.titleOverlay}>
-						<Text style={styles.titleOverlayText}>{product.product_name}</Text>
+						<H1 style={styles.titleOverlayText}>{product.product_name}</H1>
 					</View>
 				</Animated.View>
 
 				<View style={styles.content}>
-					<Text style={styles.price}>${parseFloat(price).toFixed(2)}</Text>
+					<H2 style={styles.price}>${parseFloat(price).toFixed(2)}</H2>
 
 					{product.product_production_description && (
-						<Text style={styles.description}>
+						<Paragraph style={styles.description}>
 							{product.product_production_description}
-						</Text>
+						</Paragraph>
 					)}
 
 					<View style={styles.badges}>
@@ -142,22 +133,25 @@ export default function MenuItemDetail() {
 
 					{product.ingredients && product.ingredients.length > 0 && (
 						<View style={styles.ingredientsSection}>
-							<Text style={styles.sectionTitle}>
+							<H3 style={styles.sectionTitle}>
 								<Trans>Ingredients</Trans>
-							</Text>
+							</H3>
 							{product.ingredients.slice(0, 5).map((ingredient) => (
-								<Text key={ingredient.ingredient_id} style={styles.ingredient}>
+								<Paragraph
+									key={ingredient.ingredient_id}
+									style={styles.ingredient}
+								>
 									• {ingredient.ingredient_name}
-								</Text>
+								</Paragraph>
 							))}
 						</View>
 					)}
 
 					{/* Quantity Controls */}
 					<View style={styles.quantitySection}>
-						<Text style={styles.quantityLabel}>
+						<Label style={styles.quantityLabel}>
 							<Trans>Quantity</Trans>
-						</Text>
+						</Label>
 						<View style={styles.quantityControls}>
 							<TouchableOpacity
 								style={styles.quantityButton}
@@ -165,7 +159,7 @@ export default function MenuItemDetail() {
 							>
 								<Ionicons name="remove" size={20} color="#333" />
 							</TouchableOpacity>
-							<Text style={styles.quantityText}>{quantity}</Text>
+							<Label style={styles.quantityText}>{quantity}</Label>
 							<TouchableOpacity
 								style={styles.quantityButton}
 								onPress={incrementQuantity}
@@ -175,27 +169,18 @@ export default function MenuItemDetail() {
 						</View>
 					</View>
 
-					<TouchableOpacity
-						style={styles.addToBagButton}
-						onPress={handleAddToOrder}
-					>
-						<Text style={styles.addToBagButtonText}>
-							<Trans>
-								Add to Order - ${(parseFloat(price) * quantity).toFixed(2)}
-							</Trans>
-						</Text>
-					</TouchableOpacity>
+					<Button onPress={handleAddToOrder}>
+						<Trans>
+							Add to Order - ${(parseFloat(price) * quantity).toFixed(2)}
+						</Trans>
+					</Button>
 				</View>
-			</ScrollView>
+			</ScreenContainer>
 		</>
 	)
 }
 
 const styles = StyleSheet.create((theme) => ({
-	container: {
-		flex: 1,
-		backgroundColor: theme.colors.background,
-	},
 	heroImageContainer: {
 		width: '100%',
 		height: 300,
@@ -215,8 +200,6 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.spacing.lg,
 	},
 	titleOverlayText: {
-		fontSize: theme.fontSizes.xxxl,
-		fontWeight: theme.fontWeights.bold,
 		color: '#FFFFFF',
 	},
 	placeholderImage: {
@@ -254,24 +237,18 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.text,
 	},
 	content: {
-		padding: theme.spacing.lg,
+		padding: theme.layout.screenPadding,
 	},
 	title: {
-		fontSize: theme.fontSizes.xxxl,
-		fontWeight: theme.fontWeights.bold,
 		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 	price: {
-		fontSize: theme.fontSizes.xl,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.primary,
 		marginBottom: theme.spacing.lg,
 	},
 	description: {
-		fontSize: theme.fontSizes.md,
 		color: theme.colors.text,
-		lineHeight: theme.fontSizes.xl,
 		marginBottom: theme.spacing.lg,
 	},
 	badges: {
@@ -280,13 +257,13 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.xl,
 	},
 	badge: {
-		backgroundColor: theme.colors.secondary,
+		backgroundColor: theme.colors.primary,
 		paddingHorizontal: theme.spacing.md,
 		paddingVertical: theme.spacing.xs,
 		borderRadius: theme.borderRadius.sm,
 	},
 	popularBadge: {
-		backgroundColor: theme.colors.success,
+		backgroundColor: theme.colors.primary,
 	},
 	badgeText: {
 		fontSize: theme.fontSizes.sm,
@@ -297,8 +274,6 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.lg,
 	},
 	quantityLabel: {
-		fontSize: theme.fontSizes.md,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
@@ -319,46 +294,25 @@ const styles = StyleSheet.create((theme) => ({
 		borderColor: theme.colors.border,
 	},
 	quantityText: {
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.text,
 		minWidth: 40,
 		textAlign: 'center',
 	},
-	addToBagButton: {
-		backgroundColor: theme.colors.primary,
-		paddingVertical: theme.spacing.lg,
-		paddingHorizontal: theme.spacing.xl,
-		borderRadius: theme.borderRadius.md,
-		alignItems: 'center',
-	},
-	addToBagButtonText: {
-		color: theme.colors.surface,
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.semibold,
-	},
-	loadingContainer: {
-		flex: 1,
-		backgroundColor: theme.colors.background,
-	},
+
 	loadingText: {
-		fontSize: theme.fontSizes.md,
 		color: theme.colors.textSecondary,
 	},
 	timeBadge: {
-		backgroundColor: theme.colors.accent,
+		backgroundColor: theme.colors.primary,
 	},
 	ingredientsSection: {
 		marginBottom: theme.spacing.xl,
 	},
 	sectionTitle: {
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.semibold,
 		color: theme.colors.text,
 		marginBottom: theme.spacing.md,
 	},
 	ingredient: {
-		fontSize: theme.fontSizes.sm,
 		color: theme.colors.textSecondary,
 		marginBottom: theme.spacing.xs,
 		paddingLeft: theme.spacing.sm,

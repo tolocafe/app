@@ -42,9 +42,6 @@ export function QueryProvider({ children }: QueryProviderProps) {
 		<PersistQueryClientProvider
 			client={queryClient}
 			persistOptions={{ persister }}
-			onSuccess={() => {
-				console.log('Query cache restored from MMKV')
-			}}
 		>
 			{children}
 		</PersistQueryClientProvider>

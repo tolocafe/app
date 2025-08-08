@@ -10,7 +10,7 @@ import { Platform } from 'react-native'
 export default function TabLayout() {
 	const colorScheme = useColorScheme()
 	const { t } = useLingui()
-	const { hasItems } = useOrderStats()
+	const { totalItems } = useOrderStats()
 
 	return (
 		<Tabs
@@ -30,6 +30,7 @@ export default function TabLayout() {
 						if (Platform.OS === 'ios') {
 							return { sfSymbol: 'house' }
 						}
+
 						return (
 							<Ionicons
 								name={focused ? 'restaurant' : 'restaurant-outline'}
@@ -48,12 +49,13 @@ export default function TabLayout() {
 				name="orders"
 				options={{
 					title: t`Orders`,
-					tabBarBadge: hasItems ? ' ' : undefined,
+					tabBarBadge: totalItems > 0 ? totalItems.toString() : undefined,
 					// @ts-ignore - bottom-tabs library has incomplete type definitions
-					tabBarIcon: ({ focused }: { focused: boolean }) => {
+					tabBarIcon({ focused }: { focused: boolean }) {
 						if (Platform.OS === 'ios') {
 							return { sfSymbol: 'bag' }
 						}
+
 						return (
 							<Ionicons
 								name={focused ? 'receipt' : 'receipt-outline'}

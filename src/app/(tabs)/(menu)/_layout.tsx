@@ -2,6 +2,10 @@ import { Stack } from 'expo-router'
 import { useLingui } from '@lingui/react/macro'
 import { defaultStackScreenOptions } from '@/lib/navigation'
 
+export const unstable_settings = {
+	initialRouteName: 'index',
+}
+
 export default function MenuLayout() {
 	const { t } = useLingui()
 
