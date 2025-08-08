@@ -3,7 +3,7 @@ import { HTTPException } from 'hono/http-exception'
 const DEFAULT_OTP_TTL = 300
 
 export function generateOtp(length = 6): string {
-	return Array.from(crypto.getRandomValues(new Uint32Array(length)))
+	return [...crypto.getRandomValues(new Uint32Array(length))]
 		.map((v) => (v % 10).toString())
 		.join('')
 }

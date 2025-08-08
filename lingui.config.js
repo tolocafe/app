@@ -1,13 +1,14 @@
+/* eslint-disable no-undef */
 /** @type {import('@lingui/conf').LinguiConfig} */
 module.exports = {
-	locales: ['es', 'en'],
-	sourceLocale: 'es',
 	catalogs: [
 		{
-			path: 'src/lib/locales/{locale}/messages',
-			include: ['src/**/*.ts', 'src/**/*.tsx'],
 			exclude: ['**/node_modules/**', '**/dist/**'],
+			include: ['src/**/*.ts', 'src/**/*.tsx'],
+			path: 'src/lib/locales/{locale}/messages',
 		},
 	],
 	format: 'po',
+	locales: ['es', 'en'],
+	sourceLocale: 'es',
 }

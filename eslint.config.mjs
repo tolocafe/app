@@ -29,6 +29,7 @@ export default [
 			'expo-env.d.ts',
 			'playwright-report',
 			'src/lib/locales/',
+			'worker-configuration.d.ts',
 		],
 	},
 	{

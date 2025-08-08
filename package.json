@@ -12,7 +12,7 @@
 		"test": "jest --watchAll=false",
 		"test:watch": "jest --watchAll",
 		"test:coverage": "jest --coverage --watchAll=false",
-		"lint": "expo lint",
+		"lint": "eslint --max-warnings=0 .",
 		"lingui:extract": "lingui extract",
 		"lingui:compile": "lingui compile",
 		"format": "prettier --write .",

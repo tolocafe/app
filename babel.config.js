@@ -1,16 +1,19 @@
-module.exports = function (api) {
+/* eslint-disable no-undef, unicorn/no-anonymous-default-export */
+
+module.exports = (api) => {
 	api.cache(true)
+
 	return {
-		presets: [['babel-preset-expo']],
 		plugins: [
 			[
 				'react-native-unistyles/plugin',
 				{
-					root: 'src',
 					exclude: ['node_modules'],
+					root: 'src',
 				},
 			],
 			'@lingui/babel-plugin-lingui-macro',
 		],
+		presets: [['babel-preset-expo']],
 	}
 }

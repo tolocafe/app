@@ -1,4 +1,4 @@
-import { ClientData, PosterApiResponse } from '@/lib/api'
+import type { ClientData, PosterApiResponse } from '@/lib/api'
 // import { AwsClient } from 'aws4fetch'
 
 // const aws = new AwsClient({
@@ -12,55 +12,63 @@ export async function createPosterClient(
 	token: string,
 	body: Record<string, unknown>,
 ) {
-	const res = await fetch(`${BASE_URL}/clients.createClient?token=${token}`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+	const data = (await fetch(`${BASE_URL}/clients.createClient?token=${token}`, {
 		body: JSON.stringify(body),
-	})
-	const json = await res.json()
+		headers: { 'Content-Type': 'application/json' },
+		method: 'POST',
+	}).then((response) => response.json())) as PosterApiResponse<number>
 
-	if (res.ok) return json.response.client
+	if (typeof data.response === 'number') return data.response
 
 	throw new Error('Failed to create client')
 }
 
-export async function getPosterClientByPhone(token: string, phone: string) {
-	const res = (await fetch(
-		`${BASE_URL}/clients.getClients?token=${token}&phone=${encodeURIComponent(phone)}&num=1`,
-	).then((res) => res.json())) as PosterApiResponse<ClientData[]>
+export async function createPosterOrder(
+	token: string,
+	orderData: Record<string, unknown>,
+	clientId: string,
+) {
+	const finalOrderData = {
+		...orderData,
+		client_id: clientId,
+	}
 
-	if (res?.response?.at(0)) return res.response.at(0)
+	const response = await fetch(`${BASE_URL}/orders?token=${token}`, {
+		body: JSON.stringify(finalOrderData),
+		headers: { 'Content-Type': 'application/json' },
+		method: 'POST',
+	})
 
-	return null
+	const data = (await response.json()) as PosterApiResponse<number>
+
+	if (response.ok && Boolean(data.response)) {
+		return data.response
+	}
+
+	throw new Error(data.error || 'Failed to create order')
 }
 
 export async function getPosterClientById(token: string, id: string) {
-	const res = (await fetch(
+	const data = (await fetch(
 		`${BASE_URL}/clients.getClient?token=${token}&client_id=${id}`,
-	).then((res) => res.json())) as PosterApiResponse<ClientData[]>
+	).then((response) => response.json())) as PosterApiResponse<ClientData[]>
 
-	if (res?.response?.length) return res.response[0]
+	if (data.response.length > 0) return data.response[0]
 
 	return null
 }
 
-export async function updatePosterClient(
-	token: string,
-	clientId: string,
-	body: Record<string, unknown>,
-) {
-	const res = (await fetch(`${BASE_URL}/clients.updateClient?token=${token}`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ ...body, client_id: clientId }),
-	}).then((res) => res.json())) as PosterApiResponse<number>
+export async function getPosterClientByPhone(token: string, phone: string) {
+	const response = (await fetch(
+		`${BASE_URL}/clients.getClients?token=${token}&phone=${encodeURIComponent(phone)}&num=1`,
+	).then((response) => response.json())) as PosterApiResponse<ClientData[]>
 
-	if (res?.response) return res.response
+	if (response.response.at(0)) return response.response.at(0)
 
-	throw new Error('Failed to update client')
+	return null
 }
 
-export async function sendSms(token: string, phone: string, message: string) {
+export function sendSms(token: string, phone: string, message: string) {
 	// TODO: use real service
 
 	/**
@@ -71,7 +79,8 @@ export async function sendSms(token: string, phone: string, message: string) {
 &AUTHPARAMS
 	 */
 
-	console.log({ token, phone, message })
+	// eslint-disable-next-line no-console
+	console.log({ message, phone, token })
 
 	// await aws.fetch(`https://sns.us-west-2.amazonaws.com/?Action=Publish`, {
 	// 	body: JSON.stringify({
@@ -86,30 +95,18 @@ export async function sendSms(token: string, phone: string, message: string) {
 	return true
 }
 
-export async function createPosterOrder(
+export async function updatePosterClient(
 	token: string,
-	orderData: Record<string, unknown>,
 	clientId: string,
+	body: Record<string, unknown>,
 ) {
-	const finalOrderData = {
-		...orderData,
-		client_id: clientId,
-	}
+	const data = (await fetch(`${BASE_URL}/clients.updateClient?token=${token}`, {
+		body: JSON.stringify({ ...body, client_id: clientId }),
+		headers: { 'Content-Type': 'application/json' },
+		method: 'POST',
+	}).then((response) => response.json())) as PosterApiResponse<number>
 
-	const res = await fetch(
-		`${BASE_URL}/transactions.createOrder?token=${token}`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(finalOrderData),
-		},
-	)
+	if (data.response) return data.response
 
-	const json = await res.json()
-
-	if (res.ok && json.response) {
-		return json.response
-	}
-
-	throw new Error(json.error || 'Failed to create order')
+	throw new Error('Failed to update client')
 }

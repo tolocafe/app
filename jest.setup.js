@@ -1,13 +1,14 @@
 import '@testing-library/jest-native/extend-expect'
+import { jest } from '@jest/globals'
 
 // Additional mocks for libraries not covered by jest-expo
 
 // Mock react-native-mmkv
 jest.mock('react-native-mmkv', () => ({
 	MMKV: jest.fn(() => ({
+		delete: jest.fn(),
 		getString: jest.fn(),
 		set: jest.fn(),
-		delete: jest.fn(),
 	})),
 }))
 
@@ -15,10 +16,10 @@ jest.mock('react-native-mmkv', () => ({
 jest.mock('@sentry/react-native', () => ({
 	captureException: jest.fn(),
 	captureMessage: jest.fn(),
-	wrap: jest.fn((component) => component),
 	reactNavigationIntegration: jest.fn(() => ({
 		registerNavigationContainer: jest.fn(),
 	})),
+	wrap: jest.fn((component) => component),
 }))
 
 // Mock react-native-unistyles
@@ -32,8 +33,8 @@ jest.mock('react-native-unistyles', () => ({
 // Mock Lingui
 jest.mock('@lingui/core', () => ({
 	i18n: {
-		load: jest.fn(),
 		activate: jest.fn(),
+		load: jest.fn(),
 	},
 }))
 
@@ -58,5 +59,6 @@ jest.mock('@bottom-tabs/react-navigation', () => ({
 
 // Mock Zustand
 jest.mock('zustand', () => ({
-	create: jest.fn(() => () => ({})),
+	// eslint-disable-next-line unicorn/consistent-function-scoping
+	create: jest.fn(() => () => null),
 }))
