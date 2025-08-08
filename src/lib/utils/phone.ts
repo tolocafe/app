@@ -31,7 +31,9 @@ export function isValidPhoneNumber(phone: string): boolean {
 	const digits = phone.replaceAll(/\D/g, '')
 
 	// Accept 10 digits or 11 digits starting with 1
-	return digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+	return (
+		digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+	)
 }
 
 /**

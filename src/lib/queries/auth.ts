@@ -11,7 +11,8 @@ type RequestOtpMutationOptions = {
 }
 
 export const requestOtpMutationOptions = mutationOptions({
-	mutationFn: ({ email, name, phone }: RequestOtpMutationOptions) => api.auth.requestOtp(phone, name, email),
+	mutationFn: ({ email, name, phone }: RequestOtpMutationOptions) =>
+		api.auth.requestOtp(phone, name, email),
 })
 
 type VerifyOtpMutationOptions = {
@@ -21,7 +22,8 @@ type VerifyOtpMutationOptions = {
 }
 
 export const verifyOtpMutationOptions = mutationOptions({
-	mutationFn: ({ code, phone, sessionName }: VerifyOtpMutationOptions) => api.auth.verifyOtp(phone, code, sessionName),
+	mutationFn: ({ code, phone, sessionName }: VerifyOtpMutationOptions) =>
+		api.auth.verifyOtp(phone, code, sessionName),
 })
 
 export const selfQueryOptions = queryOptions({

@@ -4,7 +4,10 @@ import { ScrollView } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
-export type ScreenContainerProps = Omit<ScrollViewProps, 'contentInsetAdjustmentBehavior'> & {
+export type ScreenContainerProps = Omit<
+	ScrollViewProps,
+	'contentInsetAdjustmentBehavior'
+> & {
 	children: ReactNode
 }
 
