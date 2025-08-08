@@ -14,4 +14,7 @@ export const clearAllCache = async () => {
 		// eslint-disable-next-line no-console
 		console.warn('Failed to clear persisted cache:', error)
 	}
+
+	queryClient.removeQueries()
+	await queryClient.refetchQueries()
 }

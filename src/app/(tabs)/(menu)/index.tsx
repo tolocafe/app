@@ -24,6 +24,7 @@ import {
 	productsQueryOptions,
 } from '@/lib/queries/menu'
 import { useAddItem } from '@/lib/stores/order-store'
+import { formatPosterPrice } from '@/lib/utils/price'
 
 import type { PosterCategory, PosterProduct } from '@/lib/api'
 
@@ -33,43 +34,12 @@ export default function Menu() {
 	const { data: user } = useQuery(selfQueryOptions)
 	const isAuthenticated = Boolean(user)
 
-	const { data: menuData, error, isLoading } = useQuery(productsQueryOptions)
-	const { data: categoriesData } = useQuery(categoriesQueryOptions)
-
-	if (isLoading) {
-		return (
-			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" />
-				<Paragraph style={styles.loadingText}>
-					<Trans>Loading menu...</Trans>
-				</Paragraph>
-			</View>
-		)
-	}
-
-	if (error) {
-		return (
-			<View style={styles.errorContainer}>
-				<Paragraph style={styles.errorText}>
-					<Trans>Failed to load menu. Please try again.</Trans>
-				</Paragraph>
-				<Button>
-					<Trans>Retry</Trans>
-				</Button>
-			</View>
-		)
-	}
-
-	const categories = categoriesData?.response ?? []
-	const menuItems = menuData?.response ?? []
+	const { data: menu, error, isFetching } = useQuery(productsQueryOptions)
+	const { data: categories } = useQuery(categoriesQueryOptions)
 
 	const handleAddToBag = (item: PosterProduct) => {
 		if (isAuthenticated) {
-			// Add item to order with default quantity of 1
-			addItem({
-				productId: item.product_id,
-				quantity: 1,
-			})
+			addItem({ productId: item.product_id, quantity: 1 })
 		} else {
 			router.push({
 				params: { itemName: item.product_name },
@@ -111,7 +81,7 @@ export default function Menu() {
 						</Paragraph>
 						<View style={styles.menuItemFooter}>
 							<Paragraph style={styles.menuItemPrice}>
-								${(Number.parseFloat(firstPrice) / 100).toFixed(2)}
+								{formatPosterPrice(firstPrice)}
 							</Paragraph>
 							<View style={styles.menuItemActions}>
 								<TouchableOpacity
@@ -132,7 +102,7 @@ export default function Menu() {
 	}
 
 	const renderCategorySection = (category: PosterCategory) => {
-		const categoryItems = menuItems.filter(
+		const categoryItems = menu.filter(
 			(item: PosterProduct) => item.menu_category_id === category.category_id,
 		)
 
@@ -151,6 +121,32 @@ export default function Menu() {
 				/>
 			</View>
 		)
+	}
+
+	if (menu.length === 0) {
+		if (isFetching) {
+			return (
+				<View style={styles.loadingContainer}>
+					<ActivityIndicator size="large" />
+					<Paragraph style={styles.loadingText}>
+						<Trans>Loading menu...</Trans>
+					</Paragraph>
+				</View>
+			)
+		}
+
+		if (error) {
+			return (
+				<View style={styles.errorContainer}>
+					<Paragraph style={styles.errorText}>
+						<Trans>Failed to load menu. Please try again.</Trans>
+					</Paragraph>
+					<Button>
+						<Trans>Retry</Trans>
+					</Button>
+				</View>
+			)
+		}
 	}
 
 	return (

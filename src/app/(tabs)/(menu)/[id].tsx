@@ -3,8 +3,9 @@ import { TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans } from '@lingui/react/macro'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
+import { LinearGradient } from 'expo-linear-gradient'
 import { router, useLocalSearchParams } from 'expo-router'
 import Head from 'expo-router/head'
 import Animated from 'react-native-reanimated'
@@ -25,13 +26,8 @@ export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const [quantity, setQuantity] = useState(1)
 	const addItem = useAddItem()
-	const queryClient = useQueryClient()
 
-	// Get data from query cache
-	const productData = queryClient.getQueryData(
-		productQueryOptions(id || '').queryKey,
-	)
-	const product = productData?.response
+	const { data: product } = useQuery(productQueryOptions(id))
 
 	const handleAddToOrder = () => {
 		if (!product) return
@@ -75,7 +71,7 @@ export default function MenuItemDetail() {
 			<Head>
 				<title>{product.product_name} - TOLO Good Coffee</title>
 			</Head>
-			<ScreenContainer>
+			<ScreenContainer contentInsetAdjustmentBehavior="never">
 				<Animated.View
 					sharedTransitionTag={`menu-item-${product.product_id}`}
 					style={styles.heroImageContainer}
@@ -86,15 +82,20 @@ export default function MenuItemDetail() {
 							source={{
 								uri: `${POSTER_BASE_URL}${product.photo_origin || product.photo}`,
 							}}
-							style={styles.heroImage}
+							style={{ height: '100%', width: '100%' }}
 							transition={200}
 						/>
 					) : (
-						<View style={styles.heroImage} />
+						<View style={{ height: '100%', width: '100%' }} />
 					)}
-					<View style={styles.titleOverlay}>
+					<LinearGradient
+						colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.85)']}
+						end={{ x: 0, y: 1 }}
+						start={{ x: 0, y: 0 }}
+						style={styles.titleOverlay}
+					>
 						<H1 style={styles.titleOverlayText}>{product.product_name}</H1>
-					</View>
+					</LinearGradient>
 				</Animated.View>
 
 				<View style={styles.content}>
@@ -225,10 +226,6 @@ const styles = StyleSheet.create((theme) => ({
 		top: 40,
 		zIndex: 1,
 	},
-	heroImage: {
-		height: 300,
-		width: '100%',
-	},
 	heroImageContainer: {
 		backgroundColor: theme.colors.border,
 		height: 300,
@@ -297,7 +294,6 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.sm,
 	},
 	titleOverlay: {
-		backgroundColor: 'rgba(0, 0, 0, 0.4)',
 		bottom: 0,
 		left: 0,
 		padding: theme.spacing.lg,

@@ -57,7 +57,6 @@ These priorities guide all technical decisions and ensure the codebase remains m
 - **Navigation**: Expo Router with typed routes
 - **Package Manager**: bun (never npm or yarn)
 - **React Imports**: Never import React default - import specific APIs only
-- **React Compiler**: AVOID using `useMemo`, `useCallback`, or `memo` since React Compiler handles optimizations automatically. Manual memoization can interfere with compiler optimizations.
 
 ### File Naming Conventions
 

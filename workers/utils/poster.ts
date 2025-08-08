@@ -1,10 +1,8 @@
-import type { ClientData, PosterApiResponse } from '@/lib/api'
-// import { AwsClient } from 'aws4fetch'
+import * as AWS from '@aws-sdk/client-sns'
 
-// const aws = new AwsClient({
-// 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-// 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-// })
+import type { ClientData, PosterApiResponse } from '@/lib/api'
+
+const snsClient = new AWS.SNS({ region: 'us-east-1' })
 
 const BASE_URL = 'https://joinposter.com/api'
 
@@ -68,31 +66,13 @@ export async function getPosterClientByPhone(token: string, phone: string) {
 	return null
 }
 
-export function sendSms(token: string, phone: string, message: string) {
-	// TODO: use real service
-
-	/**
-	 * https://sns.us-west-2.amazonaws.com/?Action=Publish
-&TargetArn=arn%3Aaws%3Asns%3Aus-west-2%3A803981987763%3Aendpoint%2FAPNS_SANDBOX%2Fpushapp%2F98e9ced9-f136-3893-9d60-776547eafebb
-&Message=%7B%22default%22%3A%22This+is+the+default+Message%22%2C%22APNS_SANDBOX%22%3A%22%7B+%5C%22aps%5C%22+%3A+%7B+%5C%22alert%5C%22+%3A+%5C%22You+have+got+email.%5C%22%2C+%5C%22badge%5C%22+%3A+9%2C%5C%22sound%5C%22+%3A%5C%22default%5C%22%7D%7D%22%7D
-&Version=2010-03-31
-&AUTHPARAMS
-	 */
-
-	// eslint-disable-next-line no-console
-	console.log({ message, phone, token })
-
-	// await aws.fetch(`https://sns.us-west-2.amazonaws.com/?Action=Publish`, {
-	// 	body: JSON.stringify({
-	// 		TargetArn:
-	// 			'arn:aws:sns:us-west-2:803981987763:endpoint/APNS_SANDBOX/pushapp/98e9ced9-f136-3893-9d60-776547eafebb',
-	// 		Message: JSON.stringify({
-	// 			Message: 'Hello',
-	// 		}),
-	// 	}),
-	// })
-
-	return true
+export async function sendSms(_token: string, phone: string, message: string) {
+	return snsClient.send(
+		new AWS.PublishCommand({
+			Message: message,
+			PhoneNumber: phone,
+		}),
+	)
 }
 
 export async function updatePosterClient(

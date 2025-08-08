@@ -31,6 +31,8 @@ const app = new Hono<{
 	}
 }>().basePath('/api')
 
+type SessionRecord = { createdAt: number; name: string; token: string }
+
 app.use(
 	'*',
 	cors({
@@ -53,11 +55,11 @@ app
 		return context.json(categories, 200, defaultJsonHeaders)
 	})
 	.get('/menu/products', async (context) => {
-		const categories = await getMenuProducts(context.env.POSTER_TOKEN, {
+		const products = await getMenuProducts(context.env.POSTER_TOKEN, {
 			type: 'products',
 		})
 
-		return context.json(categories, 200, defaultJsonHeaders)
+		return context.json(products, 200, defaultJsonHeaders)
 	})
 	.get('/menu/products/:id', async (context) => {
 		const productId = context.req.param('id')
@@ -72,6 +74,7 @@ app
 
 		try {
 			const product = await getProduct(context.env.POSTER_TOKEN, productId)
+
 			return context.json(product, 200, defaultJsonHeaders)
 		} catch {
 			return context.json(
@@ -103,7 +106,17 @@ app
 
 		await Promise.all([
 			storeOtp(c.env.OTP_CODES, phone, code),
-			sendSms(c.env.POSTER_TOKEN, phone, `Your verification code: ${code}`),
+			sendSms(
+				c.env.POSTER_TOKEN,
+				phone,
+				`Your verification code: ${code}`,
+				// eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
+			).catch((error) => {
+				// eslint-disable-next-line no-console
+				console.log(error)
+
+				throw error
+			}),
 		])
 
 		return c.json({ success: true })
@@ -183,7 +196,6 @@ app
 		const key = clientId
 		const sessionsRaw = await c.env.KV_SESSIONS.get(key)
 
-		type SessionRecord = { createdAt: number; name: string; token: string }
 		const isSessionRecord = (value: unknown): value is SessionRecord =>
 			typeof value === 'object' &&
 			value !== null &&
@@ -212,6 +224,7 @@ app
 			!Array.isArray(bodyUnknown)
 				? (bodyUnknown as Record<string, unknown>)
 				: {}
+
 		const client = await updatePosterClient(c.env.POSTER_TOKEN, id, body)
 		return c.json(client)
 	})

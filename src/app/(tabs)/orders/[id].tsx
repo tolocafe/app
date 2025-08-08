@@ -44,21 +44,21 @@ export default function OrderDetail() {
 		const productData = queryClient.getQueryData(
 			productQueryOptions(productId).queryKey,
 		)
-		return productData?.response.product_name || `Product ID: ${productId}`
+		return productData?.product_name || `Product ID: ${productId}`
 	}
 
 	const getProductCategory = (productId: string): null | string => {
 		const productData = queryClient.getQueryData(
 			productQueryOptions(productId).queryKey,
 		)
-		return productData?.response.category_name || null
+		return productData?.category_name || null
 	}
 
 	const getProductPrice = (productId: string): null | string => {
 		const productData = queryClient.getQueryData(
 			productQueryOptions(productId).queryKey,
 		)
-		const product = productData?.response
+		const product = productData
 		if (!product) return null
 		const priceRaw = Object.values(product.price)[0] || '0'
 		return `$${Number.parseFloat(priceRaw).toFixed(2)}`

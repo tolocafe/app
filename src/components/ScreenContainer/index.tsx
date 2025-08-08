@@ -1,26 +1,19 @@
-import type { ReactNode } from 'react'
-import type { ScrollViewProps } from 'react-native'
+import type { ComponentProps } from 'react'
 import { ScrollView } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
 
-export type ScreenContainerProps = Omit<
-	ScrollViewProps,
-	'contentInsetAdjustmentBehavior'
-> & {
-	children: ReactNode
-}
+export type Props = ComponentProps<typeof ScrollView>
 
 export function ScreenContainer({
 	children,
-	contentContainerStyle,
+	contentInsetAdjustmentBehavior = 'automatic',
 	style,
 	...rest
-}: ScreenContainerProps) {
+}: Props) {
 	return (
 		<ScrollView
-			contentContainerStyle={contentContainerStyle}
-			contentInsetAdjustmentBehavior="automatic"
+			contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
 			style={[styles.container, style]}
 			{...rest}
 		>

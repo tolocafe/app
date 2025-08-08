@@ -1,5 +1,6 @@
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
+import { HTTPError } from 'ky'
 import { MMKV } from 'react-native-mmkv'
 
 const queryStore = new MMKV({
@@ -18,12 +19,21 @@ export const persister = createAsyncStoragePersister({
 	storage,
 })
 
+function shouldRetry(failureCount: number, error: unknown): boolean {
+	if (error instanceof HTTPError) {
+		const status = error.response.status
+		if (status >= 400 && status < 500) return false
+	}
+
+	return failureCount < 3
+}
+
 // Create and export the query client
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		mutations: {
 			networkMode: 'offlineFirst',
-			retry: 3,
+			retry: shouldRetry,
 			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
 		},
 		queries: {
@@ -31,7 +41,7 @@ export const queryClient = new QueryClient({
 			networkMode: 'offlineFirst',
 			refetchOnReconnect: true,
 			refetchOnWindowFocus: true,
-			retry: 3,
+			retry: shouldRetry,
 			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
 			staleTime: 0, // 5 minutes - data is fresh for 5 minutes
 		},

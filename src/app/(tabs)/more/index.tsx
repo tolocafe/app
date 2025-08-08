@@ -62,6 +62,7 @@ export default function More() {
 						setIsClearingCache(true)
 						try {
 							await clearAllCache()
+
 							Alert.alert(
 								t`Cache Cleared`,
 								t`All cached data has been cleared successfully.`,

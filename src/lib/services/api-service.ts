@@ -1,9 +1,4 @@
-import type {
-	ClientData,
-	PosterApiResponse,
-	PosterCategory,
-	PosterProduct,
-} from '@/lib/api'
+import type { ClientData, PosterCategory, PosterProduct } from '@/lib/api'
 import type { CreateOrderResponse } from '@/lib/queries/order'
 
 import { privateClient, publicClient } from './http-client'
@@ -13,7 +8,6 @@ import { privateClient, publicClient } from './http-client'
  * Uses public client for auth/menu endpoints, private client for user-specific endpoints
  */
 export const api = {
-	// Auth endpoints (public - no token required initially)
 	auth: {
 		requestOtp: (phone: string, name?: string, email?: string) =>
 			publicClient
@@ -36,7 +30,6 @@ export const api = {
 				.json(),
 	},
 
-	// Client endpoints (private - requires authentication)
 	client: {
 		update: (clientId: string, data: Record<string, unknown>) =>
 			privateClient
@@ -48,25 +41,15 @@ export const api = {
 
 	get: (endpoint: string) => privateClient.get(endpoint).json(),
 
-	// Menu endpoints (public - no authentication required)
 	menu: {
 		getCategories: () =>
-			publicClient
-				.get<PosterApiResponse<PosterCategory[]>>('menu/categories')
-				.json(),
-
+			publicClient.get<PosterCategory[]>('menu/categories').json(),
 		getProduct: (productId: string) =>
-			publicClient
-				.get<PosterApiResponse<PosterProduct>>(`menu/products/${productId}`)
-				.json(),
-
+			publicClient.get<PosterProduct>(`menu/products/${productId}`).json(),
 		getProducts: () =>
-			publicClient
-				.get<PosterApiResponse<PosterProduct[]>>('menu/products')
-				.json(),
+			publicClient.get<PosterProduct[]>('menu/products').json(),
 	},
 
-	// Order endpoints (private - requires authentication)
 	orders: {
 		create: (orderData: unknown) =>
 			privateClient
