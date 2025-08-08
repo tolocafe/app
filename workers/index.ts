@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/cloudflare'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import { cors } from 'hono/cors'
@@ -254,4 +255,12 @@ app.onError((error, c) => {
 	return c.json({ error: 'Internal Server Error' }, 500)
 })
 
-export default app
+export default Sentry.withSentry(
+	(environment: { SENTRY_DSN: string }) => ({
+		dsn: environment.SENTRY_DSN,
+		enableLogs: true,
+		sendDefaultPii: true,
+		tracesSampleRate: 1,
+	}),
+	app,
+)

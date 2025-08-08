@@ -1,7 +1,9 @@
 import * as Sentry from '@sentry/react-native'
 
+const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN as string
+
 Sentry.init({
-	dsn: process.env.SENTRY_DSN,
+	dsn,
 	integrations: [
 		Sentry.mobileReplayIntegration(),
 		Sentry.feedbackIntegration(),
