@@ -19,7 +19,8 @@
 		"format:check": "prettier --check .",
 		"typecheck": "tsc --noEmit",
 		"deploy": "wrangler deploy",
-		"update:publish": "eas update --auto"
+		"update:publish": "eas update --auto",
+		"clean": "rm -rf node_modules ios wrangler coverage android .expo && bun install"
 	},
 	"dependencies": {
 		"@bottom-tabs/react-navigation": "0.10.0",
@@ -83,6 +84,7 @@
 		"@testing-library/jest-native": "5.4.3",
 		"@testing-library/react-native": "13.2.2",
 		"@types/jest": "30.0.0",
+		"@types/node": "24.2.1",
 		"@types/react": "~19.0.10",
 		"babel-plugin-react-compiler": "19.1.0-rc.2",
 		"eslint": "9.32.0",
