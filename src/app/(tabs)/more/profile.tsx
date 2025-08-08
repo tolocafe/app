@@ -1,24 +1,22 @@
-import { useState, useMemo } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { TextInput, View } from 'react-native'
-import { Text, Label } from '@/components/Text'
-import { StyleSheet } from 'react-native-unistyles'
+
 import { Trans, useLingui } from '@lingui/react/macro'
+import { useForm } from '@tanstack/react-form'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Head from 'expo-router/head'
+import { StyleSheet } from 'react-native-unistyles'
+import { z } from 'zod/v4'
+
+import { Button } from '@/components/Button'
+import { ScreenContainer } from '@/components/ScreenContainer'
+import { Label, Text } from '@/components/Text'
 import {
 	selfQueryOptions,
 	updateClientMutationOptions,
 } from '@/lib/queries/auth'
-import type { ClientData } from '@/lib/api'
-import { Button } from '@/components/Button'
-import { ScreenContainer } from '@/components/ScreenContainer'
 
-function getFullName(
-	firstname: string | undefined,
-	lastname: string | undefined,
-) {
-	return `${firstname}${lastname ? ` ${lastname}` : ''}`
-}
+import type { ClientData } from '@/lib/api'
 
 export default function ProfileScreen() {
 	const { t } = useLingui()
@@ -26,26 +24,33 @@ export default function ProfileScreen() {
 
 	const { data: user } = useQuery(selfQueryOptions)
 
-	const [form, setForm] = useState<{
-		client_name: string
-		email: string
-	}>(() => ({
-		client_name: getFullName(user?.firstname, user?.lastname),
-		email: user?.email || '',
-	}))
+	const nameSchema = z
+		.string()
+		.trim()
+		.min(1, t`Please enter your name`)
 
-	const isDirty = useMemo(() => {
-		return (
-			getFullName(user?.firstname, user?.lastname) !== form.client_name ||
-			(user?.email ?? '') !== form.email
-		)
-	}, [
-		user?.firstname,
-		user?.lastname,
-		user?.email,
-		form.client_name,
-		form.email,
-	])
+	const emailSchema = z.email(t`Enter a valid email`).trim()
+
+	const form = useForm({
+		defaultValues: {
+			client_name: getFullName(user?.firstname, user?.lastname),
+			email: user?.email || '',
+		},
+	})
+
+	const isDirty = useMemo(
+		() =>
+			getFullName(user?.firstname, user?.lastname) !==
+				form.state.values.client_name ||
+			(user?.email ?? '') !== form.state.values.email,
+		[
+			user?.firstname,
+			user?.lastname,
+			user?.email,
+			form.state.values.client_name,
+			form.state.values.email,
+		],
+	)
 
 	const updateMutation = useMutation({
 		...updateClientMutationOptions(user?.client_id ?? ''),
@@ -54,15 +59,11 @@ export default function ProfileScreen() {
 		},
 	})
 
-	const handleChange = (key: keyof typeof form, value: string) => {
-		setForm((prev) => ({ ...prev, [key]: value }))
-	}
-
 	const handleSave = async () => {
 		if (!user?.client_id || !isDirty) return
 		await updateMutation.mutateAsync({
-			name: form.client_name,
-			email: form.email,
+			email: form.state.values.email,
+			name: form.state.values.client_name,
 		})
 	}
 
@@ -84,33 +85,59 @@ export default function ProfileScreen() {
 						<Label style={styles.label}>
 							<Trans>First name</Trans>
 						</Label>
-						<TextInput
-							style={styles.input}
-							value={form.client_name}
-							onChangeText={(v) => handleChange('client_name', v)}
-							placeholder={t`Enter your first name`}
-							autoCapitalize="words"
-						/>
+						<form.Field
+							name="client_name"
+							validators={{
+								onChange: ({ value }) => {
+									const result = nameSchema.safeParse(value)
+									if (!result.success) return result.error.issues[0]?.message
+								},
+							}}
+						>
+							{(field) => (
+								<TextInput
+									autoCapitalize="words"
+									onBlur={field.handleBlur}
+									onChangeText={field.handleChange}
+									placeholder={t`Enter your first name`}
+									style={styles.input}
+									value={field.state.value}
+								/>
+							)}
+						</form.Field>
 					</View>
 
 					<View style={styles.row}>
 						<Label style={styles.label}>
 							<Trans>Email</Trans>
 						</Label>
-						<TextInput
-							style={styles.input}
-							value={form.email}
-							onChangeText={(v) => handleChange('email', v)}
-							placeholder={t`name@example.com`}
-							keyboardType="email-address"
-							autoCapitalize="none"
-							autoCorrect={false}
-						/>
+						<form.Field
+							name="email"
+							validators={{
+								onChange: ({ value }) => {
+									const result = emailSchema.safeParse(value)
+									if (!result.success) return result.error.issues[0]?.message
+								},
+							}}
+						>
+							{(field) => (
+								<TextInput
+									autoCapitalize="none"
+									autoCorrect={false}
+									keyboardType="email-address"
+									onBlur={field.handleBlur}
+									onChangeText={field.handleChange}
+									placeholder={t`name@example.com`}
+									style={styles.input}
+									value={field.state.value}
+								/>
+							)}
+						</form.Field>
 					</View>
 
 					<Button
-						onPress={handleSave}
 						disabled={!isDirty || updateMutation.isPending}
+						onPress={handleSave}
 					>
 						{updateMutation.isPending ? (
 							<Trans>Saving...</Trans>
@@ -136,9 +163,26 @@ export default function ProfileScreen() {
 	)
 }
 
+function getFullName(
+	firstname: string | undefined,
+	lastname: string | undefined,
+) {
+	return `${firstname}${lastname ? ` ${lastname}` : ''}`
+}
+
 const styles = StyleSheet.create((theme) => ({
-	container: {
-		flex: 1,
+	balanceLabel: {
+		color: theme.colors.text,
+	},
+	balanceRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+	balanceValue: {
+		color: theme.colors.primary,
+		fontSize: theme.fontSizes.xl,
+		fontWeight: theme.fontWeights.bold,
 	},
 	card: {
 		backgroundColor: theme.colors.surface,
@@ -146,38 +190,28 @@ const styles = StyleSheet.create((theme) => ({
 		margin: theme.layout.screenPadding,
 		padding: theme.spacing.lg,
 	},
-	sectionTitle: {
+	container: {
+		flex: 1,
+	},
+	input: {
+		backgroundColor: theme.colors.background,
+		borderColor: theme.colors.border,
+		borderRadius: theme.borderRadius.md,
+		borderWidth: 1,
 		color: theme.colors.text,
-		marginBottom: theme.spacing.md,
+		paddingHorizontal: theme.spacing.md,
+		paddingVertical: theme.spacing.sm,
 	},
-	row: {
-		marginBottom: theme.spacing.md,
-	},
+
 	label: {
 		color: theme.colors.text,
 		marginBottom: theme.spacing.xs,
 	},
-	input: {
-		backgroundColor: theme.colors.background,
-		borderWidth: 1,
-		borderColor: theme.colors.border,
-		borderRadius: theme.borderRadius.md,
-		paddingHorizontal: theme.spacing.md,
-		paddingVertical: theme.spacing.sm,
+	row: {
+		marginBottom: theme.spacing.md,
+	},
+	sectionTitle: {
 		color: theme.colors.text,
-	},
-
-	balanceRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
-	balanceLabel: {
-		color: theme.colors.text,
-	},
-	balanceValue: {
-		color: theme.colors.primary,
-		fontSize: theme.fontSizes.xl,
-		fontWeight: theme.fontWeights.bold,
+		marginBottom: theme.spacing.md,
 	},
 }))

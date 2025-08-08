@@ -1,8 +1,10 @@
-import ky from 'ky'
 import { Platform } from 'react-native'
+
 import * as SecureStore from 'expo-secure-store'
-import { STORAGE_KEYS } from '@/lib/constants/storage'
+import ky from 'ky'
+
 import { BASE_URL } from '@/lib/api'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
 
 const isWeb = Platform.OS === 'web'
 
@@ -11,7 +13,7 @@ const isWeb = Platform.OS === 'web'
  * - Web: returns null (auth handled via HttpOnly cookie)
  * - Native: reads token from SecureStore
  */
-async function getAuthToken(): Promise<string | null> {
+async function getAuthToken(): Promise<null | string> {
 	if (isWeb) return null
 	try {
 		const token = await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_SESSION)
@@ -26,9 +28,8 @@ async function getAuthToken(): Promise<string | null> {
  * Use for endpoints that don't require user authentication
  */
 export const publicClient = ky.create({
-	prefixUrl: `${BASE_URL}/api`,
-	headers: { 'Content-Type': 'application/json' },
 	credentials: 'include',
+	headers: { 'Content-Type': 'application/json' },
 	hooks: {
 		afterResponse: [
 			async (request, _options, response) => {
@@ -37,10 +38,10 @@ export const publicClient = ky.create({
 
 				try {
 					if (request.url.includes('/auth/verify-otp')) {
-						const data = await response
+						const data = (await response
 							.clone()
 							.json()
-							.catch(() => null)
+							.catch(() => null)) as null | { token: string }
 						const token: unknown = data?.token
 						if (typeof token === 'string' && token.length > 0) {
 							await SecureStore.setItemAsync(STORAGE_KEYS.AUTH_SESSION, token)
@@ -54,6 +55,7 @@ export const publicClient = ky.create({
 			},
 		],
 	},
+	prefixUrl: `${BASE_URL}/api`,
 })
 
 /**
@@ -61,11 +63,10 @@ export const publicClient = ky.create({
  * Use for endpoints that require user authentication
  */
 export const privateClient = ky.create({
-	prefixUrl: `${BASE_URL}/api`,
+	credentials: 'include',
 	headers: {
 		'Content-Type': 'application/json',
 	},
-	credentials: 'include',
 	hooks: {
 		beforeRequest: [
 			async (request) => {
@@ -80,4 +81,5 @@ export const privateClient = ky.create({
 			},
 		],
 	},
+	prefixUrl: `${BASE_URL}/api`,
 })

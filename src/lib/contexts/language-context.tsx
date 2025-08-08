@@ -1,13 +1,14 @@
-import { i18n } from '@lingui/core'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { MMKV } from 'react-native-mmkv'
+
+import { i18n } from '@lingui/core'
 import * as Sentry from '@sentry/react-native'
+import { MMKV } from 'react-native-mmkv'
 
 type Language = 'en' | 'es'
 
-interface LanguageContextType {
-	currentLanguage: Language
+type LanguageContextType = {
 	changeLanguage: (language: Language) => Promise<void>
+	currentLanguage: Language
 	isReady: boolean
 }
 
@@ -18,30 +19,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 const storage = new MMKV()
 const LANGUAGE_KEY = 'tolo_language'
 
-/**
- * Loads and activates language messages
- */
-async function loadLanguageMessages(language: Language): Promise<void> {
-	try {
-		if (language === 'es') {
-			const { messages } = await import('@/lib/locales/es/messages.js')
-			i18n.load('es', messages)
-			i18n.activate('es')
-		} else {
-			const { messages } = await import('@/lib/locales/en/messages.js')
-			i18n.load('en', messages)
-			i18n.activate('en')
-		}
-	} catch (error) {
-		Sentry.captureException(error, {
-			tags: { feature: 'i18n', operation: 'loadLanguageMessages' },
-			extra: { language },
-		})
-		throw error
-	}
-}
-
-interface LanguageProviderProps {
+type LanguageProviderProps = {
 	children: React.ReactNode
 }
 
@@ -83,7 +61,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 			}
 		}
 
-		initializeLanguage()
+		void initializeLanguage()
 	}, [])
 
 	const changeLanguage = async (language: Language) => {
@@ -93,8 +71,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 			setCurrentLanguage(language)
 		} catch (error) {
 			Sentry.captureException(error, {
+				extra: { currentLanguage, targetLanguage: language },
 				tags: { feature: 'i18n', operation: 'changeLanguage' },
-				extra: { targetLanguage: language, currentLanguage },
 			})
 		}
 	}
@@ -106,7 +84,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
 	return (
 		<LanguageContext.Provider
-			value={{ currentLanguage, changeLanguage, isReady }}
+			value={{ changeLanguage, currentLanguage, isReady }}
 		>
 			{children}
 		</LanguageContext.Provider>
@@ -119,4 +97,31 @@ export function useLanguage() {
 		throw new Error('useLanguage must be used within a LanguageProvider')
 	}
 	return context
+}
+
+/**
+ * Loads and activates language messages
+ */
+async function loadLanguageMessages(language: Language): Promise<void> {
+	try {
+		if (language === 'es') {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { messages } = await import('@/lib/locales/es/messages.js')
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			i18n.load('es', messages)
+			i18n.activate('es')
+		} else {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { messages } = await import('@/lib/locales/en/messages.js')
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			i18n.load('en', messages)
+			i18n.activate('en')
+		}
+	} catch (error) {
+		Sentry.captureException(error, {
+			extra: { language },
+			tags: { feature: 'i18n', operation: 'loadLanguageMessages' },
+		})
+		throw error
+	}
 }

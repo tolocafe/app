@@ -1,19 +1,25 @@
 import { useState } from 'react'
-import { Trans } from '@lingui/react/macro'
-import { useLocalSearchParams, router } from 'expo-router'
-import Head from 'expo-router/head'
-import { Image } from 'expo-image'
-import Animated from 'react-native-reanimated'
-import { useQueryClient } from '@tanstack/react-query'
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
-import { Text, H1, H2, H3, Paragraph, Label } from '@/components/Text'
-import { StyleSheet } from 'react-native-unistyles'
-import { productQueryOptions } from '@/lib/queries/product'
-import { POSTER_BASE_URL } from '@/lib/api'
-import { useAddItem } from '@/lib/stores/order-store'
+import { TouchableOpacity, View } from 'react-native'
+
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { Trans } from '@lingui/react/macro'
+import { useQueryClient } from '@tanstack/react-query'
+import { Image } from 'expo-image'
+import { router, useLocalSearchParams } from 'expo-router'
+import Head from 'expo-router/head'
+import Animated from 'react-native-reanimated'
+import { StyleSheet } from 'react-native-unistyles'
+
 import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
+import { H1, H2, H3, Label, Paragraph, Text } from '@/components/Text'
+import { POSTER_BASE_URL } from '@/lib/api'
+import { productQueryOptions } from '@/lib/queries/product'
+import { useAddItem } from '@/lib/stores/order-store'
+
+const handleClose = () => {
+	router.back()
+}
 
 export default function MenuItemDetail() {
 	const { id } = useLocalSearchParams<{ id: string }>()
@@ -26,12 +32,6 @@ export default function MenuItemDetail() {
 		productQueryOptions(id || '').queryKey,
 	)
 	const product = productData?.response
-	const isLoading = false // Data is from cache, so no loading state
-	const error = null // Data is from cache, so no error state
-
-	const handleClose = () => {
-		router.back()
-	}
 
 	const handleAddToOrder = () => {
 		if (!product) return
@@ -42,21 +42,11 @@ export default function MenuItemDetail() {
 		})
 	}
 
-	const incrementQuantity = () => setQuantity((prev) => prev + 1)
-	const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1))
+	const incrementQuantity = () => setQuantity((previous) => previous + 1)
+	const decrementQuantity = () =>
+		setQuantity((previous) => Math.max(1, previous - 1))
 
-	if (isLoading) {
-		return (
-			<ScreenContainer>
-				<ActivityIndicator size="large" />
-				<Paragraph style={styles.loadingText}>
-					<Trans>Loading product details...</Trans>
-				</Paragraph>
-			</ScreenContainer>
-		)
-	}
-
-	if (error || !product) {
+	if (!product) {
 		return (
 			<ScreenContainer>
 				<View style={styles.header}>
@@ -92,11 +82,11 @@ export default function MenuItemDetail() {
 				>
 					{hasImage ? (
 						<Image
+							contentFit="cover"
 							source={{
 								uri: `${POSTER_BASE_URL}${product.photo_origin || product.photo}`,
 							}}
 							style={styles.heroImage}
-							contentFit="cover"
 							transition={200}
 						/>
 					) : (
@@ -108,7 +98,7 @@ export default function MenuItemDetail() {
 				</Animated.View>
 
 				<View style={styles.content}>
-					<H2 style={styles.price}>${parseFloat(price).toFixed(2)}</H2>
+					<H2 style={styles.price}>${Number.parseFloat(price).toFixed(2)}</H2>
 
 					{product.product_production_description && (
 						<Paragraph style={styles.description}>
@@ -131,7 +121,7 @@ export default function MenuItemDetail() {
 						)}
 					</View>
 
-					{product.ingredients && product.ingredients.length > 0 && (
+					{product.ingredients.length > 0 && (
 						<View style={styles.ingredientsSection}>
 							<H3 style={styles.sectionTitle}>
 								<Trans>Ingredients</Trans>
@@ -154,24 +144,24 @@ export default function MenuItemDetail() {
 						</Label>
 						<View style={styles.quantityControls}>
 							<TouchableOpacity
-								style={styles.quantityButton}
 								onPress={decrementQuantity}
+								style={styles.quantityButton}
 							>
-								<Ionicons name="remove" size={20} color="#333" />
+								<Ionicons color="#333" name="remove" size={20} />
 							</TouchableOpacity>
 							<Label style={styles.quantityText}>{quantity}</Label>
 							<TouchableOpacity
-								style={styles.quantityButton}
 								onPress={incrementQuantity}
+								style={styles.quantityButton}
 							>
-								<Ionicons name="add" size={20} color="#333" />
+								<Ionicons color="#333" name="add" size={20} />
 							</TouchableOpacity>
 						</View>
 					</View>
 
 					<Button onPress={handleAddToOrder}>
 						<Trans>
-							Add to Order - ${(parseFloat(price) * quantity).toFixed(2)}
+							Add to Order - ${(Number.parseFloat(price) * quantity).toFixed(2)}
 						</Trans>
 					</Button>
 				</View>
@@ -181,117 +171,113 @@ export default function MenuItemDetail() {
 }
 
 const styles = StyleSheet.create((theme) => ({
-	heroImageContainer: {
-		width: '100%',
-		height: 300,
-		backgroundColor: theme.colors.border,
-		position: 'relative',
-	},
-	heroImage: {
-		width: '100%',
-		height: 300,
-	},
-	titleOverlay: {
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
-		backgroundColor: 'rgba(0, 0, 0, 0.4)',
-		padding: theme.spacing.lg,
-	},
-	titleOverlayText: {
-		color: '#FFFFFF',
-	},
-	placeholderImage: {
-		backgroundColor: theme.colors.border,
-	},
-	header: {
-		position: 'absolute',
-		top: 40,
-		right: 0,
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		padding: theme.spacing.lg,
-		zIndex: 1,
-	},
-	closeButton: {
-		width: theme.spacing.xl,
-		height: theme.spacing.xl,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.full,
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
-	},
-	closeButtonText: {
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.bold,
-		color: theme.colors.text,
-	},
-	content: {
-		padding: theme.layout.screenPadding,
-	},
-	title: {
-		color: theme.colors.text,
-		marginBottom: theme.spacing.sm,
-	},
-	price: {
-		color: theme.colors.primary,
-		marginBottom: theme.spacing.lg,
-	},
-	description: {
-		color: theme.colors.text,
-		marginBottom: theme.spacing.lg,
+	badge: {
+		backgroundColor: theme.colors.primary,
+		borderRadius: theme.borderRadius.sm,
+		paddingHorizontal: theme.spacing.md,
+		paddingVertical: theme.spacing.xs,
 	},
 	badges: {
 		flexDirection: 'row',
 		gap: theme.spacing.sm,
 		marginBottom: theme.spacing.xl,
 	},
-	badge: {
-		backgroundColor: theme.colors.primary,
-		paddingHorizontal: theme.spacing.md,
-		paddingVertical: theme.spacing.xs,
-		borderRadius: theme.borderRadius.sm,
+	badgeText: {
+		color: theme.colors.surface,
+		fontSize: theme.fontSizes.sm,
+		fontWeight: theme.fontWeights.semibold,
+	},
+	closeButton: {
+		alignItems: 'center',
+		backgroundColor: theme.colors.surface,
+		borderRadius: theme.borderRadius.full,
+		elevation: 5,
+		height: theme.spacing.xl,
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			height: 2,
+			width: 0,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		width: theme.spacing.xl,
+	},
+	closeButtonText: {
+		color: theme.colors.text,
+		fontSize: theme.fontSizes.lg,
+		fontWeight: theme.fontWeights.bold,
+	},
+	content: {
+		padding: theme.layout.screenPadding,
+	},
+	description: {
+		color: theme.colors.text,
+		marginBottom: theme.spacing.lg,
+	},
+	header: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
+		padding: theme.spacing.lg,
+		position: 'absolute',
+		right: 0,
+		top: 40,
+		zIndex: 1,
+	},
+	heroImage: {
+		height: 300,
+		width: '100%',
+	},
+	heroImageContainer: {
+		backgroundColor: theme.colors.border,
+		height: 300,
+		position: 'relative',
+		width: '100%',
+	},
+	ingredient: {
+		color: theme.colors.textSecondary,
+		marginBottom: theme.spacing.xs,
+		paddingLeft: theme.spacing.sm,
+	},
+	ingredientsSection: {
+		marginBottom: theme.spacing.xl,
+	},
+	loadingText: {
+		color: theme.colors.textSecondary,
+	},
+	placeholderImage: {
+		backgroundColor: theme.colors.border,
 	},
 	popularBadge: {
 		backgroundColor: theme.colors.primary,
 	},
-	badgeText: {
-		fontSize: theme.fontSizes.sm,
-		fontWeight: theme.fontWeights.semibold,
-		color: theme.colors.surface,
-	},
-	quantitySection: {
+	price: {
+		color: theme.colors.primary,
 		marginBottom: theme.spacing.lg,
+	},
+	quantityButton: {
+		alignItems: 'center',
+		backgroundColor: theme.colors.surface,
+		borderColor: theme.colors.border,
+		borderRadius: 20,
+		borderWidth: 1,
+		height: 40,
+		justifyContent: 'center',
+		width: 40,
+	},
+	quantityControls: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: theme.spacing.lg,
+		justifyContent: 'center',
 	},
 	quantityLabel: {
 		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
-	quantityControls: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: theme.spacing.lg,
-	},
-	quantityButton: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		backgroundColor: theme.colors.surface,
-		alignItems: 'center',
-		justifyContent: 'center',
-		borderWidth: 1,
-		borderColor: theme.colors.border,
+	quantitySection: {
+		marginBottom: theme.spacing.lg,
 	},
 	quantityText: {
 		color: theme.colors.text,
@@ -299,22 +285,26 @@ const styles = StyleSheet.create((theme) => ({
 		textAlign: 'center',
 	},
 
-	loadingText: {
-		color: theme.colors.textSecondary,
-	},
-	timeBadge: {
-		backgroundColor: theme.colors.primary,
-	},
-	ingredientsSection: {
-		marginBottom: theme.spacing.xl,
-	},
 	sectionTitle: {
 		color: theme.colors.text,
 		marginBottom: theme.spacing.md,
 	},
-	ingredient: {
-		color: theme.colors.textSecondary,
-		marginBottom: theme.spacing.xs,
-		paddingLeft: theme.spacing.sm,
+	timeBadge: {
+		backgroundColor: theme.colors.primary,
+	},
+	title: {
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
+	},
+	titleOverlay: {
+		backgroundColor: 'rgba(0, 0, 0, 0.4)',
+		bottom: 0,
+		left: 0,
+		padding: theme.spacing.lg,
+		position: 'absolute',
+		right: 0,
+	},
+	titleOverlayText: {
+		color: '#FFFFFF',
 	},
 }))

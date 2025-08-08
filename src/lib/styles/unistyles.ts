@@ -2,12 +2,12 @@ import { StyleSheet } from 'react-native-unistyles'
 
 const lightTheme = {
 	borderRadius: {
-		xs: 4,
-		sm: 8,
-		md: 12,
-		lg: 16,
-		xl: 24,
 		full: 9999,
+		lg: 16,
+		md: 12,
+		sm: 8,
+		xl: 24,
+		xs: 4,
 	} as const,
 	colors: {
 		background: '#F8F8F1',
@@ -19,35 +19,40 @@ const lightTheme = {
 		textSecondary: '#666666',
 	},
 	fontSizes: {
-		xs: 12,
-		sm: 14,
-		md: 16,
 		lg: 18,
+		md: 16,
+		sm: 14,
 		xl: 20,
+		xs: 12,
 		xxl: 24,
 		xxxl: 32,
 	} as const,
 	fontWeights: {
-		regular: '400',
-		medium: '500',
-		semibold: '600',
 		bold: '700',
-	} as const,
-	spacing: {
-		xs: 4,
-		sm: 8,
-		md: 12,
-		lg: 16,
-		xl: 24,
-		xxl: 32,
+		medium: '500',
+		regular: '400',
+		semibold: '600',
 	} as const,
 	layout: {
 		screenPadding: 16,
+	} as const,
+	spacing: {
+		lg: 16,
+		md: 12,
+		sm: 8,
+		xl: 24,
+		xs: 4,
+		xxl: 32,
 	} as const,
 	typography: {
 		body: {
 			fontSize: 16,
 			fontWeight: '400',
+		},
+		button: {
+			fontSize: 14,
+			fontWeight: '600',
+			letterSpacing: 0.5,
 		},
 		caption: {
 			fontSize: 14,
@@ -69,11 +74,6 @@ const lightTheme = {
 			fontSize: 18,
 			fontWeight: '600',
 		},
-		button: {
-			fontSize: 14,
-			fontWeight: '600',
-			letterSpacing: 0.5,
-		},
 	} as const,
 }
 
@@ -91,13 +91,13 @@ const darkTheme = {
 }
 
 const breakpoints = {
-	xs: 0,
-	sm: 576,
-	md: 768,
 	lg: 992,
-	xl: 1200,
+	md: 768,
+	sm: 576,
 	superLarge: 2000,
 	tvLike: 4000,
+	xl: 1200,
+	xs: 0,
 } as const
 
 const themes = {
@@ -115,8 +115,8 @@ type AppBreakpoints = typeof breakpoints
 type AppThemes = typeof themes
 
 declare module 'react-native-unistyles' {
-	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions
 	export interface UnistylesBreakpoints extends AppBreakpoints {}
-	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/consistent-type-definitions
 	export interface UnistylesThemes extends AppThemes {}
 }

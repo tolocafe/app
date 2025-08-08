@@ -1,8 +1,9 @@
-import { renderHook, act } from '@testing-library/react-native'
+import { act, renderHook } from '@testing-library/react-native'
+
 import {
-	useOrderStats,
 	useAddItem,
 	useClearOrder,
+	useOrderStats,
 } from '@/lib/stores/order-store'
 
 // Mock Sentry to avoid issues in tests

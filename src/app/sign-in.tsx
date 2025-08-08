@@ -1,79 +1,101 @@
 import { useState } from 'react'
-import { router, useLocalSearchParams } from 'expo-router'
 import {
-	TouchableOpacity,
-	View,
-	TextInput,
-	Pressable,
 	Alert,
 	Platform,
+	Pressable,
+	TextInput,
+	TouchableOpacity,
+	View,
 } from 'react-native'
-import { Text, H2, Paragraph, Label } from '@/components/Text'
-import { StyleSheet } from 'react-native-unistyles'
+
 import { Trans, useLingui } from '@lingui/react/macro'
+import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { router, useLocalSearchParams } from 'expo-router'
+import { StyleSheet } from 'react-native-unistyles'
+import { z } from 'zod/v4'
+
+import { Button } from '@/components/Button'
+import { H2, Label, Paragraph, Text } from '@/components/Text'
 import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
 } from '@/lib/queries/auth'
-import { Button } from '@/components/Button'
+import { isValidPhoneNumber } from '@/lib/utils/phone'
+
+const handleClose = () => {
+	router.back()
+}
 
 export default function SignIn() {
 	const { t } = useLingui()
 	const { itemName } = useLocalSearchParams<{ itemName?: string }>()
-	const [stage, setStage] = useState<'phone' | 'code'>('phone')
-	const [phone, setPhone] = useState('')
-	const [code, setCode] = useState('')
+	const [stage, setStage] = useState<'code' | 'phone'>('phone')
 	const queryClient = useQueryClient()
 
 	const requestOtpMutation = useMutation(requestOtpMutationOptions)
 	const verifyOtpMutation = useMutation({
 		...verifyOtpMutationOptions,
-		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ['self'] })
+		async onSuccess() {
+			await queryClient.invalidateQueries({ queryKey: ['self'] })
 
 			router.replace('/')
 		},
 	})
 
-	const handleClose = () => {
-		router.back()
-	}
+	// Zod schemas
+	const phoneSchema = z
+		.string()
+		.trim()
+		.min(1, t`Please enter a phone number`)
+		.refine((value) => isValidPhoneNumber(value), t`Enter a valid phone number`)
 
-	const sendCode = async () => {
-		if (!phone.trim()) {
-			Alert.alert(t`Error`, t`Please enter a phone number`)
-			return
-		}
+	const codeSchema = z
+		.string()
+		.trim()
+		.regex(/^\d{6}$/u, t`The code must be 6 digits`)
 
-		try {
-			await requestOtpMutation.mutateAsync({ phone: phone.trim() })
-			setStage('code')
-		} catch (error: any) {
-			Alert.alert(t`Error`, error.message || t`Failed to send code`)
-		}
-	}
+	const form = useForm({
+		defaultValues: {
+			code: '',
+			phone: '',
+		},
+		async onSubmit({ value }) {
+			try {
+				if (stage === 'phone') {
+					await requestOtpMutation.mutateAsync({ phone: value.phone.trim() })
+					setStage('code')
+					// Reset code field meta/value when moving to next stage
+					form.setFieldValue('code', '')
+					form.resetField('code')
+					return
+				}
 
-	const handleVerify = async () => {
-		if (!code.trim()) {
-			Alert.alert(t`Error`, t`Please enter the verification code`)
-			return
-		}
-
-		try {
-			await verifyOtpMutation.mutateAsync({
-				phone: phone.trim(),
-				code: code.trim(),
-				sessionName: Platform.OS,
-			})
-		} catch (error: any) {
-			Alert.alert(t`Error`, error.message || t`Invalid verification code`)
-		}
-	}
+				await verifyOtpMutation.mutateAsync({
+					code: value.code.trim(),
+					phone: value.phone.trim(),
+					sessionName: Platform.OS,
+				})
+			} catch (error) {
+				if (stage === 'phone') {
+					Alert.alert(
+						t`Error`,
+						(error as Error).message || t`Failed to send code`,
+					)
+				} else {
+					Alert.alert(
+						t`Error`,
+						(error as Error).message || t`Invalid verification code`,
+					)
+				}
+			}
+		},
+	})
 
 	const handleGoBack = () => {
 		setStage('phone')
-		setCode('')
+		form.setFieldValue('code', '')
+		form.resetField('code')
 	}
 
 	return (
@@ -107,20 +129,42 @@ export default function SignIn() {
 								<Label style={styles.label}>
 									<Trans>Phone number</Trans>
 								</Label>
-								<TextInput
-									style={styles.input}
-									value={phone}
-									onChangeText={setPhone}
-									keyboardType="phone-pad"
-									placeholder={t`+1234567890`}
-									autoComplete="tel"
-									textContentType="telephoneNumber"
-								/>
+								<form.Field
+									name="phone"
+									validators={{
+										onChange: ({ value }) => {
+											const result = phoneSchema.safeParse(value)
+											if (!result.success)
+												return result.error.issues[0]?.message
+										},
+									}}
+								>
+									{(field) => (
+										<>
+											<TextInput
+												autoComplete="tel"
+												keyboardType="phone-pad"
+												onBlur={field.handleBlur}
+												onChangeText={field.handleChange}
+												placeholder={t`+1234567890`}
+												style={styles.input}
+												textContentType="telephoneNumber"
+												value={field.state.value}
+											/>
+											{field.state.meta.isTouched &&
+											field.state.meta.errors.length > 0 ? (
+												<Text style={styles.errorText}>
+													{field.state.meta.errors[0]}
+												</Text>
+											) : null}
+										</>
+									)}
+								</form.Field>
 							</View>
 
 							<Button
-								onPress={sendCode}
-								disabled={requestOtpMutation.isPending}
+								disabled={requestOtpMutation.isPending || !form.state.canSubmit}
+								onPress={() => form.handleSubmit()}
 							>
 								{requestOtpMutation.isPending ? (
 									<Trans>Sending...</Trans>
@@ -135,28 +179,51 @@ export default function SignIn() {
 								<Trans>Enter verification code</Trans>
 							</H2>
 							<Paragraph style={styles.subtitle}>
-								<Trans>We sent a code to {phone}</Trans>
+								<Trans>We sent a code to {form.state.values.phone}</Trans>
 							</Paragraph>
 
 							<View style={styles.inputContainer}>
 								<Label style={styles.label}>
 									<Trans>Verification code</Trans>
 								</Label>
-								<TextInput
-									style={styles.input}
-									value={code}
-									onChangeText={setCode}
-									keyboardType="number-pad"
-									placeholder={t`123456`}
-									maxLength={6}
-									autoComplete="sms-otp"
-									textContentType="oneTimeCode"
-								/>
+								<form.Field
+									name="code"
+									validators={{
+										onChange: ({ value }) => {
+											const result = codeSchema.safeParse(value)
+
+											if (!result.success)
+												return result.error.issues[0]?.message
+										},
+									}}
+								>
+									{(field) => (
+										<>
+											<TextInput
+												autoComplete="sms-otp"
+												keyboardType="number-pad"
+												maxLength={6}
+												onBlur={field.handleBlur}
+												onChangeText={field.handleChange}
+												placeholder={t`123456`}
+												style={styles.input}
+												textContentType="oneTimeCode"
+												value={field.state.value}
+											/>
+											{field.state.meta.isTouched &&
+											field.state.meta.errors.length > 0 ? (
+												<Text style={styles.errorText}>
+													{field.state.meta.errors[0]}
+												</Text>
+											) : null}
+										</>
+									)}
+								</form.Field>
 							</View>
 
 							<Button
-								onPress={handleVerify}
-								disabled={verifyOtpMutation.isPending}
+								disabled={verifyOtpMutation.isPending || !form.state.canSubmit}
+								onPress={() => form.handleSubmit()}
 							>
 								{verifyOtpMutation.isPending ? (
 									<Trans>Verifying...</Trans>
@@ -165,7 +232,7 @@ export default function SignIn() {
 								)}
 							</Button>
 
-							<Pressable style={styles.backButton} onPress={handleGoBack}>
+							<Pressable onPress={handleGoBack} style={styles.backButton}>
 								<Text style={styles.backButtonText}>
 									<Trans>← Change phone number</Trans>
 								</Text>
@@ -179,42 +246,47 @@ export default function SignIn() {
 }
 
 const styles = StyleSheet.create((theme) => ({
-	container: {
-		flex: 1,
-		padding: theme.layout.screenPadding,
-		backgroundColor: theme.colors.background,
+	authContainer: {
+		gap: theme.spacing.md,
 	},
-	header: {
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
+	backButton: {
+		alignItems: 'center',
+		marginTop: theme.spacing.md,
+	},
+	backButtonText: {
+		color: theme.colors.primary,
 	},
 	closeButton: {
 		padding: theme.spacing.sm,
 	},
 	closeButtonText: {
-		fontSize: theme.typography.h3.fontSize,
 		color: theme.colors.text,
+		fontSize: theme.typography.h3.fontSize,
 	},
-	messageContainer: {
-		marginTop: theme.spacing.md,
-		marginBottom: theme.spacing.md,
-	},
-	message: {
-		color: theme.colors.textSecondary,
+	container: {
+		backgroundColor: theme.colors.background,
+		flex: 1,
+		padding: theme.layout.screenPadding,
 	},
 	content: {
 		flex: 1,
 		justifyContent: 'center',
 	},
-	authContainer: {
-		gap: theme.spacing.md,
+	errorText: {
+		color: theme.colors.error,
+		marginTop: theme.spacing.xs,
 	},
-	title: {
-		marginBottom: theme.spacing.xs,
+	header: {
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
 	},
-	subtitle: {
-		color: theme.colors.textSecondary,
-		marginBottom: theme.spacing.md,
+	input: {
+		backgroundColor: theme.colors.surface,
+		borderColor: theme.colors.border,
+		borderRadius: theme.borderRadius.sm,
+		borderWidth: 1,
+		color: theme.colors.text,
+		padding: theme.spacing.sm,
 	},
 	inputContainer: {
 		marginBottom: theme.spacing.md,
@@ -223,19 +295,18 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.text,
 		marginBottom: theme.spacing.xs,
 	},
-	input: {
-		borderWidth: 1,
-		borderColor: theme.colors.border,
-		padding: theme.spacing.sm,
-		borderRadius: theme.borderRadius.sm,
-		color: theme.colors.text,
-		backgroundColor: theme.colors.surface,
+	message: {
+		color: theme.colors.textSecondary,
 	},
-	backButton: {
+	messageContainer: {
+		marginBottom: theme.spacing.md,
 		marginTop: theme.spacing.md,
-		alignItems: 'center',
 	},
-	backButtonText: {
-		color: theme.colors.primary,
+	subtitle: {
+		color: theme.colors.textSecondary,
+		marginBottom: theme.spacing.md,
+	},
+	title: {
+		marginBottom: theme.spacing.xs,
 	},
 }))

@@ -5,7 +5,7 @@
  */
 export function formatPhoneNumber(phone: string): string {
 	// Remove all non-digit characters
-	const digits = phone.replace(/\D/g, '')
+	const digits = phone.replaceAll(/\D/g, '')
 
 	// Handle different phone number lengths
 	if (digits.length === 10) {
@@ -13,7 +13,7 @@ export function formatPhoneNumber(phone: string): string {
 		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
 	}
 
-	if (digits.length === 11 && digits[0] === '1') {
+	if (digits.length === 11 && digits.startsWith('1')) {
 		// US format with country code: +1 (123) 456-7890
 		return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`
 	}
@@ -28,10 +28,10 @@ export function formatPhoneNumber(phone: string): string {
  * @returns True if valid, false otherwise
  */
 export function isValidPhoneNumber(phone: string): boolean {
-	const digits = phone.replace(/\D/g, '')
+	const digits = phone.replaceAll(/\D/g, '')
 
 	// Accept 10 digits or 11 digits starting with 1
-	return digits.length === 10 || (digits.length === 11 && digits[0] === '1')
+	return digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
 }
 
 /**
@@ -40,5 +40,5 @@ export function isValidPhoneNumber(phone: string): boolean {
  * @returns Digits-only phone number
  */
 export function normalizePhoneNumber(phone: string): string {
-	return phone.replace(/\D/g, '')
+	return phone.replaceAll(/\D/g, '')
 }

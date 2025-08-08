@@ -1,3 +1,6 @@
+import { useEffect } from 'react'
+import { Platform } from 'react-native'
+
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
 import {
@@ -6,16 +9,14 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native'
 import * as Sentry from '@sentry/react-native'
+import 'react-native-reanimated'
 import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import 'react-native-reanimated'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import { useUpdates } from '@/lib/hooks/use-updates'
 import { QueryProvider } from '@/lib/providers/query-provider'
-import { useEffect } from 'react'
-import { Platform } from 'react-native'
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
 	enableTimeToInitialDisplay: true,
@@ -31,25 +32,23 @@ function RootLayout() {
 	const updates = useUpdates()
 
 	useEffect(() => {
-		if (ref) {
-			navigationIntegration.registerNavigationContainer(ref)
-		}
+		navigationIntegration.registerNavigationContainer(ref)
 	}, [ref])
 
 	// Capture update errors to Sentry instead of console logs
 	useEffect(() => {
 		if (updates.error) {
 			Sentry.captureMessage('Update process completed with error', {
+				extra: {
+					channel: updates.channel,
+					error: updates.error,
+					runtimeVersion: updates.runtimeVersion,
+					updateId: updates.updateId,
+				},
 				level: 'error',
 				tags: {
 					feature: 'expo-updates',
 					operation: 'updateStatus',
-				},
-				extra: {
-					error: updates.error,
-					runtimeVersion: updates.runtimeVersion,
-					updateId: updates.updateId,
-					channel: updates.channel,
 				},
 			})
 		}
@@ -69,13 +68,13 @@ function RootLayout() {
 							<Stack.Screen
 								name="sign-in"
 								options={{
-									presentation: Platform.select({
-										web: 'transparentModal',
-										default: 'modal',
-									}),
 									animation: Platform.select({
-										web: 'fade',
 										default: undefined,
+										web: 'fade',
+									}),
+									presentation: Platform.select({
+										default: 'modal',
+										web: 'transparentModal',
 									}),
 								}}
 							/>

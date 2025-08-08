@@ -1,34 +1,36 @@
+import { Linking, View } from 'react-native'
+
 import { Trans } from '@lingui/react/macro'
 import Head from 'expo-router/head'
-import { Linking, View } from 'react-native'
-import { H2 } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
+
 import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
+import { H2 } from '@/components/Text'
+
+const handleCall = () => {
+	void Linking.openURL('tel:+14155551234')
+}
+
+const handleWebsite = () => {
+	void Linking.openURL('https://tolo.cafe')
+}
+
+const handleInstagram = () => {
+	void Linking.openURL('https://instagram.com/tolo.cafe')
+}
 
 export default function Connect() {
-	const handleCall = () => {
-		Linking.openURL('tel:+14155551234')
-	}
-
-	const handleWebsite = () => {
-		Linking.openURL('https://tolo.cafe')
-	}
-
-	const handleInstagram = () => {
-		Linking.openURL('https://instagram.com/tolo.cafe')
-	}
-
 	return (
 		<>
 			<Head>
 				<title>Connect - TOLO Buen Café</title>
 				<meta
-					name="description"
 					content="Connect with TOLO: call, website, Instagram."
+					name="description"
 				/>
-				<meta property="og:title" content="Connect - TOLO Buen Café" />
-				<meta property="og:url" content="/more/connect" />
+				<meta content="Connect - TOLO Buen Café" property="og:title" />
+				<meta content="/more/connect" property="og:url" />
 			</Head>
 			<ScreenContainer contentContainerStyle={styles.scrollContent}>
 				<View style={styles.section}>
@@ -53,20 +55,20 @@ export default function Connect() {
 }
 
 const styles = StyleSheet.create((theme) => ({
-	scrollContent: {
-		paddingBottom: theme.spacing.xl,
-	},
-	section: {
-		paddingHorizontal: theme.layout.screenPadding,
-		marginBottom: theme.spacing.lg,
-	},
-	sectionTitle: {
-		color: theme.colors.text,
-		marginBottom: theme.spacing.sm,
-	},
 	card: {
 		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.lg,
 		padding: theme.spacing.lg,
+	},
+	scrollContent: {
+		paddingBottom: theme.spacing.xl,
+	},
+	section: {
+		marginBottom: theme.spacing.lg,
+		paddingHorizontal: theme.layout.screenPadding,
+	},
+	sectionTitle: {
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
 	},
 }))

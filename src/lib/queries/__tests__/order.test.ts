@@ -1,4 +1,5 @@
 import { convertOrderToApiFormat } from '@/lib/queries/order'
+
 import type { Order } from '@/lib/stores/order-store'
 
 // Mock the API service to avoid importing ky and other dependencies
@@ -14,6 +15,7 @@ describe('order utilities', () => {
 	describe('convertOrderToApiFormat', () => {
 		it('converts basic order to API format', () => {
 			const order: Order = {
+				createdAt: new Date('2023-01-01'),
 				id: 'test-order-1',
 				items: [
 					{
@@ -25,38 +27,39 @@ describe('order utilities', () => {
 						quantity: 1,
 					},
 				],
-				totalAmount: 15.99,
 				status: 'draft',
-				createdAt: new Date('2023-01-01'),
+				totalAmount: 15.99,
 				updatedAt: new Date('2023-01-01'),
 			}
 
 			const result = convertOrderToApiFormat(order)
 
 			expect(result).toEqual({
+				comment: undefined,
+				payment: {
+					sum: 0,
+					type: 'cash',
+				},
 				products: [
 					{
-						product_id: 'prod-123',
 						count: 2,
 						modifications: undefined,
+						product_id: 'prod-123',
 					},
 					{
-						product_id: 'prod-456',
 						count: 1,
 						modifications: undefined,
+						product_id: 'prod-456',
 					},
 				],
-				comment: undefined,
 				service_mode: '2',
-				payment: {
-					type: 'cash',
-					sum: 0,
-				},
 			})
 		})
 
 		it('converts order with customer note to API format', () => {
 			const order: Order = {
+				createdAt: new Date('2023-01-01'),
+				customerNote: 'Extra hot, no foam',
 				id: 'test-order-2',
 				items: [
 					{
@@ -64,11 +67,9 @@ describe('order utilities', () => {
 						quantity: 1,
 					},
 				],
-				totalAmount: 8.5,
 				status: 'draft',
-				createdAt: new Date('2023-01-01'),
+				totalAmount: 8.5,
 				updatedAt: new Date('2023-01-01'),
-				customerNote: 'Extra hot, no foam',
 			}
 
 			const result = convertOrderToApiFormat(order)
@@ -78,11 +79,10 @@ describe('order utilities', () => {
 
 		it('converts order with modifications to API format', () => {
 			const order: Order = {
+				createdAt: new Date('2023-01-01'),
 				id: 'test-order-3',
 				items: [
 					{
-						productId: 'prod-coffee',
-						quantity: 1,
 						modifications: [
 							{
 								id: 'mod-extra-shot',
@@ -95,11 +95,12 @@ describe('order utilities', () => {
 								price: 0.5,
 							},
 						],
+						productId: 'prod-coffee',
+						quantity: 1,
 					},
 				],
-				totalAmount: 6.25,
 				status: 'draft',
-				createdAt: new Date('2023-01-01'),
+				totalAmount: 6.25,
 				updatedAt: new Date('2023-01-01'),
 			}
 
@@ -107,23 +108,23 @@ describe('order utilities', () => {
 
 			expect(result.products[0].modifications).toEqual([
 				{
-					modification_id: 'mod-extra-shot',
 					count: 1,
+					modification_id: 'mod-extra-shot',
 				},
 				{
-					modification_id: 'mod-oat-milk',
 					count: 1,
+					modification_id: 'mod-oat-milk',
 				},
 			])
 		})
 
 		it('handles empty order items', () => {
 			const order: Order = {
+				createdAt: new Date('2023-01-01'),
 				id: 'empty-order',
 				items: [],
-				totalAmount: 0,
 				status: 'draft',
-				createdAt: new Date('2023-01-01'),
+				totalAmount: 0,
 				updatedAt: new Date('2023-01-01'),
 			}
 
@@ -134,6 +135,7 @@ describe('order utilities', () => {
 
 		it('sets default values correctly', () => {
 			const order: Order = {
+				createdAt: new Date('2023-01-01'),
 				id: 'test-defaults',
 				items: [
 					{
@@ -141,9 +143,8 @@ describe('order utilities', () => {
 						quantity: 1,
 					},
 				],
-				totalAmount: 5.0,
 				status: 'draft',
-				createdAt: new Date('2023-01-01'),
+				totalAmount: 5,
 				updatedAt: new Date('2023-01-01'),
 			}
 

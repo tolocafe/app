@@ -1,37 +1,44 @@
-import { Trans } from '@lingui/react/macro'
-import Head from 'expo-router/head'
 import { Linking, View } from 'react-native'
-import { Text, H3, Label } from '@/components/Text'
+
+import { Trans, useLingui } from '@lingui/react/macro'
+import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
+
 import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
+import { H3, Label, Text } from '@/components/Text'
+
+const APPLE_MAPS_URL = 'https://maps.apple/p/97fTAIvUnQ-uSU'
+const GOOGLE_MAPS_URL = 'https://maps.app.goo.gl/V9Uz531Jz94ziYDn9'
+const TRIPADVISOR_URL =
+	'https://www.tripadvisor.com/Restaurant_Review-g644384-d33287081-Reviews-Tolo_Buen_Cafe-Toluca_Central_Mexico_and_Gulf_Coast.html?m=69573'
 
 export default function VisitUs() {
-	const handleDirections = () => {
-		const address = '123 Coffee Street, San Francisco, CA 94105'
-		const url = `https://maps.apple.com/?address=${encodeURIComponent(address)}`
-		Linking.openURL(url)
-	}
+	const { t } = useLingui()
 
 	return (
 		<>
 			<Head>
-				<title>Visítanos - TOLO Buen Café</title>
+				<title>{t`Visit Us - TOLO Good Coffee`}</title>
 				<meta
+					content={t`Come visit TOLO. Find our hours, address and quick links to your preferred maps app.`}
 					name="description"
-					content="Ven a conocer TOLO en 123 Coffee Street, San Francisco. Aquí encontrarás nuestros horarios y cómo llegar."
 				/>
-				<meta property="og:title" content="Visítanos - TOLO Buen Café" />
-				<meta property="og:url" content="/more/visit-us" />
+				<meta content={t`Visit Us - TOLO Good Coffee`} property="og:title" />
+				<meta content="/more/visit-us" property="og:url" />
 			</Head>
 			<ScreenContainer>
 				<View style={styles.section}>
 					<View style={styles.card}>
 						<Text style={styles.cardTitle}>
-							<Trans>TOLO Coffee Shop</Trans>
+							<Trans>TOLO - Buen Café</Trans>
 						</Text>
-						<Label style={styles.cardText}>123 Coffee Street</Label>
-						<Label style={styles.cardText}>San Francisco, CA 94105</Label>
+						<Label style={styles.cardText}>
+							<Trans>Boulevard José María Pino Suárez 800</Trans>
+						</Label>
+						<Label style={styles.cardText}>
+							<Trans>Altamirano, 50130 Toluca, Edo. Méx., Mexico</Trans>
+						</Label>
 
 						<View style={styles.hoursContainer}>
 							<H3 style={styles.hoursTitle}>
@@ -39,27 +46,52 @@ export default function VisitUs() {
 							</H3>
 							<View style={styles.hoursRow}>
 								<Label style={styles.dayText}>
-									<Trans>Monday - Friday</Trans>
+									<Trans>Monday – Friday</Trans>
 								</Label>
-								<Label style={styles.hoursText}>6:00 AM - 8:00 PM</Label>
+								<Label style={styles.hoursText}>
+									<Trans>9:00 AM – 5:00 PM</Trans>
+								</Label>
 							</View>
 							<View style={styles.hoursRow}>
 								<Label style={styles.dayText}>
 									<Trans>Saturday</Trans>
 								</Label>
-								<Label style={styles.hoursText}>7:00 AM - 9:00 PM</Label>
+								<Label style={styles.hoursText}>
+									<Trans>Closed</Trans>
+								</Label>
 							</View>
 							<View style={styles.hoursRow}>
 								<Label style={styles.dayText}>
 									<Trans>Sunday</Trans>
 								</Label>
-								<Label style={styles.hoursText}>7:00 AM - 7:00 PM</Label>
+								<Label style={styles.hoursText}>
+									<Trans>Closed</Trans>
+								</Label>
 							</View>
 						</View>
 
-						<Button onPress={handleDirections}>
-							<Trans>Get Directions</Trans>
-						</Button>
+						<View style={styles.actions}>
+							<Button
+								accessibilityLabel={t`Open location in Apple Maps`}
+								onPress={handleOpenAppleMaps}
+							>
+								<Trans>Open in Apple Maps</Trans>
+							</Button>
+							<Button
+								accessibilityLabel={t`Open location in Google Maps`}
+								onPress={handleOpenGoogleMaps}
+								variant="surface"
+							>
+								<Trans>Open in Google Maps</Trans>
+							</Button>
+							<Button
+								accessibilityLabel={t`View on TripAdvisor`}
+								onPress={handleOpenTripAdvisor}
+								variant="surface"
+							>
+								<Trans>View on TripAdvisor</Trans>
+							</Button>
+						</View>
 					</View>
 				</View>
 			</ScreenContainer>
@@ -67,46 +99,62 @@ export default function VisitUs() {
 	)
 }
 
+function handleOpenAppleMaps(): void {
+	void Linking.openURL(APPLE_MAPS_URL)
+}
+
+function handleOpenGoogleMaps(): void {
+	void Linking.openURL(GOOGLE_MAPS_URL)
+}
+
+function handleOpenTripAdvisor(): void {
+	void Linking.openURL(TRIPADVISOR_URL)
+}
+
 const styles = StyleSheet.create((theme) => ({
-	section: {
-		paddingHorizontal: theme.layout.screenPadding,
-		marginBottom: theme.spacing.lg,
-	},
-	sectionTitle: {
-		color: theme.colors.text,
-		marginBottom: theme.spacing.sm,
+	actions: {
+		gap: theme.spacing.sm,
+		marginTop: theme.spacing.md,
 	},
 	card: {
 		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.lg,
 		padding: theme.spacing.lg,
 	},
-	cardTitle: {
-		color: theme.colors.text,
-		marginBottom: theme.spacing.xs,
-	},
 	cardText: {
 		color: theme.colors.textSecondary,
 		marginBottom: theme.spacing.xs,
 	},
-	hoursContainer: {
-		marginTop: theme.spacing.lg,
-		marginBottom: theme.spacing.sm,
-	},
-	hoursTitle: {
-		...theme.typography.h4,
+	cardTitle: {
 		color: theme.colors.text,
+		marginBottom: theme.spacing.xs,
+	},
+	dayText: {
+		color: theme.colors.text,
+	},
+	hoursContainer: {
 		marginBottom: theme.spacing.sm,
+		marginTop: theme.spacing.lg,
 	},
 	hoursRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingVertical: theme.spacing.xs,
 	},
-	dayText: {
-		color: theme.colors.text,
-	},
 	hoursText: {
 		color: theme.colors.textSecondary,
+	},
+	hoursTitle: {
+		...theme.typography.h4,
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
+	},
+	section: {
+		marginBottom: theme.spacing.lg,
+		paddingHorizontal: theme.layout.screenPadding,
+	},
+	sectionTitle: {
+		color: theme.colors.text,
+		marginBottom: theme.spacing.sm,
 	},
 }))

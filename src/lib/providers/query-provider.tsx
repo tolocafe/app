@@ -1,8 +1,12 @@
+import type { ReactNode } from 'react'
+import { useEffect } from 'react'
+import type { AppStateStatus } from 'react-native'
+import { AppState } from 'react-native'
+
 import NetInfo from '@react-native-community/netinfo'
 import { focusManager, onlineManager } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import React, { ReactNode, useEffect } from 'react'
-import { AppState, AppStateStatus } from 'react-native'
+
 import { persister, queryClient } from '@/lib/query-client'
 
 // Set up focus manager for React Native
@@ -20,20 +24,20 @@ focusManager.setEventListener((handleFocus) => {
 })
 
 // Set up online manager for React Native
-onlineManager.setEventListener((setOnline) => {
-	return NetInfo.addEventListener((state) => {
+onlineManager.setEventListener((setOnline) =>
+	NetInfo.addEventListener((state) => {
 		setOnline(Boolean(state.isConnected))
-	})
-})
+	}),
+)
 
-interface QueryProviderProps {
+type QueryProviderProps = {
 	children: ReactNode
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
 	// Initialize online status on mount
 	useEffect(() => {
-		NetInfo.fetch().then((state) => {
+		void NetInfo.fetch().then((state) => {
 			onlineManager.setOnline(Boolean(state.isConnected))
 		})
 	}, [])

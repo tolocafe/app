@@ -1,24 +1,24 @@
 import type { ReactNode } from 'react'
 import type { ScrollViewProps } from 'react-native'
 import { ScrollView } from 'react-native'
+
 import { StyleSheet } from 'react-native-unistyles'
 
-export interface ScreenContainerProps
-	extends Omit<ScrollViewProps, 'contentInsetAdjustmentBehavior'> {
+export type ScreenContainerProps = Omit<ScrollViewProps, 'contentInsetAdjustmentBehavior'> & {
 	children: ReactNode
 }
 
 export function ScreenContainer({
 	children,
-	style,
 	contentContainerStyle,
+	style,
 	...rest
 }: ScreenContainerProps) {
 	return (
 		<ScrollView
+			contentContainerStyle={contentContainerStyle}
 			contentInsetAdjustmentBehavior="automatic"
 			style={[styles.container, style]}
-			contentContainerStyle={contentContainerStyle}
 			{...rest}
 		>
 			{children}
@@ -28,8 +28,8 @@ export function ScreenContainer({
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
-		flex: 1,
 		backgroundColor: theme.colors.background,
+		flex: 1,
 	},
 }))
 

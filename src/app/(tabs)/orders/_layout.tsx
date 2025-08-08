@@ -1,5 +1,6 @@
-import { Stack } from 'expo-router'
 import { useLingui } from '@lingui/react/macro'
+import { Stack } from 'expo-router'
+
 import { defaultStackScreenOptions } from '@/lib/navigation'
 
 export const unstable_settings = {

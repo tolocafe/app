@@ -1,67 +1,53 @@
-import { create } from 'zustand/react'
-import { persist } from 'zustand/middleware'
-import { useShallow } from 'zustand/react/shallow'
 import * as Sentry from '@sentry/react-native'
-import { api } from '@/lib/services/api-service'
-import { convertOrderToApiFormat } from '@/lib/queries/order'
+import { persist } from 'zustand/middleware'
+import { create } from 'zustand/react'
+import { useShallow } from 'zustand/react/shallow'
 
-export interface OrderItem {
-	productId: string
-	quantity: number
+import { convertOrderToApiFormat } from '@/lib/queries/order'
+import { api } from '@/lib/services/api-service'
+
+export type Order = {
+	apiOrderId?: string
+	createdAt: Date
+	customerNote?: string
+	id: string
+	items: OrderItem[]
+	status: 'cancelled' | 'completed' | 'confirmed' | 'draft' | 'submitted'
+	totalAmount: number
+	updatedAt: Date
+}
+
+export type OrderItem = {
 	modifications?: {
 		id: string
 		name: string
 		price: number
 	}[]
+	productId: string
+	quantity: number
 }
 
-export interface Order {
-	id: string
-	items: OrderItem[]
-	totalAmount: number
-	status: 'draft' | 'submitted' | 'confirmed' | 'completed' | 'cancelled'
-	createdAt: Date
-	updatedAt: Date
-	customerNote?: string
-	apiOrderId?: string
-}
-
-interface OrderStore {
-	currentOrder: Order | null
-	orders: Order[]
+type OrderStore = {
+	addItem: (item: Pick<OrderItem, 'productId' | 'quantity'>) => void
+	clearOrder: () => void
 
 	// Actions
 	createOrder: () => void
-	addItem: (item: Pick<OrderItem, 'productId' | 'quantity'>) => void
-	updateItem: (productId: string, quantity: number) => void
-	removeItem: (productId: string) => void
-	clearOrder: () => void
-	setCustomerNote: (note: string) => void
-	submitOrder: () => Promise<unknown>
-
+	currentOrder: null | Order
+	getTotalAmount: () => number
 	// Getters
 	getTotalItems: () => number
-	getTotalAmount: () => number
+	orders: Order[]
+	removeItem: (productId: string) => void
+	setCustomerNote: (note: string) => void
+
+	submitOrder: () => Promise<unknown>
+	updateItem: (productId: string, quantity: number) => void
 }
 
 export const useOrderStore = create<OrderStore>()(
 	persist(
 		(set, get) => ({
-			currentOrder: null,
-			orders: [],
-
-			createOrder: () => {
-				const newOrder: Order = {
-					id: `order-${Date.now()}`,
-					items: [],
-					totalAmount: 0,
-					status: 'draft',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				}
-				set({ currentOrder: newOrder })
-			},
-
 			addItem: (item: Pick<OrderItem, 'productId' | 'quantity'>) => {
 				const { currentOrder } = get()
 				if (!currentOrder) {
@@ -74,7 +60,10 @@ export const useOrderStore = create<OrderStore>()(
 				)
 
 				let updatedItems: OrderItem[]
-				if (existingItemIndex >= 0) {
+				if (existingItemIndex === -1) {
+					// Add new item
+					updatedItems = [...currentOrder.items, { ...item }]
+				} else {
 					// Update existing item quantity
 					updatedItems = currentOrder.items.map((existingItem, index) =>
 						index === existingItemIndex
@@ -84,9 +73,6 @@ export const useOrderStore = create<OrderStore>()(
 								}
 							: existingItem,
 					)
-				} else {
-					// Add new item
-					updatedItems = [...currentOrder.items, { ...item }]
 				}
 
 				set({
@@ -98,29 +84,45 @@ export const useOrderStore = create<OrderStore>()(
 					},
 				})
 			},
+			clearOrder: () => {
+				set({ currentOrder: null })
+			},
 
-			updateItem: (productId: string, quantity: number) => {
+			createOrder: () => {
+				const nextOrder: Order = {
+					createdAt: new Date(),
+					id: `order-${Date.now()}`,
+					items: [],
+					status: 'draft',
+					totalAmount: 0,
+					updatedAt: new Date(),
+				}
+				set({ currentOrder: nextOrder })
+			},
+
+			currentOrder: null,
+
+			getTotalAmount: () => {
 				const { currentOrder } = get()
-				if (!currentOrder) return
-
-				if (quantity <= 0) {
-					get().removeItem(productId)
-					return
-				}
-
-				const updatedItems = currentOrder.items.map((item) =>
-					item.productId === productId ? { ...item, quantity } : item,
-				)
-
-				set({
-					currentOrder: {
-						...currentOrder,
-						items: updatedItems,
-						totalAmount: 0, // Will be calculated when needed
-						updatedAt: new Date(),
-					},
-				})
+				return currentOrder?.totalAmount || 0
 			},
+
+			// Getters
+			getTotalItems: () => {
+				const { currentOrder } = get()
+				if (!currentOrder) return 0
+				return currentOrder.items.reduce(
+					(total, item) => total + item.quantity,
+					0,
+				)
+			},
+
+			hasItems: () => {
+				const { currentOrder } = get()
+				return Boolean(currentOrder && currentOrder.items.length > 0)
+			},
+
+			orders: [],
 
 			removeItem: (productId: string) => {
 				const { currentOrder } = get()
@@ -143,10 +145,6 @@ export const useOrderStore = create<OrderStore>()(
 				} else {
 					set({ currentOrder: updatedOrder })
 				}
-			},
-
-			clearOrder: () => {
-				set({ currentOrder: null })
 			},
 
 			setCustomerNote: (note: string) => {
@@ -173,50 +171,53 @@ export const useOrderStore = create<OrderStore>()(
 
 					const submittedOrder = {
 						...currentOrder,
+						// Store the API response for reference with proper typing
+						apiOrderId: response.order.order_id,
 						status: 'submitted' as const,
 						updatedAt: new Date(),
-						// Store the API response for reference with proper typing
-						apiOrderId: response?.order?.order_id,
 					}
 
 					// Add to orders history and clear current order
 					set({
-						orders: [submittedOrder, ...orders],
 						currentOrder: null,
+						orders: [submittedOrder, ...orders],
 					})
 
 					return response
 				} catch (error) {
 					// Use Sentry for error logging instead of console.error
 					Sentry.captureException(error, {
-						tags: { feature: 'orders', operation: 'submitOrder' },
 						extra: {
-							orderId: currentOrder.id,
 							itemCount: currentOrder.items.length,
+							orderId: currentOrder.id,
 						},
+						tags: { feature: 'orders', operation: 'submitOrder' },
 					})
 					throw error
 				}
 			},
 
-			// Getters
-			getTotalItems: () => {
+			updateItem: (productId: string, quantity: number) => {
 				const { currentOrder } = get()
-				if (!currentOrder) return 0
-				return currentOrder.items.reduce(
-					(total, item) => total + item.quantity,
-					0,
+				if (!currentOrder) return
+
+				if (quantity <= 0) {
+					get().removeItem(productId)
+					return
+				}
+
+				const updatedItems = currentOrder.items.map((item) =>
+					item.productId === productId ? { ...item, quantity } : item,
 				)
-			},
 
-			getTotalAmount: () => {
-				const { currentOrder } = get()
-				return currentOrder?.totalAmount || 0
-			},
-
-			hasItems: () => {
-				const { currentOrder } = get()
-				return Boolean(currentOrder && currentOrder.items.length > 0)
+				set({
+					currentOrder: {
+						...currentOrder,
+						items: updatedItems,
+						totalAmount: 0, // Will be calculated when needed
+						updatedAt: new Date(),
+					},
+				})
 			},
 		}),
 		{
@@ -242,8 +243,8 @@ export const useOrderData = () =>
 export const useOrderStats = () =>
 	useOrderStore(
 		useShallow((state) => ({
-			totalItems: state.getTotalItems(),
 			totalAmount: state.getTotalAmount(),
+			totalItems: state.getTotalItems(),
 		})),
 	)
 

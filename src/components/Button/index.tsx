@@ -1,35 +1,36 @@
-import { Pressable, View } from 'react-native'
-import { Text } from '@/components/Text'
 import type { ReactNode } from 'react'
+import { Pressable, View } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
+
 import { StyleSheet } from 'react-native-unistyles'
+
+import { Text } from '@/components/Text'
+
+export type ButtonProps = {
+	accessibilityLabel?: string
+	children: ReactNode
+	disabled?: boolean
+	onPress?: (event: GestureResponderEvent) => void
+	testID?: string
+	variant?: ButtonVariant
+}
 
 type ButtonVariant = 'primary' | 'surface'
 
-export interface ButtonProps {
-	children: ReactNode
-	onPress?: (event: GestureResponderEvent) => void
-	disabled?: boolean
-	variant?: ButtonVariant
-	accessibilityLabel?: string
-	testID?: string
-}
-
 export function Button({
-	children,
-	onPress,
-	disabled = false,
-	variant = 'primary',
 	accessibilityLabel,
+	children,
+	disabled = false,
+	onPress,
 	testID,
+	variant = 'primary',
 }: ButtonProps) {
 	const isPrimary = variant === 'primary'
 
 	return (
 		<Pressable
-			accessibilityRole="button"
 			accessibilityLabel={accessibilityLabel}
-			testID={testID}
+			accessibilityRole="button"
 			disabled={disabled}
 			onPress={onPress}
 			style={({ pressed }) => [
@@ -38,14 +39,15 @@ export function Button({
 				disabled && styles.buttonDisabled,
 				pressed && !disabled && styles.buttonPressed,
 			]}
+			testID={testID}
 		>
 			<View style={styles.contentWrapper}>
 				<Text
+					numberOfLines={1}
 					style={[
 						styles.text,
 						isPrimary ? styles.textOnPrimary : styles.textOnSurface,
 					]}
-					numberOfLines={1}
 				>
 					{children}
 				</Text>
@@ -57,18 +59,10 @@ export function Button({
 const styles = StyleSheet.create((theme) => ({
 	button: {
 		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: theme.spacing.md,
-		paddingHorizontal: theme.spacing.lg,
 		borderRadius: theme.borderRadius.lg,
-	},
-	buttonPrimary: {
-		backgroundColor: theme.colors.primary,
-	},
-	buttonSurface: {
-		backgroundColor: theme.colors.surface,
-		borderWidth: 1,
-		borderColor: theme.colors.border,
+		justifyContent: 'center',
+		paddingHorizontal: theme.spacing.lg,
+		paddingVertical: theme.spacing.md,
 	},
 	buttonDisabled: {
 		opacity: 0.6,
@@ -76,11 +70,19 @@ const styles = StyleSheet.create((theme) => ({
 	buttonPressed: {
 		opacity: 0.85,
 	},
+	buttonPrimary: {
+		backgroundColor: theme.colors.primary,
+	},
+	buttonSurface: {
+		backgroundColor: theme.colors.surface,
+		borderColor: theme.colors.border,
+		borderWidth: 1,
+	},
 	contentWrapper: {
-		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'center',
+		flexDirection: 'row',
 		gap: theme.spacing.xs,
+		justifyContent: 'center',
 	},
 	text: {
 		textTransform: 'uppercase',

@@ -1,16 +1,26 @@
 import { FlatList, TouchableOpacity, View } from 'react-native'
-import { Text, H2, H3, Paragraph } from '@/components/Text'
-import { useQuery } from '@tanstack/react-query'
-import { selfQueryOptions } from '@/lib/queries/auth'
-import { Trans, useLingui } from '@lingui/react/macro'
-import Head from 'expo-router/head'
-import { router } from 'expo-router'
 
+import { Trans, useLingui } from '@lingui/react/macro'
+import { useQuery } from '@tanstack/react-query'
+import { router } from 'expo-router'
+import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
-import { useOrderData, useOrderStats } from '@/lib/stores/order-store'
-import type { Order } from '@/lib/stores/order-store'
+
 import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
+import { H2, H3, Paragraph, Text } from '@/components/Text'
+import { selfQueryOptions } from '@/lib/queries/auth'
+import { useOrderData, useOrderStats } from '@/lib/stores/order-store'
+
+import type { Order } from '@/lib/stores/order-store'
+
+const handleSignIn = () => {
+	router.push('/sign-in')
+}
+
+const handleOrderPress = (order: Order) => {
+	router.push(`/(tabs)/orders/${order.id}`)
+}
 
 export default function Orders() {
 	const { data: user } = useQuery(selfQueryOptions)
@@ -18,14 +28,6 @@ export default function Orders() {
 	const { t } = useLingui()
 	const { currentOrder, orders } = useOrderData()
 	const { totalItems } = useOrderStats()
-
-	const handleSignIn = () => {
-		router.push('/sign-in')
-	}
-
-	const handleOrderPress = (order: Order) => {
-		router.push(`/(tabs)/orders/${order.id}`)
-	}
 
 	const handleCurrentOrderPress = () => {
 		if (currentOrder) {
@@ -35,8 +37,8 @@ export default function Orders() {
 
 	const renderOrderItem = ({ item }: { item: Order }) => (
 		<TouchableOpacity
-			style={styles.orderCard}
 			onPress={() => handleOrderPress(item)}
+			style={styles.orderCard}
 		>
 			<View style={styles.orderHeader}>
 				<H3>
@@ -108,8 +110,8 @@ export default function Orders() {
 							<Trans>In Progress</Trans>
 						</H2>
 						<TouchableOpacity
-							style={styles.currentOrderCard}
 							onPress={handleCurrentOrderPress}
+							style={styles.currentOrderCard}
 						>
 							<View style={styles.orderHeader}>
 								<H3 style={styles.currentOrderTitle}>
@@ -137,11 +139,11 @@ export default function Orders() {
 								<Trans>Order History</Trans>
 							</H2>
 							<FlatList
-								data={orders}
-								renderItem={renderOrderItem}
-								keyExtractor={(item) => item.id}
-								showsVerticalScrollIndicator={false}
 								contentContainerStyle={styles.ordersList}
+								data={orders}
+								keyExtractor={(item) => item.id}
+								renderItem={renderOrderItem}
+								showsVerticalScrollIndicator={false}
 							/>
 						</>
 					) : (
@@ -164,92 +166,92 @@ const styles = StyleSheet.create((theme) => ({
 	container: {
 		padding: theme.layout.screenPadding,
 	},
-	header: {
-		marginBottom: theme.spacing.xl,
-	},
-	subtitle: {
-		opacity: 0.8,
-	},
-	ordersContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: theme.spacing.xxl,
-	},
-	emptyState: {
-		textAlign: 'center',
-	},
-	emptyStateSubtitle: {
-		textAlign: 'center',
-		opacity: 0.6,
-	},
-	signInContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: theme.spacing.xxl,
-		paddingHorizontal: theme.spacing.lg,
-	},
-	signInTitle: {
-		textAlign: 'center',
-		marginBottom: theme.spacing.md,
-	},
-	signInSubtitle: {
-		textAlign: 'center',
-		opacity: 0.7,
-		marginBottom: theme.spacing.xl,
-		lineHeight: theme.fontSizes.xl,
-	},
-	currentOrderSection: {
-		marginBottom: theme.spacing.xl,
-	},
-	sectionTitle: {
-		marginBottom: theme.spacing.md,
-	},
 	currentOrderCard: {
 		backgroundColor: theme.colors.primary,
 		borderRadius: theme.borderRadius.md,
 		padding: theme.spacing.lg,
 	},
+	currentOrderSection: {
+		marginBottom: theme.spacing.xl,
+	},
+	currentOrderText: {
+		color: theme.colors.surface,
+	},
 	currentOrderTitle: {
 		color: theme.colors.surface,
+	},
+	emptyState: {
+		textAlign: 'center',
+	},
+	emptyStateSubtitle: {
+		opacity: 0.6,
+		textAlign: 'center',
+	},
+	header: {
+		marginBottom: theme.spacing.xl,
 	},
 	orderBadge: {
 		color: theme.colors.surface,
 		opacity: 0.9,
 	},
-	tapToEdit: {
-		color: theme.colors.surface,
-		opacity: 0.8,
-		marginTop: theme.spacing.xs,
-	},
-	ordersList: {
-		paddingBottom: theme.spacing.xl,
-	},
 	orderCard: {
 		backgroundColor: theme.colors.surface,
 		borderRadius: theme.borderRadius.md,
-		padding: theme.spacing.lg,
 		marginBottom: theme.spacing.md,
-	},
-	orderHeader: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		marginBottom: theme.spacing.sm,
-	},
-	orderStatus: {
-		color: theme.colors.primary,
-	},
-	orderItems: {
-		color: theme.colors.textSecondary,
-		marginBottom: theme.spacing.xs,
+		padding: theme.spacing.lg,
 	},
 	orderDate: {
 		color: theme.colors.textSecondary,
 		marginTop: theme.spacing.xs,
 	},
-	currentOrderText: {
+	orderHeader: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginBottom: theme.spacing.sm,
+	},
+	orderItems: {
+		color: theme.colors.textSecondary,
+		marginBottom: theme.spacing.xs,
+	},
+	ordersContainer: {
+		alignItems: 'center',
+		flex: 1,
+		justifyContent: 'center',
+		paddingVertical: theme.spacing.xxl,
+	},
+	ordersList: {
+		paddingBottom: theme.spacing.xl,
+	},
+	orderStatus: {
+		color: theme.colors.primary,
+	},
+	sectionTitle: {
+		marginBottom: theme.spacing.md,
+	},
+	signInContainer: {
+		alignItems: 'center',
+		flex: 1,
+		justifyContent: 'center',
+		paddingHorizontal: theme.spacing.lg,
+		paddingVertical: theme.spacing.xxl,
+	},
+	signInSubtitle: {
+		lineHeight: theme.fontSizes.xl,
+		marginBottom: theme.spacing.xl,
+		opacity: 0.7,
+		textAlign: 'center',
+	},
+	signInTitle: {
+		marginBottom: theme.spacing.md,
+		textAlign: 'center',
+	},
+	subtitle: {
+		opacity: 0.8,
+	},
+	tapToEdit: {
 		color: theme.colors.surface,
+		marginTop: theme.spacing.xs,
+		opacity: 0.8,
 	},
 }))

@@ -1,10 +1,12 @@
 import '@/lib/styles/unistyles'
 
+import { View } from 'react-native'
+
 import { Link, Stack } from 'expo-router'
 import Head from 'expo-router/head'
-import { View } from 'react-native'
-import { H1, Text } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
+
+import { H1, Text } from '@/components/Text'
 
 export default function NotFoundScreen() {
 	return (
@@ -12,10 +14,10 @@ export default function NotFoundScreen() {
 			<Head>
 				<title>Página No Encontrada - TOLO</title>
 				<meta
-					name="description"
 					content="Oops, esta página no existe. Regresa a TOLO para disfrutar de nuestro buen café y descubrir todo lo que tenemos para ti."
+					name="description"
 				/>
-				<meta name="robots" content="noindex, nofollow" />
+				<meta content="noindex, nofollow" name="robots" />
 			</Head>
 			<Stack.Screen options={{ title: 'Oops!' }} />
 			<View style={styles.container}>
@@ -30,23 +32,23 @@ export default function NotFoundScreen() {
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
-		flex: 1,
 		alignItems: 'center',
+		backgroundColor: theme.colors.background,
+		flex: 1,
 		justifyContent: 'center',
 		padding: theme.layout.screenPadding,
-		backgroundColor: theme.colors.background,
-	},
-	title: {
-		fontSize: theme.fontSizes.xl,
-		fontWeight: theme.fontWeights.bold,
-		color: theme.colors.text,
 	},
 	link: {
 		marginTop: theme.spacing.md,
 		paddingVertical: theme.spacing.md,
 	},
 	linkText: {
-		fontSize: theme.fontSizes.md,
 		color: theme.colors.primary,
+		fontSize: theme.fontSizes.md,
+	},
+	title: {
+		color: theme.colors.text,
+		fontSize: theme.fontSizes.xl,
+		fontWeight: theme.fontWeights.bold,
 	},
 }))

@@ -1,20 +1,21 @@
-import * as Sentry from '@sentry/react-native'
-import * as Updates from 'expo-updates'
 import { useEffect, useState } from 'react'
 
-export interface UpdateState {
+import * as Sentry from '@sentry/react-native'
+import * as Updates from 'expo-updates'
+
+export type UpdateState = {
+	error: null | string
 	isChecking: boolean
 	isDownloading: boolean
 	isUpdateAvailable: boolean
-	error: string | null
 }
 
 export function useUpdates() {
 	const [state, setState] = useState<UpdateState>({
+		error: null,
 		isChecking: false,
 		isDownloading: false,
 		isUpdateAvailable: false,
-		error: null,
 	})
 
 	const checkForUpdates = async () => {
@@ -23,20 +24,20 @@ export function useUpdates() {
 		}
 
 		try {
-			setState((prev) => ({ ...prev, isChecking: true, error: null }))
+			setState((previous) => ({ ...previous, error: null, isChecking: true }))
 
 			const update = await Updates.checkForUpdateAsync()
 
-			setState((prev) => ({
-				...prev,
+			setState((previous) => ({
+				...previous,
 				isChecking: false,
 				isUpdateAvailable: update.isAvailable,
 			}))
 
 			if (update.isAvailable) {
-				setState((prev) => ({ ...prev, isDownloading: true }))
+				setState((previous) => ({ ...previous, isDownloading: true }))
 				await Updates.fetchUpdateAsync()
-				setState((prev) => ({ ...prev, isDownloading: false }))
+				setState((previous) => ({ ...previous, isDownloading: false }))
 				// Automatically reload the app with the new update
 				await Updates.reloadAsync()
 			}
@@ -46,22 +47,22 @@ export function useUpdates() {
 
 			// Capture error to Sentry
 			Sentry.captureException(error, {
+				extra: {
+					channel: Updates.channel,
+					runtimeVersion: Updates.runtimeVersion,
+					updateId: Updates.updateId,
+				},
 				tags: {
 					feature: 'expo-updates',
 					operation: 'checkForUpdates',
 				},
-				extra: {
-					runtimeVersion: Updates.runtimeVersion,
-					updateId: Updates.updateId,
-					channel: Updates.channel,
-				},
 			})
 
-			setState((prev) => ({
-				...prev,
+			setState((previous) => ({
+				...previous,
+				error: errorMessage,
 				isChecking: false,
 				isDownloading: false,
-				error: errorMessage,
 			}))
 		}
 	}
@@ -75,19 +76,19 @@ export function useUpdates() {
 
 			// Capture error to Sentry
 			Sentry.captureException(error, {
+				extra: {
+					channel: Updates.channel,
+					runtimeVersion: Updates.runtimeVersion,
+					updateId: Updates.updateId,
+				},
 				tags: {
 					feature: 'expo-updates',
 					operation: 'reloadApp',
 				},
-				extra: {
-					runtimeVersion: Updates.runtimeVersion,
-					updateId: Updates.updateId,
-					channel: Updates.channel,
-				},
 			})
 
-			setState((prev) => ({
-				...prev,
+			setState((previous) => ({
+				...previous,
 				error: errorMessage,
 			}))
 		}
@@ -95,16 +96,16 @@ export function useUpdates() {
 
 	// Check for updates on mount
 	useEffect(() => {
-		checkForUpdates()
+		void checkForUpdates()
 	}, [])
 
 	return {
 		...state,
+		channel: Updates.channel,
 		checkForUpdates,
+		createdAt: Updates.createdAt,
 		reloadApp,
 		runtimeVersion: Updates.runtimeVersion,
 		updateId: Updates.updateId,
-		createdAt: Updates.createdAt,
-		channel: Updates.channel,
 	}
 }

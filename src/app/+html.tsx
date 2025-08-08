@@ -1,5 +1,6 @@
-import { ScrollViewStyleReset } from 'expo-router/html'
 import type { PropsWithChildren } from 'react'
+
+import { ScrollViewStyleReset } from 'expo-router/html'
 
 // Initialize Unistyles for web static rendering
 import '@/lib/styles/unistyles'
@@ -9,55 +10,55 @@ export default function Root({ children }: PropsWithChildren) {
 		<html lang="es">
 			<head>
 				<meta charSet="utf-8" />
-				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+				<meta content="IE=edge" httpEquiv="X-UA-Compatible" />
 				<meta
-					name="viewport"
 					content="width=device-width, initial-scale=1, shrink-to-fit=no"
+					name="viewport"
 				/>
 
 				{/* SEO and Performance Meta Tags */}
-				<meta name="theme-color" content="#ffffff" />
-				<meta name="color-scheme" content="light dark" />
-				<meta name="mobile-web-app-capable" content="yes" />
-				<meta name="apple-mobile-web-app-capable" content="yes" />
-				<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-				<meta name="apple-mobile-web-app-title" content="TOLO" />
+				<meta content="#ffffff" name="theme-color" />
+				<meta content="light dark" name="color-scheme" />
+				<meta content="yes" name="mobile-web-app-capable" />
+				<meta content="yes" name="apple-mobile-web-app-capable" />
+				<meta content="default" name="apple-mobile-web-app-status-bar-style" />
+				<meta content="TOLO" name="apple-mobile-web-app-title" />
 
-				<link rel="apple-touch-icon" href="/icon.png" />
-				<link rel="manifest" href="/manifest.json" />
+				<link href="/icon.png" rel="apple-touch-icon" />
+				<link href="/manifest.json" rel="manifest" />
 
 				{/* Default SEO - can be overridden per page */}
 				<meta
-					name="description"
 					content="TOLO - Buen Café. Tu cafetería de barrio donde cada taza cuenta una historia"
+					name="description"
 				/>
 				<meta
-					name="keywords"
 					content="TOLO, buen café, cafetería, espresso, latte, cappuccino, café de barrio, café casero"
+					name="keywords"
 				/>
-				<meta name="author" content="TOLO Coffee Shop" />
+				<meta content="TOLO Coffee Shop" name="author" />
 
 				{/* Open Graph Meta Tags */}
-				<meta property="og:type" content="website" />
-				<meta property="og:site_name" content="TOLO Coffee Shop" />
-				<meta property="og:title" content="TOLO - Buen Café" />
+				<meta content="website" property="og:type" />
+				<meta content="TOLO Coffee Shop" property="og:site_name" />
+				<meta content="TOLO - Buen Café" property="og:title" />
 				<meta
-					property="og:description"
 					content="Tu cafetería de barrio donde cada taza cuenta una historia"
+					property="og:description"
 				/>
-				<meta property="og:image" content="/icon.png" />
-				<meta property="og:image:width" content="512" />
-				<meta property="og:image:height" content="512" />
-				<meta property="og:image:alt" content="Logo de TOLO Coffee Shop" />
+				<meta content="/icon.png" property="og:image" />
+				<meta content="512" property="og:image:width" />
+				<meta content="512" property="og:image:height" />
+				<meta content="Logo de TOLO Coffee Shop" property="og:image:alt" />
 
 				{/* Twitter Card Meta Tags */}
-				<meta name="twitter:card" content="summary" />
-				<meta name="twitter:title" content="TOLO - Buen Café" />
+				<meta content="summary" name="twitter:card" />
+				<meta content="TOLO - Buen Café" name="twitter:title" />
 				<meta
-					name="twitter:description"
 					content="Tu cafetería de barrio donde cada taza cuenta una historia"
+					name="twitter:description"
 				/>
-				<meta name="twitter:image" content="/icon.png" />
+				<meta content="/icon.png" name="twitter:image" />
 
 				{/* Disable body scrolling on web for native-like experience */}
 				<ScrollViewStyleReset />

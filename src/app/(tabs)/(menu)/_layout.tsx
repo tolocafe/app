@@ -1,5 +1,6 @@
-import { Stack } from 'expo-router'
 import { useLingui } from '@lingui/react/macro'
+import { Stack } from 'expo-router'
+
 import { defaultStackScreenOptions } from '@/lib/navigation'
 
 export const unstable_settings = {
@@ -14,7 +15,7 @@ export default function MenuLayout() {
 			<Stack.Screen name="index" options={{ title: t`Menu` }} />
 			<Stack.Screen
 				name="[id]"
-				options={{ title: '', headerTransparent: true }}
+				options={{ headerTransparent: true, title: '' }}
 			/>
 		</Stack>
 	)

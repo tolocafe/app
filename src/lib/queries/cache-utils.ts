@@ -1,4 +1,4 @@
-import { queryClient, persister } from '@/lib/query-client'
+import { persister, queryClient } from '@/lib/query-client'
 
 /**
  * Clears all cached data including in-memory queries and persisted cache
@@ -11,6 +11,7 @@ export const clearAllCache = async () => {
 	try {
 		await persister.removeClient()
 	} catch (error) {
+		// eslint-disable-next-line no-console
 		console.warn('Failed to clear persisted cache:', error)
 	}
 }
