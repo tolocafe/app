@@ -21,18 +21,13 @@ import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
 } from '@/lib/queries/auth'
-import { isValidPhoneNumber } from '@/lib/utils/phone'
 
 const handleClose = () => {
 	router.back()
 }
 
 const signInSchema = z.object({
-	phoneNumber: z
-		.string()
-		.trim()
-		.min(1, 'Please enter a phone number')
-		.refine((value) => isValidPhoneNumber(value), 'Enter a valid phone number'),
+	phoneNumber: z.string().trim().min(1, 'Please enter a phone number'),
 	verificationCode: z
 		.string()
 		.trim()
