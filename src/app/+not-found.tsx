@@ -1,10 +1,10 @@
+import '@/lib/styles/unistyles'
+
 import { Link, Stack } from 'expo-router'
 import Head from 'expo-router/head'
 import { View } from 'react-native'
 import { H1, Text } from '@/components/Text'
 import { StyleSheet } from 'react-native-unistyles'
-
-import '@/lib/styles/unistyles'
 
 export default function NotFoundScreen() {
 	return (

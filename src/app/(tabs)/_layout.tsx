@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import Tabs from '@/components/Tabs'
 import { useLingui } from '@lingui/react/macro'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -5,7 +6,6 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/lib/constants/colors'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
 import { useOrderStats } from '@/lib/stores/order-store'
-import { Platform } from 'react-native'
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme()

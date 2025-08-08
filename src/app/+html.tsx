@@ -1,7 +1,8 @@
 import { ScrollViewStyleReset } from 'expo-router/html'
-import React, { type PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
-import '@/lib/styles/unistyles' // Initialize Unistyles for web static rendering
+// Initialize Unistyles for web static rendering
+import '@/lib/styles/unistyles'
 
 export default function Root({ children }: PropsWithChildren) {
 	return (

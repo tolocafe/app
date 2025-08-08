@@ -18,7 +18,7 @@ import {
 } from '@/lib/queries/auth'
 import { Button } from '@/components/Button'
 
-export default function SignInModal() {
+export default function SignIn() {
 	const { t } = useLingui()
 	const { itemName } = useLocalSearchParams<{ itemName?: string }>()
 	const [stage, setStage] = useState<'phone' | 'code'>('phone')
