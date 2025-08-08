@@ -260,7 +260,7 @@ export default Sentry.withSentry(
 		dsn: environment.SENTRY_DSN,
 		enableLogs: true,
 		sendDefaultPii: true,
-		tracesSampleRate: 1,
+		tracesSampleRate: 0.5,
 	}),
 	app,
 )

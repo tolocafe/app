@@ -7,8 +7,11 @@ Sentry.init({
 	integrations: [
 		Sentry.mobileReplayIntegration(),
 		Sentry.feedbackIntegration(),
+		Sentry.httpClientIntegration(),
+		Sentry.screenshotIntegration(),
 	],
 	replaysOnErrorSampleRate: 1,
 	replaysSessionSampleRate: 0.1,
-	sendDefaultPii: false,
+	sendDefaultPii: true,
+	tracesSampleRate: 0.5,
 })
