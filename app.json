@@ -71,8 +71,9 @@
 					"resizeMode": "contain"
 				}
 			],
-			"react-native-edge-to-edge"
-		],
+							"react-native-edge-to-edge",
+				"react-native-keyboard-controller"
+			],
 		"runtimeVersion": {
 			"policy": "fingerprint"
 		},
