@@ -9,7 +9,6 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native'
 import * as Sentry from '@sentry/react-native'
-import 'react-native-reanimated'
 import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
