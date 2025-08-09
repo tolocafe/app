@@ -13,6 +13,7 @@ module.exports = (api) => {
 				},
 			],
 			'@lingui/babel-plugin-lingui-macro',
+			'react-native-reanimated/plugin',
 		],
 		presets: [['babel-preset-expo']],
 	}

@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useForm } from '@tanstack/react-form'
@@ -115,7 +116,7 @@ export default function SignIn() {
 				</View>
 			)}
 
-			<View style={styles.content}>
+			<KeyboardAwareScrollView contentContainerStyle={styles.content}>
 				<View style={styles.authContainer}>
 					{stage === 'phone' ? (
 						<>
@@ -223,7 +224,7 @@ export default function SignIn() {
 						</>
 					)}
 				</View>
-			</View>
+			</KeyboardAwareScrollView>
 		</View>
 	)
 }
@@ -252,7 +253,7 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.layout.screenPadding,
 	},
 	content: {
-		flex: 1,
+		flexGrow: 1,
 		justifyContent: 'center',
 	},
 	errorText: {
