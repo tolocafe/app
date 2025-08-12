@@ -16,6 +16,7 @@ module.exports = {
 			displayName: 'utils',
 			moduleNameMapper: {
 				'^@/(.*)$': '<rootDir>/src/$1',
+				'^@common/(.*)$': '<rootDir>/common/$1',
 			},
 			testEnvironment: 'node',
 			testMatch: [
@@ -29,6 +30,7 @@ module.exports = {
 			displayName: 'components',
 			moduleNameMapper: {
 				'^@/(.*)$': '<rootDir>/src/$1',
+				'^@common/(.*)$': '<rootDir>/common/$1',
 			},
 			preset: 'react-native',
 			setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

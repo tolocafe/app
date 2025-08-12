@@ -1,5 +1,7 @@
 import { mutationOptions } from '@tanstack/react-query'
 
+import type { CreateOrder } from '@common/schemas'
+
 import { api } from '@/lib/services/api-service'
 
 import type { Order } from '@/lib/stores/order-store'
@@ -37,10 +39,7 @@ export type CreateOrderResponse = {
 }
 
 export const createOrderMutationOptions = mutationOptions({
-	mutationFn: async (orderData: CreateOrderRequest) => {
-		const response = await api.orders.create(orderData)
-		return response
-	},
+	mutationFn: (data: CreateOrder) => api.orders.create(data),
 })
 
 // Helper function to convert our internal Order format to API format
@@ -51,14 +50,14 @@ export function convertOrderToApiFormat(order: Order): CreateOrderRequest {
 			sum: 0, // Server will calculate the total
 			type: 'cash',
 		},
-		products: order.items.map((item) => ({
+		products: order.products.map((item) => ({
 			count: item.quantity,
 			// Price will be calculated by the server based on product_id
 			modifications: item.modifications?.map((module_) => ({
 				count: 1,
 				modification_id: module_.id,
 			})),
-			product_id: item.productId,
+			product_id: item.id,
 		})),
 		service_mode: '2', // takeaway by default
 	}

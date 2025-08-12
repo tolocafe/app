@@ -1,4 +1,4 @@
-import { FlatList, TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
@@ -10,7 +10,7 @@ import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, H3, Paragraph, Text } from '@/components/Text'
 import { selfQueryOptions } from '@/lib/queries/auth'
-import { useOrderData, useOrderStats } from '@/lib/stores/order-store'
+import { useCurrentOrder, useOrderStats } from '@/lib/stores/order-store'
 
 import type { Order } from '@/lib/stores/order-store'
 
@@ -26,12 +26,12 @@ export default function Orders() {
 	const { data: user } = useQuery(selfQueryOptions)
 	const isAuthenticated = Boolean(user)
 	const { t } = useLingui()
-	const { currentOrder, orders } = useOrderData()
+	const currentOrder = useCurrentOrder()
 	const { totalItems } = useOrderStats()
 
 	const handleCurrentOrderPress = () => {
 		if (currentOrder) {
-			router.push(`/(tabs)/orders/${currentOrder.id}?current=true`)
+			router.push(`/(tabs)/orders/current`)
 		}
 	}
 
@@ -53,7 +53,7 @@ export default function Orders() {
 				</Text>
 			</View>
 			<Paragraph style={styles.orderItems}>
-				<Trans>{item.items.length} items</Trans>
+				<Trans>{item.products.length} items</Trans>
 			</Paragraph>
 			<Paragraph>
 				{item.totalAmount > 0
@@ -72,7 +72,7 @@ export default function Orders() {
 				<Head>
 					<title>{t`Orders`}</title>
 				</Head>
-				<ScreenContainer>
+				<ScreenContainer noScroll>
 					<View style={styles.signInContainer}>
 						<H2 style={styles.signInTitle}>
 							<Trans>Sign In Required</Trans>
@@ -133,18 +133,12 @@ export default function Orders() {
 
 				{/* Order History */}
 				<View style={styles.ordersContainer}>
-					{orders.length > 0 ? (
+					{currentOrder ? (
 						<>
 							<H2 style={styles.sectionTitle}>
 								<Trans>Order History</Trans>
 							</H2>
-							<FlatList
-								contentContainerStyle={styles.ordersList}
-								data={orders}
-								keyExtractor={(item) => item.id}
-								renderItem={renderOrderItem}
-								showsVerticalScrollIndicator={false}
-							/>
+							{renderOrderItem({ item: currentOrder })}
 						</>
 					) : (
 						<>
@@ -232,22 +226,20 @@ const styles = StyleSheet.create((theme) => ({
 	signInContainer: {
 		alignItems: 'center',
 		flex: 1,
+		gap: theme.spacing.md,
 		justifyContent: 'center',
 		paddingHorizontal: theme.spacing.lg,
 		paddingVertical: theme.spacing.xxl,
 	},
 	signInSubtitle: {
-		lineHeight: theme.fontSizes.xl,
-		marginBottom: theme.spacing.xl,
-		opacity: 0.7,
+		color: theme.colors.textSecondary,
 		textAlign: 'center',
 	},
 	signInTitle: {
-		marginBottom: theme.spacing.md,
 		textAlign: 'center',
 	},
 	subtitle: {
-		opacity: 0.8,
+		color: theme.colors.textSecondary,
 	},
 	tapToEdit: {
 		color: theme.colors.surface,

@@ -46,7 +46,7 @@ describe('useOrderStats hook', () => {
 		// Add an item
 		act(() => {
 			addItemResult.current({
-				productId: 'test-product-1',
+				id: 'test-product-1',
 				quantity: 2,
 			})
 		})
@@ -62,14 +62,14 @@ describe('useOrderStats hook', () => {
 		// Add multiple items
 		act(() => {
 			addItemResult.current({
-				productId: 'product-1',
+				id: 'product-1',
 				quantity: 1,
 			})
 		})
 
 		act(() => {
 			addItemResult.current({
-				productId: 'product-2',
+				id: 'product-2',
 				quantity: 3,
 			})
 		})
@@ -85,14 +85,14 @@ describe('useOrderStats hook', () => {
 		// Add same product twice
 		act(() => {
 			addItemResult.current({
-				productId: 'product-1',
+				id: 'product-1',
 				quantity: 2,
 			})
 		})
 
 		act(() => {
 			addItemResult.current({
-				productId: 'product-1',
+				id: 'product-1',
 				quantity: 1,
 			})
 		})
@@ -109,7 +109,7 @@ describe('useOrderStats hook', () => {
 		// Add items first
 		act(() => {
 			addItemResult.current({
-				productId: 'product-1',
+				id: 'product-1',
 				quantity: 2,
 			})
 		})

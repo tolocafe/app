@@ -7,8 +7,10 @@
 		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@common/*": ["./common/*"]
 		},
 		"removeComments": true,
 		"skipLibCheck": true,

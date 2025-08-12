@@ -5,7 +5,7 @@
 	},
 	"build": {
 		"common": {
-			"bun": "1.2.19",
+			"bun": "1.2.20",
 			"node": "22.18.0"
 		},
 		"development": {

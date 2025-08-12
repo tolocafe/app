@@ -17,13 +17,13 @@ describe('order utilities', () => {
 			const order: Order = {
 				createdAt: new Date('2023-01-01'),
 				id: 'test-order-1',
-				items: [
+				products: [
 					{
-						productId: 'prod-123',
+						id: 'prod-123',
 						quantity: 2,
 					},
 					{
-						productId: 'prod-456',
+						id: 'prod-456',
 						quantity: 1,
 					},
 				],
@@ -61,9 +61,9 @@ describe('order utilities', () => {
 				createdAt: new Date('2023-01-01'),
 				customerNote: 'Extra hot, no foam',
 				id: 'test-order-2',
-				items: [
+				products: [
 					{
-						productId: 'prod-789',
+						id: 'prod-789',
 						quantity: 1,
 					},
 				],
@@ -81,7 +81,7 @@ describe('order utilities', () => {
 			const order: Order = {
 				createdAt: new Date('2023-01-01'),
 				id: 'test-order-3',
-				items: [
+				products: [
 					{
 						modifications: [
 							{
@@ -95,7 +95,7 @@ describe('order utilities', () => {
 								price: 0.5,
 							},
 						],
-						productId: 'prod-coffee',
+						id: 'prod-coffee',
 						quantity: 1,
 					},
 				],
@@ -122,7 +122,7 @@ describe('order utilities', () => {
 			const order: Order = {
 				createdAt: new Date('2023-01-01'),
 				id: 'empty-order',
-				items: [],
+				products: [],
 				status: 'draft',
 				totalAmount: 0,
 				updatedAt: new Date('2023-01-01'),
@@ -137,9 +137,9 @@ describe('order utilities', () => {
 			const order: Order = {
 				createdAt: new Date('2023-01-01'),
 				id: 'test-defaults',
-				items: [
+				products: [
 					{
-						productId: 'prod-test',
+						id: 'prod-test',
 						quantity: 1,
 					},
 				],

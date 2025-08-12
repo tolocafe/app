@@ -1,8 +1,14 @@
 import * as AWS from '@aws-sdk/client-sns'
 
-import type { ClientData, PosterApiResponse } from '@/lib/api'
+import type { ClientData, PosterApiResponse } from '@common/api'
 
-const snsClient = new AWS.SNS({ region: 'us-east-1' })
+const snsClient = new AWS.SNS({
+	credentials: {
+		accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+	},
+	region: 'us-east-1',
+})
 
 const BASE_URL = 'https://joinposter.com/api'
 

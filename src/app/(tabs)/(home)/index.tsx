@@ -9,50 +9,42 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 import Head from 'expo-router/head'
 import Animated from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
-import { H2, H3, Paragraph } from '@/components/Text'
+import { H2, H3, H4, Paragraph } from '@/components/Text'
 import { POSTER_BASE_URL } from '@/lib/api'
 import { selfQueryOptions } from '@/lib/queries/auth'
 import {
 	categoriesQueryOptions,
 	productsQueryOptions,
 } from '@/lib/queries/menu'
-import { useAddItem } from '@/lib/stores/order-store'
+import { useAddItemGuarded } from '@/lib/stores/order-store'
 import { formatPosterPrice } from '@/lib/utils/price'
 
 import type { PosterCategory, PosterProduct } from '@/lib/api'
 
 export default function Menu() {
 	const { t } = useLingui()
-	const addItem = useAddItem()
-	const { data: user } = useQuery(selfQueryOptions)
-	const isAuthenticated = Boolean(user)
+	const addItem = useAddItemGuarded()
+	useQuery(selfQueryOptions)
 
 	const { data: menu, error, isFetching } = useQuery(productsQueryOptions)
 	const { data: categories } = useQuery(categoriesQueryOptions)
 
 	const handleAddToBag = (item: PosterProduct) => {
-		if (isAuthenticated) {
-			addItem({ productId: item.product_id, quantity: 1 })
-		} else {
-			router.push({
-				params: { itemName: item.product_name },
-				pathname: '/sign-in',
-			})
-		}
+		addItem({ id: item.product_id, quantity: 1 })
 	}
 
 	const renderMenuItem = ({ item }: { item: PosterProduct }) => {
 		const firstPrice = Object.values(item.price)[0]
 
 		return (
-			<Link href={`/(tabs)/(menu)/${item.product_id}`}>
+			<Link href={`/(tabs)/(home)/${item.product_id}`}>
 				<View style={styles.menuItem}>
 					<Animated.View
 						sharedTransitionTag={`menu-item-${item.product_id}`}
@@ -74,7 +66,7 @@ export default function Menu() {
 					</Animated.View>
 					<View style={styles.menuItemContent}>
 						<View style={styles.menuItemHeader}>
-							<H3>{item.product_name}</H3>
+							<H4>{item.product_name}</H4>
 						</View>
 						<Paragraph style={styles.menuItemDescription}>
 							{item.product_production_description}
@@ -110,7 +102,7 @@ export default function Menu() {
 
 		return (
 			<View key={category.category_id} style={styles.categorySection}>
-				<H2 style={styles.categoryTitle}>{category.category_name}</H2>
+				<H3 style={styles.categoryTitle}>{category.category_name}</H3>
 				<FlatList
 					contentContainerStyle={styles.categoryItems}
 					data={categoryItems}
@@ -168,7 +160,10 @@ export default function Menu() {
 				/>
 				<meta content="/" property="og:url" />
 			</Head>
-			<ScreenContainer>
+			<ScreenContainer contentInsetAdjustmentBehavior="automatic">
+				<View style={styles.categoryTitle}>
+					<H2>Menu</H2>
+				</View>
 				{categories.map((category) => renderCategorySection(category))}
 			</ScreenContainer>
 		</>

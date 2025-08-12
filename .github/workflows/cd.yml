@@ -16,7 +16,7 @@ jobs:
       - name: 🧄 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.19
+          bun-version: 1.2.20
 
       - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8

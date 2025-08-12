@@ -1,3 +1,8 @@
+import {
+	CreateOrderSchema,
+	RequestOtpSchema,
+	VerifyOtpSchema,
+} from '@common/schemas'
 import * as Sentry from '@sentry/cloudflare'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
@@ -16,11 +21,6 @@ import {
 	sendSms,
 	updatePosterClient,
 } from './utils/poster'
-import {
-	createOrderSchema,
-	requestOtpSchema,
-	verifyOtpSchema,
-} from './utils/schemas'
 
 const app = new Hono<{
 	Bindings: {
@@ -86,7 +86,7 @@ app
 	})
 
 	.post('/auth/request-otp', async (c) => {
-		const { email, name, phone } = requestOtpSchema.parse(await c.req.json())
+		const { email, name, phone } = RequestOtpSchema.parse(await c.req.json())
 
 		const existingClient = await getPosterClientByPhone(
 			c.env.POSTER_TOKEN,
@@ -109,7 +109,7 @@ app
 			sendSms(
 				c.env.POSTER_TOKEN,
 				phone,
-				`Your verification code: ${code}`,
+				`[TOLO] Tu código de verificación es ${code}`,
 				// eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
 			).catch((error) => {
 				// eslint-disable-next-line no-console
@@ -122,7 +122,7 @@ app
 		return c.json({ success: true })
 	})
 	.post('/auth/verify-otp', async (c) => {
-		const { code, phone, sessionName } = verifyOtpSchema.parse(
+		const { code, phone, sessionName } = VerifyOtpSchema.parse(
 			await c.req.json(),
 		)
 
@@ -232,6 +232,7 @@ app
 		const clientId = await authenticate(c, c.env.JWT_SECRET)
 
 		const bodyUnknown = (await c.req.json()) as unknown
+
 		if (
 			typeof bodyUnknown !== 'object' ||
 			bodyUnknown === null ||
@@ -240,8 +241,8 @@ app
 			throw new HTTPException(400, { message: 'Invalid body' })
 		}
 
-		const validatedData = createOrderSchema.parse({
-			...(bodyUnknown as Record<string, unknown>),
+		const validatedData = CreateOrderSchema.parse({
+			...bodyUnknown,
 			client_id: clientId,
 		})
 
@@ -251,6 +252,7 @@ app
 				validatedData,
 				clientId,
 			)
+
 			return c.json({ order, success: true }, 201, defaultJsonHeaders)
 		} catch (error) {
 			throw new HTTPException(500, {

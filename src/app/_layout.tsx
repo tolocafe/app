@@ -12,6 +12,7 @@ import * as Sentry from '@sentry/react-native'
 import 'react-native-reanimated'
 import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
@@ -55,34 +56,37 @@ function RootLayout() {
 	}, [updates.channel, updates.error, updates.runtimeVersion, updates.updateId])
 
 	return (
-		<QueryProvider>
-			<LanguageProvider>
-				<I18nProvider i18n={i18n}>
-					<ThemeProvider
-						value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-					>
-						<StatusBar style="auto" />
-						<Stack>
-							<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-							<Stack.Screen name="+not-found" />
-							<Stack.Screen
-								name="sign-in"
-								options={{
-									animation: Platform.select({
-										default: undefined,
-										web: 'fade',
-									}),
-									presentation: Platform.select({
-										default: 'modal',
-										web: 'transparentModal',
-									}),
-								}}
-							/>
-						</Stack>
-					</ThemeProvider>
-				</I18nProvider>
-			</LanguageProvider>
-		</QueryProvider>
+		<KeyboardProvider>
+			<QueryProvider>
+				<LanguageProvider>
+					<I18nProvider i18n={i18n}>
+						<ThemeProvider
+							value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+						>
+							<StatusBar style="auto" />
+							<Stack>
+								<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+								<Stack.Screen name="+not-found" />
+								<Stack.Screen
+									name="sign-in"
+									options={{
+										animation: Platform.select({
+											default: undefined,
+											web: 'fade',
+										}),
+										headerShown: false,
+										presentation: Platform.select({
+											default: 'modal',
+											web: 'transparentModal',
+										}),
+									}}
+								/>
+							</Stack>
+						</ThemeProvider>
+					</I18nProvider>
+				</LanguageProvider>
+			</QueryProvider>
+		</KeyboardProvider>
 	)
 }
 

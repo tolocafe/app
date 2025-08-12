@@ -49,6 +49,20 @@ export function H3({
 	)
 }
 
+export function H4({
+	accessibilityRole = 'header',
+	style,
+	...rest
+}: AppTextProps) {
+	return (
+		<RNText
+			accessibilityRole={accessibilityRole}
+			{...rest}
+			style={[styles.text, styles.h4, style]}
+		/>
+	)
+}
+
 export function Label({ style, ...rest }: AppTextProps) {
 	return <RNText {...rest} style={[styles.text, styles.label, style]} />
 }
@@ -63,16 +77,24 @@ export function Text({ style, ...rest }: AppTextProps) {
 
 const styles = StyleSheet.create((theme) => ({
 	h1: {
+		color: theme.colors.text,
 		fontSize: theme.typography.h1.fontSize,
 		fontWeight: theme.typography.h1.fontWeight,
 	},
 	h2: {
+		color: theme.colors.text,
 		fontSize: theme.typography.h2.fontSize,
 		fontWeight: theme.typography.h2.fontWeight,
 	},
 	h3: {
+		color: theme.colors.text,
 		fontSize: theme.typography.h3.fontSize,
 		fontWeight: theme.typography.h3.fontWeight,
+	},
+	h4: {
+		color: theme.colors.textSecondary,
+		fontSize: theme.typography.h4.fontSize,
+		fontWeight: theme.typography.h4.fontWeight,
 	},
 	label: {
 		fontSize: theme.typography.body.fontSize,

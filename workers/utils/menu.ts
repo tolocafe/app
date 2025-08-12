@@ -2,7 +2,7 @@ import type {
 	PosterApiResponse,
 	PosterCategory,
 	PosterProduct,
-} from '../../src/lib/api'
+} from '@common/api'
 
 const BASE_URL = 'https://joinposter.com/api'
 

@@ -16,7 +16,7 @@ const lightTheme = {
 		primary: '#3D6039',
 		surface: '#FFFFFF',
 		text: '#0C0C0C',
-		textSecondary: '#666666',
+		textSecondary: '#121212',
 	},
 	fontSizes: {
 		lg: 18,
@@ -68,7 +68,7 @@ const lightTheme = {
 		},
 		h3: {
 			fontSize: 20,
-			fontWeight: '600',
+			fontWeight: '800',
 		},
 		h4: {
 			fontSize: 18,
@@ -86,7 +86,7 @@ const darkTheme = {
 		primary: '#8BC34A',
 		surface: '#1E1E1E',
 		text: '#FFFFFF',
-		textSecondary: '#B0B0B0',
+		textSecondary: '#999999',
 	} satisfies (typeof lightTheme)['colors'],
 }
 

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans } from '@lingui/react/macro'
+import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -15,32 +16,55 @@ import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H1, H2, H3, Label, Paragraph, Text } from '@/components/Text'
 import { POSTER_BASE_URL } from '@/lib/api'
+import { useTabBarHeight } from '@/lib/navigation/tab-bar-height'
 import { productQueryOptions } from '@/lib/queries/product'
-import { useAddItem } from '@/lib/stores/order-store'
+import { useAddItemGuarded } from '@/lib/stores/order-store'
+import { formatPosterPrice } from '@/lib/utils/price'
 
 const handleClose = () => {
 	router.back()
 }
 
-export default function MenuItemDetail() {
+export default function MenuDetail() {
+	const tabBarHeight = useTabBarHeight()
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const [quantity, setQuantity] = useState(1)
-	const addItem = useAddItem()
 
+	const addItem = useAddItemGuarded()
 	const { data: product } = useQuery(productQueryOptions(id))
 
-	const handleAddToOrder = () => {
-		if (!product) return
+	const { Field, handleSubmit, setFieldValue, Subscribe } = useForm({
+		defaultValues: {
+			modifications: {} as Record<string, number>,
+			productId: id,
+			quantity: 1,
+		},
+		onSubmit: ({ value }) => {
+			addItem({
+				id: value.productId,
+				quantity: value.quantity,
+			})
+		},
+	})
 
-		addItem({
-			productId: product.product_id,
-			quantity,
-		})
-	}
+	// Default each group to its first modification when product loads
+	useEffect(() => {
+		const groups = product?.group_modifications
+		if (!groups?.length) return
 
-	const incrementQuantity = () => setQuantity((previous) => previous + 1)
+		for (const group of groups) {
+			if (group.modifications.length > 0) {
+				setFieldValue(
+					`modifications.${group.dish_modification_group_id}`,
+					group.modifications[0].dish_modification_id,
+				)
+			}
+		}
+	}, [product?.group_modifications, setFieldValue])
+
+	const incrementQuantity = () =>
+		setFieldValue('quantity', (previous) => previous + 1)
 	const decrementQuantity = () =>
-		setQuantity((previous) => Math.max(1, previous - 1))
+		setFieldValue('quantity', (previous) => Math.max(1, previous - 1))
 
 	if (!product) {
 		return (
@@ -62,8 +86,8 @@ export default function MenuItemDetail() {
 		)
 	}
 
-	// Get the first available price (usually for the main spot)
-	const price = Object.values(product.price)[0] || '0'
+	// Get the first available unit price in cents (usually for the main spot)
+	const unitPriceCents = Object.values(product.price)[0] ?? '0'
 	const hasImage = product.photo_origin || product.photo
 
 	return (
@@ -71,7 +95,10 @@ export default function MenuItemDetail() {
 			<Head>
 				<title>{product.product_name} - TOLO Good Coffee</title>
 			</Head>
-			<ScreenContainer contentInsetAdjustmentBehavior="never">
+			<ScreenContainer
+				contentContainerStyle={{ paddingBottom: tabBarHeight }}
+				contentInsetAdjustmentBehavior="never"
+			>
 				<Animated.View
 					sharedTransitionTag={`menu-item-${product.product_id}`}
 					style={styles.heroImageContainer}
@@ -99,7 +126,7 @@ export default function MenuItemDetail() {
 				</Animated.View>
 
 				<View style={styles.content}>
-					<H2 style={styles.price}>${Number.parseFloat(price).toFixed(2)}</H2>
+					<H2 style={styles.price}>{formatPosterPrice(unitPriceCents)}</H2>
 
 					{product.product_production_description && (
 						<Paragraph style={styles.description}>
@@ -138,6 +165,75 @@ export default function MenuItemDetail() {
 						</View>
 					)}
 
+					{/* Debug: remove if not needed */}
+
+					{/* Modifications */}
+					{product.group_modifications &&
+						product.group_modifications.length > 0 && (
+							<View style={styles.modificationsSection}>
+								<H3 style={styles.sectionTitle}>
+									<Trans>Available modifications</Trans>
+								</H3>
+								{product.group_modifications.map((group) => (
+									<View
+										key={group.dish_modification_group_id}
+										style={styles.modGroup}
+									>
+										<Label style={styles.modGroupTitle}>{group.name}</Label>
+										<Field
+											name={`modifications.${group.dish_modification_group_id}`}
+										>
+											{(field) => (
+												<View
+													accessibilityRole="radiogroup"
+													style={styles.modButtonGroup}
+												>
+													{group.modifications.map((modification) => {
+														const isSelected =
+															field.state.value ===
+															modification.dish_modification_id
+														return (
+															<TouchableOpacity
+																accessibilityRole="radio"
+																accessibilityState={{ selected: isSelected }}
+																key={modification.dish_modification_id}
+																onPress={() =>
+																	field.handleChange(
+																		modification.dish_modification_id,
+																	)
+																}
+																style={styles.modButton}
+															>
+																<View style={styles.modButtonRow}>
+																	<Text style={styles.modButtonText}>
+																		{modification.name}
+																		{modification.price > 0
+																			? ` (+${formatPosterPrice(modification.price)})`
+																			: ''}
+																	</Text>
+																	{isSelected ? (
+																		<View style={styles.modCheck}>
+																			<Ionicons
+																				color={styles.modCheckIcon.color}
+																				name="checkmark"
+																				size={14}
+																			/>
+																		</View>
+																	) : (
+																		<View style={styles.modCheckPlaceholder} />
+																	)}
+																</View>
+															</TouchableOpacity>
+														)
+													})}
+												</View>
+											)}
+										</Field>
+									</View>
+								))}
+							</View>
+						)}
+
 					{/* Quantity Controls */}
 					<View style={styles.quantitySection}>
 						<Label style={styles.quantityLabel}>
@@ -150,7 +246,11 @@ export default function MenuItemDetail() {
 							>
 								<Ionicons color="#333" name="remove" size={20} />
 							</TouchableOpacity>
-							<Label style={styles.quantityText}>{quantity}</Label>
+							<Subscribe selector={(state) => state.values.quantity}>
+								{(quantity) => (
+									<Label style={styles.quantityText}>{quantity}</Label>
+								)}
+							</Subscribe>
 							<TouchableOpacity
 								onPress={incrementQuantity}
 								style={styles.quantityButton}
@@ -160,10 +260,15 @@ export default function MenuItemDetail() {
 						</View>
 					</View>
 
-					<Button onPress={handleAddToOrder}>
-						<Trans>
-							Add to Order - ${(Number.parseFloat(price) * quantity).toFixed(2)}
-						</Trans>
+					<Button onPress={handleSubmit}>
+						<Subscribe selector={(state) => state.values.quantity}>
+							{(quantity) => (
+								<Trans>
+									Add to Order -{' '}
+									{formatPosterPrice(Number(unitPriceCents) * quantity)}
+								</Trans>
+							)}
+						</Subscribe>
 					</Button>
 				</View>
 			</ScreenContainer>
@@ -243,6 +348,77 @@ const styles = StyleSheet.create((theme) => ({
 	loadingText: {
 		color: theme.colors.textSecondary,
 	},
+	modButton: {
+		alignItems: 'center',
+		backgroundColor: theme.colors.surface,
+		borderColor: theme.colors.border,
+		borderRadius: theme.borderRadius.full,
+		borderWidth: 1,
+		justifyContent: 'center',
+		minHeight: 44,
+		minWidth: 64,
+		paddingHorizontal: theme.spacing.lg,
+		paddingVertical: theme.spacing.sm,
+	},
+	modButtonGroup: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: theme.spacing.sm,
+	},
+	modButtonRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: theme.spacing.sm,
+		justifyContent: 'space-between',
+	},
+	modButtonText: {
+		color: theme.colors.text,
+		fontSize: theme.typography.button.fontSize,
+		fontWeight: theme.fontWeights.semibold,
+		textAlign: 'center',
+	},
+	modCheckIcon: {
+		color: '#FFFFFF',
+	},
+	modCheck: {
+		alignItems: 'center',
+		backgroundColor: theme.colors.primary,
+		borderRadius: theme.borderRadius.full,
+		height: 20,
+		justifyContent: 'center',
+		width: 20,
+	},
+	modCheckPlaceholder: {
+		height: 20,
+		width: 20,
+	},
+	modGroup: {
+		gap: theme.spacing.xs,
+		marginBottom: theme.spacing.lg,
+	},
+	modGroupTitle: {
+		color: theme.colors.text,
+		marginBottom: theme.spacing.xs,
+	},
+	modificationsSection: {
+		marginBottom: theme.spacing.xl,
+	},
+	modItemName: {
+		color: theme.colors.text,
+		flexShrink: 1,
+		paddingRight: theme.spacing.md,
+	},
+	modItemPrice: {
+		color: theme.colors.textSecondary,
+	},
+	modItemRow: {
+		alignItems: 'center',
+		borderBottomColor: theme.colors.border,
+		borderBottomWidth: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingVertical: theme.spacing.xs,
+	},
 	placeholderImage: {
 		backgroundColor: theme.colors.border,
 	},
@@ -281,7 +457,6 @@ const styles = StyleSheet.create((theme) => ({
 		minWidth: 40,
 		textAlign: 'center',
 	},
-
 	sectionTitle: {
 		color: theme.colors.text,
 		marginBottom: theme.spacing.md,

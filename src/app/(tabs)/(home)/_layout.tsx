@@ -7,7 +7,7 @@ export const unstable_settings = {
 	initialRouteName: 'index',
 }
 
-export default function MenuLayout() {
+export default function HomeLayout() {
 	const { t } = useLingui()
 
 	return (

@@ -16,6 +16,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { z } from 'zod/v4'
 
 import { Button } from '@/components/Button'
+import ScreenContainer from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
 import {
 	requestOtpMutationOptions,
@@ -31,7 +32,8 @@ const signInSchema = z.object({
 	verificationCode: z
 		.string()
 		.trim()
-		.regex(/^\d{6}$/u, 'The code must be 6 digits'),
+		.regex(/^\d{6}$/u, 'The code must be 6 digits')
+		.or(z.literal('')),
 })
 
 export default function SignIn() {
@@ -100,7 +102,11 @@ export default function SignIn() {
 	}
 
 	return (
-		<View style={styles.container}>
+		<ScreenContainer
+			bounces={false}
+			contentContainerStyle={{ alignContent: 'center', padding: 10 }}
+			keyboardAware
+		>
 			<View style={styles.header}>
 				<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
 					<Text style={styles.closeButtonText}>✕</Text>
@@ -146,10 +152,12 @@ export default function SignIn() {
 								</Field>
 							</View>
 
-							<Subscribe selector={(state) => state.canSubmit}>
+							<Subscribe selector={(state) => state}>
 								{(canSubmit) => (
 									<Button
-										disabled={requestOtpMutation.isPending || !canSubmit}
+										disabled={
+											requestOtpMutation.isPending || !canSubmit.canSubmit
+										}
 										onPress={() => handleSubmit()}
 									>
 										{requestOtpMutation.isPending ? (
@@ -224,7 +232,7 @@ export default function SignIn() {
 					)}
 				</View>
 			</View>
-		</View>
+		</ScreenContainer>
 	)
 }
 
