@@ -50,19 +50,6 @@ export type FormattedCreateOrderResponse = Omit<
 	order: CreateOrderResponse['order'] & { sumFormatted: string }
 }
 
-export function formatCreateOrderResponse(
-	response: CreateOrderResponse,
-): FormattedCreateOrderResponse {
-	return {
-		...response,
-		order: {
-			...response.order,
-			sumFormatted: formatPosterPrice(response.order.sum),
-		},
-	}
-}
-
-// Helper function to convert our internal Order format to API format
 export function convertOrderToApiFormat(order: Order): CreateOrderRequest {
 	return {
 		comment: order.customerNote,
@@ -82,3 +69,18 @@ export function convertOrderToApiFormat(order: Order): CreateOrderRequest {
 		service_mode: '2', // takeaway by default
 	}
 }
+
+export function formatCreateOrderResponse(
+	response: CreateOrderResponse,
+): FormattedCreateOrderResponse {
+	return {
+		...response,
+		order: {
+			...response.order,
+			sumFormatted: formatPosterPrice(response.order.sum),
+		},
+	}
+}
+
+// Helper function to convert our internal Order format to API format
+// (moved above to satisfy lint rule)

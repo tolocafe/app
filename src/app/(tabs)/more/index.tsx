@@ -152,6 +152,33 @@ export default function More() {
 								<Button onPress={handleSignOut}>
 									<Trans>Sign Out</Trans>
 								</Button>
+								<View style={styles.userInfoDivider} />
+								<View style={styles.socialIconsRow}>
+									<TouchableOpacity
+										accessibilityRole="button"
+										onPress={() =>
+											Linking.openURL('https://instagram.com/tolo.cafe')
+										}
+										style={styles.socialIcon}
+									>
+										<Ionicons
+											color={styles.socialIcon.color}
+											name="logo-instagram"
+											size={28}
+										/>
+									</TouchableOpacity>
+									<TouchableOpacity
+										accessibilityRole="button"
+										onPress={() => Linking.openURL('https://wa.me/14155551234')}
+										style={styles.socialIcon}
+									>
+										<Ionicons
+											color={styles.socialIcon.color}
+											name="logo-whatsapp"
+											size={28}
+										/>
+									</TouchableOpacity>
+								</View>
 							</>
 						) : isLoadingUser ? (
 							<View style={styles.userInfoLoading}>
@@ -161,7 +188,7 @@ export default function More() {
 							</View>
 						) : (
 							<>
-								<Paragraph style={styles.signInPrompt}>
+								<Paragraph style={styles.userInfoText}>
 									<Trans>
 										Sign in to view your account information and access
 										personalized features.
@@ -238,40 +265,6 @@ export default function More() {
 								<Trans>Clear Cache</Trans>
 							)}
 						</Button>
-					</Card>
-				</View>
-
-				<View style={styles.section}>
-					<H2 style={styles.sectionTitle}>
-						<Trans>Connect</Trans>
-					</H2>
-					<Card>
-						<View style={styles.socialIconsRow}>
-							<TouchableOpacity
-								onPress={() =>
-									Linking.openURL('https://instagram.com/tolo.cafe')
-								}
-								accessibilityRole="button"
-								style={styles.socialIcon}
-							>
-								<Ionicons
-									name="logo-instagram"
-									size={28}
-									color={styles.socialIcon.color}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() => Linking.openURL('https://wa.me/14155551234')}
-								accessibilityRole="button"
-								style={styles.socialIcon}
-							>
-								<Ionicons
-									name="logo-whatsapp"
-									size={28}
-									color={styles.socialIcon.color}
-								/>
-							</TouchableOpacity>
-						</View>
 					</Card>
 				</View>
 
@@ -373,15 +366,6 @@ const styles = StyleSheet.create((theme) => ({
 		fontSize: theme.typography.caption.fontSize,
 		textAlign: 'center',
 	},
-	socialIconsRow: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		paddingVertical: theme.spacing.sm,
-	},
-	socialIcon: {
-		color: theme.colors.text,
-		marginHorizontal: theme.spacing.md,
-	},
 	hoursContainer: {
 		marginBottom: theme.spacing.sm,
 		marginTop: theme.spacing.lg,
@@ -457,12 +441,6 @@ const styles = StyleSheet.create((theme) => ({
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
 	},
-	signInPrompt: {
-		color: theme.colors.textSecondary,
-		lineHeight: 22,
-		marginBottom: theme.spacing.lg,
-		textAlign: 'center',
-	},
 	signOutButton: {
 		alignItems: 'center',
 		backgroundColor: theme.colors.primary,
@@ -475,6 +453,15 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.surface,
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
+	},
+	socialIcon: {
+		color: theme.colors.text,
+		marginHorizontal: theme.spacing.md,
+	},
+	socialIconsRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		paddingVertical: theme.spacing.sm,
 	},
 	// User Information Styles
 	userInfo: {

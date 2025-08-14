@@ -10,10 +10,10 @@ export type ButtonProps = {
 	accessibilityLabel?: string
 	children: ReactNode
 	disabled?: boolean
+	fullWidth?: boolean
 	onPress?: (event: GestureResponderEvent) => void
 	testID?: string
 	variant?: ButtonVariant
-	fullWidth?: boolean
 }
 
 type ButtonVariant = 'primary' | 'surface'
@@ -22,10 +22,10 @@ export function Button({
 	accessibilityLabel,
 	children,
 	disabled = false,
+	fullWidth = false,
 	onPress,
 	testID,
 	variant = 'primary',
-	fullWidth = false,
 }: ButtonProps) {
 	const isPrimary = variant === 'primary'
 
@@ -82,15 +82,15 @@ const styles = StyleSheet.create((theme) => ({
 		borderColor: theme.colors.border,
 		borderWidth: 1,
 	},
-	fullWidth: {
-		alignSelf: 'stretch',
-		flex: 1,
-	},
 	contentWrapper: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		gap: theme.spacing.xs,
 		justifyContent: 'center',
+	},
+	fullWidth: {
+		alignSelf: 'stretch',
+		flex: 1,
 	},
 	text: {
 		textTransform: 'uppercase',
