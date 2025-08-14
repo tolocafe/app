@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Platform, TouchableOpacity, View } from 'react-native'
+import { Alert, Linking, Platform, TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -145,6 +145,9 @@ export default function More() {
 									</>
 								)}
 
+								<Button onPress={() => router.push('/more/profile')}>
+									<Trans>Edit</Trans>
+								</Button>
 								<View style={styles.userInfoDivider} />
 								<Button onPress={handleSignOut}>
 									<Trans>Sign Out</Trans>
@@ -213,22 +216,6 @@ export default function More() {
 
 						<View style={styles.settingDivider} />
 
-						{/* Simple list entries that navigate to detail screens */}
-						<TouchableOpacity
-							onPress={() => router.push('/more/profile')}
-							style={styles.settingRow}
-						>
-							<Label style={styles.settingLabel}>
-								<Trans>Profile</Trans>
-							</Label>
-							<Ionicons
-								color={styles.caret.color}
-								name="chevron-forward"
-								size={20}
-							/>
-						</TouchableOpacity>
-						<View style={styles.settingDivider} />
-
 						<TouchableOpacity
 							onPress={() => router.push('/more/visit-us')}
 							style={styles.settingRow}
@@ -243,19 +230,6 @@ export default function More() {
 							/>
 						</TouchableOpacity>
 						<View style={styles.settingDivider} />
-						<TouchableOpacity
-							onPress={() => router.push('/more/connect')}
-							style={styles.settingRow}
-						>
-							<Label style={styles.settingLabel}>
-								<Trans>Connect</Trans>
-							</Label>
-							<Ionicons
-								color={styles.caret.color}
-								name="chevron-forward"
-								size={20}
-							/>
-						</TouchableOpacity>
 
 						<Button disabled={isClearingCache} onPress={handleClearCache}>
 							{isClearingCache ? (
@@ -266,6 +240,31 @@ export default function More() {
 						</Button>
 					</Card>
 				</View>
+
+				<View style={styles.section}>
+					<H2 style={styles.sectionTitle}>
+						<Trans>Connect</Trans>
+					</H2>
+					<Card>
+						<View style={styles.socialIconsRow}>
+							<TouchableOpacity
+								onPress={() => Linking.openURL('https://instagram.com/tolo.cafe')}
+								accessibilityRole="button"
+								style={styles.socialIcon}
+							>
+								<Ionicons name="logo-instagram" size={28} color={styles.socialIcon.color} />
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => Linking.openURL('https://wa.me/14155551234')}
+								accessibilityRole="button"
+								style={styles.socialIcon}
+							>
+								<Ionicons name="logo-whatsapp" size={28} color={styles.socialIcon.color} />
+							</TouchableOpacity>
+						</View>
+					</Card>
+				</View>
+
 				<View style={styles.footer}>
 					<Paragraph style={styles.footerText}>
 						<Trans>
@@ -363,6 +362,15 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.textSecondary,
 		fontSize: theme.typography.caption.fontSize,
 		textAlign: 'center',
+	},
+	socialIconsRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		paddingVertical: theme.spacing.sm,
+	},
+	socialIcon: {
+		color: theme.colors.text,
+		marginHorizontal: theme.spacing.md,
 	},
 	hoursContainer: {
 		marginBottom: theme.spacing.sm,
