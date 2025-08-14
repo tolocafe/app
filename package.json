@@ -83,6 +83,7 @@
 	"devDependencies": {
 		"@babel/core": "~7.26.0",
 		"@cloudflare/vitest-pool-workers": "0.8.61",
+		"@cloudflare/workers-types": "^4.20250813.0",
 		"@eslint/js": "~9.33.0",
 		"@lingui/babel-plugin-lingui-macro": "5.4.0",
 		"@react-native/metro-config": "0.80.2",

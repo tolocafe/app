@@ -16,12 +16,14 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": true,
-		"types": ["jest", "node"]
+		"types": ["jest", "node", "@cloudflare/workers-types"]
 	},
 	"extends": "expo/tsconfig.base",
 	"include": [
-		"**/*.ts",
-		"**/*.tsx",
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"workers/**/*.ts",
+		"workers/**/*.tsx",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
 		"eslint.config.mjs",

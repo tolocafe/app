@@ -4,7 +4,7 @@ import { testPhoneNumbers } from './constants'
 
 const DEFAULT_OTP_TTL = 300
 
-const TEST_OTP_CODE = process.env.TEST_OTP_CODE
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE as string | undefined
 
 export function generateOtp(length = 6): string {
 	return [...crypto.getRandomValues(new Uint32Array(length))]

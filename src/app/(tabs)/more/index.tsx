@@ -55,28 +55,26 @@ export default function More() {
 					</H2>
 
 					{user ? (
-						<Card>
-							<List>
-								{fullName ? (
-									<ListItem label={<Trans>Name</Trans>} text={fullName} />
-								) : null}
-								<ListItem
-									label={<Trans>Phone</Trans>}
-									text={user.phone || <Trans>Not provided</Trans>}
-								/>
-								<ListItem
-									label={<Trans>Wallet</Trans>}
-									text={formatPosterPrice(user.ewallet ?? '0')}
-								/>
-								<ListItem
-									accessibilityRole="link"
-									centered
-									label={<Trans>Edit Profile</Trans>}
-									labelColor="primary"
-									onPress={() => router.push('/more/profile')}
-								/>
-							</List>
-						</Card>
+						<List>
+							{fullName ? (
+								<ListItem label={<Trans>Name</Trans>} text={fullName} />
+							) : null}
+							<ListItem
+								label={<Trans>Phone</Trans>}
+								text={user.phone || <Trans>Not provided</Trans>}
+							/>
+							<ListItem
+								label={<Trans>Wallet</Trans>}
+								text={formatPosterPrice(user.ewallet ?? '0')}
+							/>
+							<ListItem
+								accessibilityRole="link"
+								centered
+								label={<Trans>Edit Profile</Trans>}
+								labelColor="primary"
+								onPress={() => router.push('/more/profile')}
+							/>
+						</List>
 					) : isLoadingUser ? (
 						<Card>
 							<Paragraph style={styles.userInfoText}>
@@ -103,55 +101,53 @@ export default function More() {
 						<Trans>Stores</Trans>
 					</H2>
 
-					<Card>
-						<List>
-							<ListItem
-								accessibilityRole="link"
-								chevron
-								label={<Trans>Visit Us</Trans>}
-								onPress={() => router.push('/more/visit-us')}
-							/>
-							<View style={styles.socialIconsRow}>
-								<TouchableOpacity
-									accessibilityRole="button"
-									onPress={() =>
-										Linking.openURL('https://instagram.com/tolo.cafe')
-									}
-									style={styles.socialIcon}
-								>
-									<Ionicons
-										color={styles.socialIcon.color}
-										name="logo-instagram"
-										size={28}
-									/>
-								</TouchableOpacity>
-								<TouchableOpacity
-									accessibilityRole="button"
-									onPress={() => Linking.openURL('https://wa.me/14155551234')}
-									style={styles.socialIcon}
-								>
-									<Ionicons
-										color={styles.socialIcon.color}
-										name="logo-whatsapp"
-										size={28}
-									/>
-								</TouchableOpacity>
-								<TouchableOpacity
-									accessibilityRole="button"
-									onPress={() =>
-										Linking.openURL('https://www.tiktok.com/@tolo.cafe')
-									}
-									style={styles.socialIcon}
-								>
-									<Ionicons
-										color={styles.socialIcon.color}
-										name="logo-tiktok"
-										size={28}
-									/>
-								</TouchableOpacity>
-							</View>
-						</List>
-					</Card>
+					<List>
+						<ListItem
+							accessibilityRole="link"
+							chevron
+							label={<Trans>Visit Us</Trans>}
+							onPress={() => router.push('/more/visit-us')}
+						/>
+						<View style={styles.socialIconsRow}>
+							<TouchableOpacity
+								accessibilityRole="button"
+								onPress={() =>
+									Linking.openURL('https://instagram.com/tolo.cafe')
+								}
+								style={styles.socialIcon}
+							>
+								<Ionicons
+									color={styles.socialIcon.color}
+									name="logo-instagram"
+									size={28}
+								/>
+							</TouchableOpacity>
+							<TouchableOpacity
+								accessibilityRole="button"
+								onPress={() => Linking.openURL('https://wa.me/14155551234')}
+								style={styles.socialIcon}
+							>
+								<Ionicons
+									color={styles.socialIcon.color}
+									name="logo-whatsapp"
+									size={28}
+								/>
+							</TouchableOpacity>
+							<TouchableOpacity
+								accessibilityRole="button"
+								onPress={() =>
+									Linking.openURL('https://www.tiktok.com/@tolo.cafe')
+								}
+								style={styles.socialIcon}
+							>
+								<Ionicons
+									color={styles.socialIcon.color}
+									name="logo-tiktok"
+									size={28}
+								/>
+							</TouchableOpacity>
+						</View>
+					</List>
 				</View>
 
 				<View style={styles.section}>
@@ -159,52 +155,50 @@ export default function More() {
 						<Trans>Settings</Trans>
 					</H2>
 
-					<Card>
-						<List>
-							<ListItem>
-								<View style={styles.settingRow}>
-									<Label style={styles.settingLabel}>
-										<Trans>Language</Trans>
-									</Label>
-									<DropdownMenu.Root>
-										<DropdownMenu.Trigger asChild>
-											<View style={styles.languageDropdownTrigger}>
-												<Label style={styles.languageDropdownText}>
-													{currentLanguage === 'en' ? 'English' : 'Español'}
-												</Label>
-												<Ionicons
-													color={styles.languageDropdownArrow.color}
-													name="chevron-down"
-													size={16}
-												/>
-											</View>
-										</DropdownMenu.Trigger>
-										<DropdownMenu.Content>
-											<DropdownMenu.Item
-												key="en"
-												onSelect={() => changeLanguage('en')}
-											>
-												<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
-											</DropdownMenu.Item>
-											<DropdownMenu.Item
-												key="es"
-												onSelect={() => changeLanguage('es')}
-											>
-												<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
-											</DropdownMenu.Item>
-										</DropdownMenu.Content>
-									</DropdownMenu.Root>
-								</View>
-							</ListItem>
+					<List>
+						<ListItem>
+							<View style={styles.settingRow}>
+								<Label style={styles.settingLabel}>
+									<Trans>Language</Trans>
+								</Label>
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild>
+										<View style={styles.languageDropdownTrigger}>
+											<Label style={styles.languageDropdownText}>
+												{currentLanguage === 'en' ? 'English' : 'Español'}
+											</Label>
+											<Ionicons
+												color={styles.languageDropdownArrow.color}
+												name="chevron-down"
+												size={16}
+											/>
+										</View>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content>
+										<DropdownMenu.Item
+											key="en"
+											onSelect={() => changeLanguage('en')}
+										>
+											<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											key="es"
+											onSelect={() => changeLanguage('es')}
+										>
+											<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
+										</DropdownMenu.Item>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							</View>
+						</ListItem>
 
-							<ListItem
-								accessibilityRole="link"
-								chevron
-								label={<Trans>App</Trans>}
-								onPress={() => router.push('/more/app')}
-							/>
-						</List>
-					</Card>
+						<ListItem
+							accessibilityRole="link"
+							chevron
+							label={<Trans>App</Trans>}
+							onPress={() => router.push('/more/app')}
+						/>
+					</List>
 				</View>
 
 				<View style={styles.footer}>
