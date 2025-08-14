@@ -126,7 +126,7 @@ app
 			await c.req.json(),
 		)
 
-		await verifyOtp(c.env.OTP_CODES, phone, code)
+		const { isTest } = await verifyOtp(c.env.OTP_CODES, phone, code)
 
 		const client = await getPosterClientByPhone(c.env.POSTER_TOKEN, phone)
 
@@ -139,7 +139,6 @@ app
 			c.env.KV_SESSIONS.get(clientId),
 		])
 
-		type SessionRecord = { createdAt: number; name: string; token: string }
 		const isSessionRecord = (value: unknown): value is SessionRecord =>
 			typeof value === 'object' &&
 			value !== null &&
@@ -162,9 +161,11 @@ app
 					{ createdAt: Date.now(), name: sessionName, token },
 				]),
 			),
-			updatePosterClient(c.env.POSTER_TOKEN, clientId, {
-				client_groups_id_client: 3,
-			}),
+			client.client_groups_id === '0'
+				? updatePosterClient(c.env.POSTER_TOKEN, clientId, {
+						client_groups_id_client: 3,
+					})
+				: Promise.resolve(),
 		])
 
 		// For web: set HttpOnly cookie. For native: client uses token from body
@@ -177,9 +178,9 @@ app
 				httpOnly: true,
 				// 30 days
 				maxAge: 60 * 60 * 24 * 30,
-				path: '/',
-				sameSite: 'Lax',
-				secure: true,
+				path: '/api',
+				sameSite: isTest ? 'None' : 'Lax',
+				secure: !isTest,
 			})
 		}
 
