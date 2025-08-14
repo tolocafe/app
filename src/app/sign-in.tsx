@@ -4,14 +4,16 @@ import {
 	Platform,
 	Pressable,
 	TextInput,
+	TouchableOpacity,
 	View,
 } from 'react-native'
 
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import { Stack, router, useLocalSearchParams } from 'expo-router'
 import { StyleSheet } from 'react-native-unistyles'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { z } from 'zod/v4'
 
 import { Button } from '@/components/Button'
@@ -102,6 +104,31 @@ export default function SignIn() {
 			contentContainerStyle={{ alignContent: 'center', padding: 10 }}
 			keyboardAware
 		>
+			<Stack.Screen
+				options={{
+					animation: Platform.select({
+						default: undefined,
+						web: 'fade',
+					}),
+					headerShown: true,
+					headerTitle: '',
+					headerLeft: () => null,
+					headerRight: ({ tintColor }) => (
+						<TouchableOpacity
+							onPress={() => router.back()}
+							style={{ paddingHorizontal: 12, paddingVertical: 4 }}
+							accessibilityLabel="Close"
+						>
+							<Ionicons name="close" size={24} color={tintColor} />
+						</TouchableOpacity>
+					),
+					presentation: Platform.select({
+						default: 'modal',
+						web: 'transparentModal',
+					}),
+				}}
+			/>
+
 			{itemName && (
 				<View style={styles.messageContainer}>
 					<Paragraph style={styles.message}>

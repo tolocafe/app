@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { Platform, TouchableOpacity } from 'react-native'
 
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
@@ -10,10 +9,9 @@ import {
 } from '@react-navigation/native'
 import * as Sentry from '@sentry/react-native'
 import 'react-native-reanimated'
-import { Stack, useNavigationContainerRef, router } from 'expo-router'
+import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
-import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
@@ -68,31 +66,7 @@ function RootLayout() {
 							<Stack>
 								<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 								<Stack.Screen name="+not-found" />
-								<Stack.Screen
-									name="sign-in"
-									options={{
-										animation: Platform.select({
-											default: undefined,
-											web: 'fade',
-										}),
-										headerShown: true,
-										headerTitle: '',
-										headerLeft: () => null,
-										headerRight: ({ tintColor }) => (
-											<TouchableOpacity
-												onPress={() => router.back()}
-												style={{ paddingHorizontal: 12, paddingVertical: 4 }}
-												accessibilityLabel="Close"
-											>
-												<Ionicons name="close" size={24} color={tintColor} />
-											</TouchableOpacity>
-										),
-										presentation: Platform.select({
-											default: 'modal',
-											web: 'transparentModal',
-										}),
-									}}
-								/>
+								<Stack.Screen name="sign-in" />
 							</Stack>
 						</ThemeProvider>
 					</I18nProvider>
