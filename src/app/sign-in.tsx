@@ -139,12 +139,15 @@ export default function SignIn() {
 								</Label>
 								<Field name="phoneNumber">
 									{(field) => (
-																	<PhoneNumberInput
-								value={field.state.value}
-								onChangeText={field.handleChange}
-								placeholder={t`Phone number`}
-								inputProps={{ onBlur: field.handleBlur, style: styles.input }}
-							/>
+										<PhoneNumberInput
+											value={field.state.value}
+											onChangeText={field.handleChange}
+											placeholder={t`Phone number`}
+											inputProps={{
+												onBlur: field.handleBlur,
+												style: styles.input,
+											}}
+										/>
 									)}
 								</Field>
 							</View>

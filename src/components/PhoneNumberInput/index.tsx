@@ -14,7 +14,10 @@ export type PhoneNumberInputProps = {
 	onChangeText: (next: string) => void
 	placeholder?: string
 	countries?: CountryCode[]
-	inputProps?: Omit<React.ComponentProps<typeof TextInput>, 'value' | 'onChangeText' | 'placeholder'>
+	inputProps?: Omit<
+		React.ComponentProps<typeof TextInput>,
+		'value' | 'onChangeText' | 'placeholder'
+	>
 }
 
 function getCountryFromValue(value: string | undefined): CountryCode {
@@ -32,13 +35,19 @@ function getNationalDigitsFromE164(e164: string | undefined): string {
 	return digits
 }
 
-function toE164FromNational(nationalDigits: string, country: CountryCode): string {
+function toE164FromNational(
+	nationalDigits: string,
+	country: CountryCode,
+): string {
 	const normalized = nationalDigits.replace(/\D/g, '')
 	if (normalized.length === 0) return ''
 	return country === 'MX' ? `+52${normalized}` : `+1${normalized}`
 }
 
-function formatNationalForDisplay(nationalDigits: string, country: CountryCode): string {
+function formatNationalForDisplay(
+	nationalDigits: string,
+	country: CountryCode,
+): string {
 	const digits = nationalDigits.replace(/\D/g, '')
 	if (country === 'US') {
 		if (digits.length <= 3) return digits
@@ -98,14 +107,20 @@ export default function PhoneNumberInput({
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					{countries.includes('US') && (
-						<DropdownMenu.Item key="US" onSelect={() => handleSelectCountry('US')}>
+						<DropdownMenu.Item
+							key="US"
+							onSelect={() => handleSelectCountry('US')}
+						>
 							<DropdownMenu.ItemTitle>
 								United States (+1)
 							</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
 					{countries.includes('MX') && (
-						<DropdownMenu.Item key="MX" onSelect={() => handleSelectCountry('MX')}>
+						<DropdownMenu.Item
+							key="MX"
+							onSelect={() => handleSelectCountry('MX')}
+						>
 							<DropdownMenu.ItemTitle>Mexico (+52)</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
