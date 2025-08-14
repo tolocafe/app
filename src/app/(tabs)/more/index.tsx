@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Platform, TouchableOpacity, View } from 'react-native'
+import { Alert, Linking, Platform, TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -145,10 +145,40 @@ export default function More() {
 									</>
 								)}
 
+								<Button onPress={() => router.push('/more/profile')}>
+									<Trans>Edit</Trans>
+								</Button>
 								<View style={styles.userInfoDivider} />
 								<Button onPress={handleSignOut}>
 									<Trans>Sign Out</Trans>
 								</Button>
+								<View style={styles.userInfoDivider} />
+								<View style={styles.socialIconsRow}>
+									<TouchableOpacity
+										accessibilityRole="button"
+										onPress={() =>
+											Linking.openURL('https://instagram.com/tolo.cafe')
+										}
+										style={styles.socialIcon}
+									>
+										<Ionicons
+											color={styles.socialIcon.color}
+											name="logo-instagram"
+											size={28}
+										/>
+									</TouchableOpacity>
+									<TouchableOpacity
+										accessibilityRole="button"
+										onPress={() => Linking.openURL('https://wa.me/14155551234')}
+										style={styles.socialIcon}
+									>
+										<Ionicons
+											color={styles.socialIcon.color}
+											name="logo-whatsapp"
+											size={28}
+										/>
+									</TouchableOpacity>
+								</View>
 							</>
 						) : isLoadingUser ? (
 							<View style={styles.userInfoLoading}>
@@ -158,7 +188,7 @@ export default function More() {
 							</View>
 						) : (
 							<>
-								<Paragraph style={styles.signInPrompt}>
+								<Paragraph style={styles.userInfoText}>
 									<Trans>
 										Sign in to view your account information and access
 										personalized features.
@@ -213,22 +243,6 @@ export default function More() {
 
 						<View style={styles.settingDivider} />
 
-						{/* Simple list entries that navigate to detail screens */}
-						<TouchableOpacity
-							onPress={() => router.push('/more/profile')}
-							style={styles.settingRow}
-						>
-							<Label style={styles.settingLabel}>
-								<Trans>Profile</Trans>
-							</Label>
-							<Ionicons
-								color={styles.caret.color}
-								name="chevron-forward"
-								size={20}
-							/>
-						</TouchableOpacity>
-						<View style={styles.settingDivider} />
-
 						<TouchableOpacity
 							onPress={() => router.push('/more/visit-us')}
 							style={styles.settingRow}
@@ -243,19 +257,6 @@ export default function More() {
 							/>
 						</TouchableOpacity>
 						<View style={styles.settingDivider} />
-						<TouchableOpacity
-							onPress={() => router.push('/more/connect')}
-							style={styles.settingRow}
-						>
-							<Label style={styles.settingLabel}>
-								<Trans>Connect</Trans>
-							</Label>
-							<Ionicons
-								color={styles.caret.color}
-								name="chevron-forward"
-								size={20}
-							/>
-						</TouchableOpacity>
 
 						<Button disabled={isClearingCache} onPress={handleClearCache}>
 							{isClearingCache ? (
@@ -266,6 +267,7 @@ export default function More() {
 						</Button>
 					</Card>
 				</View>
+
 				<View style={styles.footer}>
 					<Paragraph style={styles.footerText}>
 						<Trans>
@@ -439,12 +441,6 @@ const styles = StyleSheet.create((theme) => ({
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
 	},
-	signInPrompt: {
-		color: theme.colors.textSecondary,
-		lineHeight: 22,
-		marginBottom: theme.spacing.lg,
-		textAlign: 'center',
-	},
 	signOutButton: {
 		alignItems: 'center',
 		backgroundColor: theme.colors.primary,
@@ -457,6 +453,15 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.surface,
 		fontSize: theme.typography.body.fontSize,
 		fontWeight: theme.typography.body.fontWeight,
+	},
+	socialIcon: {
+		color: theme.colors.text,
+		marginHorizontal: theme.spacing.md,
+	},
+	socialIconsRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		paddingVertical: theme.spacing.sm,
 	},
 	// User Information Styles
 	userInfo: {

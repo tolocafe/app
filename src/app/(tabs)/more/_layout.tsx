@@ -14,7 +14,6 @@ export default function MoreLayout() {
 		<Stack screenOptions={defaultStackScreenOptions}>
 			<Stack.Screen name="index" options={{ title: t`More` }} />
 			<Stack.Screen name="visit-us" options={{ title: t`Visit Us` }} />
-			<Stack.Screen name="connect" options={{ title: t`Connect` }} />
 			<Stack.Screen name="profile" options={{ title: t`Profile` }} />
 		</Stack>
 	)
