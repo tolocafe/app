@@ -4,8 +4,7 @@ import { testPhoneNumbers } from './constants'
 
 const DEFAULT_OTP_TTL = 300
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const TEST_OTP_CODE = process.env.TEST_OTP_CODE as string | undefined
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE
 
 export function generateOtp(length = 6): string {
 	return [...crypto.getRandomValues(new Uint32Array(length))]
@@ -25,7 +24,11 @@ export async function storeOtp(
 }
 
 export async function verifyOtp(kv: KVNamespace, phone: string, code: string) {
-	if (testPhoneNumbers.includes(phone) && code === TEST_OTP_CODE)
+	if (
+		testPhoneNumbers.includes(phone) &&
+		TEST_OTP_CODE &&
+		code === TEST_OTP_CODE
+	)
 		return { isTest: true }
 
 	const stored = await kv.get(phone)
