@@ -16,9 +16,9 @@ import { StyleSheet } from 'react-native-unistyles'
 import { z } from 'zod/v4'
 
 import { Button } from '@/components/Button'
+import PhoneNumberInput from '@/components/PhoneNumberInput'
 import ScreenContainer from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
-import PhoneNumberInput from '@/components/PhoneNumberInput'
 import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
@@ -140,13 +140,10 @@ export default function SignIn() {
 								<Field name="phoneNumber">
 									{(field) => (
 										<PhoneNumberInput
-											value={field.state.value}
+											inputProps={{ onBlur: field.handleBlur, style: styles.input }}
 											onChangeText={field.handleChange}
 											placeholder={t`Phone number`}
-											inputProps={{
-												onBlur: field.handleBlur,
-												style: styles.input,
-											}}
+											value={field.state.value}
 										/>
 									)}
 								</Field>

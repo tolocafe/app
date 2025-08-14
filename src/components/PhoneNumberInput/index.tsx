@@ -1,75 +1,19 @@
-import React from 'react'
+import type { ComponentProps } from 'react'
 import { TextInput, View } from 'react-native'
 
-import * as DropdownMenu from 'zeego/dropdown-menu'
-
 import { StyleSheet } from 'react-native-unistyles'
+import * as DropdownMenu from 'zeego/dropdown-menu'
 
 import { Text } from '@/components/Text'
 
-export type CountryCode = 'US' | 'MX'
+export type CountryCode = 'MX' | 'US'
 
 export type PhoneNumberInputProps = {
-	value: string
+	countries?: CountryCode[]
+	inputProps?: Omit<ComponentProps<typeof TextInput>, 'onChangeText' | 'placeholder' | 'value'>
 	onChangeText: (next: string) => void
 	placeholder?: string
-	countries?: CountryCode[]
-	inputProps?: Omit<
-		React.ComponentProps<typeof TextInput>,
-		'value' | 'onChangeText' | 'placeholder'
-	>
-}
-
-function getCountryFromValue(value: string | undefined): CountryCode {
-	if (!value) return 'US'
-	if (value.startsWith('+52')) return 'MX'
-	if (value.startsWith('+1')) return 'US'
-	return 'US'
-}
-
-function getNationalDigitsFromE164(e164: string | undefined): string {
-	if (!e164) return ''
-	const digits = e164.replace(/\D/g, '')
-	if (digits.startsWith('52')) return digits.slice(2)
-	if (digits.startsWith('1')) return digits.slice(1)
-	return digits
-}
-
-function toE164FromNational(
-	nationalDigits: string,
-	country: CountryCode,
-): string {
-	const normalized = nationalDigits.replace(/\D/g, '')
-	if (normalized.length === 0) return ''
-	return country === 'MX' ? `+52${normalized}` : `+1${normalized}`
-}
-
-function formatNationalForDisplay(
-	nationalDigits: string,
-	country: CountryCode,
-): string {
-	const digits = nationalDigits.replace(/\D/g, '')
-	if (country === 'US') {
-		if (digits.length <= 3) return digits
-		if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
-		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
-	}
-	// MX: 10-digit national number displayed as `AA AAAA AAAA`
-	if (digits.length <= 2) return digits
-	if (digits.length <= 6) return `${digits.slice(0, 2)} ${digits.slice(2)}`
-	return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6, 10)}`
-}
-
-function getDialCode(country: CountryCode): string {
-	return country === 'MX' ? '+52' : '+1'
-}
-
-function getCountryLabel(country: CountryCode): string {
-	return country === 'MX' ? 'Mexico' : 'United States'
-}
-
-function getFlag(country: CountryCode): string {
-	return country === 'MX' ? '🇲🇽' : '🇺🇸'
+	value: string
 }
 
 export default function PhoneNumberInput({
@@ -84,12 +28,11 @@ export default function PhoneNumberInput({
 	const display = formatNationalForDisplay(nationalDigits, selectedCountry)
 
 	const handleChangeText = (text: string) => {
-		const digits = text.replace(/\D/g, '')
+		const digits = text.replaceAll(/\D/g, '')
 		onChangeText(toE164FromNational(digits, selectedCountry))
 	}
 
 	const handleSelectCountry = (country: CountryCode) => {
-		// Keep current national digits, only change dial code
 		const next = toE164FromNational(nationalDigits, country)
 		onChangeText(next)
 	}
@@ -107,20 +50,14 @@ export default function PhoneNumberInput({
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					{countries.includes('US') && (
-						<DropdownMenu.Item
-							key="US"
-							onSelect={() => handleSelectCountry('US')}
-						>
+						<DropdownMenu.Item key="US" onSelect={() => handleSelectCountry('US')}>
 							<DropdownMenu.ItemTitle>
 								United States (+1)
 							</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
 					{countries.includes('MX') && (
-						<DropdownMenu.Item
-							key="MX"
-							onSelect={() => handleSelectCountry('MX')}
-						>
+						<DropdownMenu.Item key="MX" onSelect={() => handleSelectCountry('MX')}>
 							<DropdownMenu.ItemTitle>Mexico (+52)</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
@@ -129,16 +66,57 @@ export default function PhoneNumberInput({
 
 			<TextInput
 				{...inputProps}
+				autoComplete={inputProps?.autoComplete ?? 'tel'}
 				keyboardType={inputProps?.keyboardType ?? 'phone-pad'}
-				placeholder={placeholder}
 				onChangeText={handleChangeText}
-				value={display}
+				placeholder={placeholder}
 				style={[styles.input, inputProps?.style]}
 				textContentType={inputProps?.textContentType ?? 'telephoneNumber'}
-				autoComplete={inputProps?.autoComplete ?? 'tel'}
+				value={display}
 			/>
 		</View>
 	)
+}
+
+function formatNationalForDisplay(nationalDigits: string, country: CountryCode): string {
+	const digits = nationalDigits.replaceAll(/\D/g, '')
+	if (country === 'US') {
+		if (digits.length <= 3) return digits
+		if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
+		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
+	}
+	if (digits.length <= 2) return digits
+	if (digits.length <= 6) return `${digits.slice(0, 2)} ${digits.slice(2)}`
+	return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6, 10)}`
+}
+
+function getCountryFromValue(value: string | undefined): CountryCode {
+	if (!value) return 'US'
+	if (value.startsWith('+52')) return 'MX'
+	if (value.startsWith('+1')) return 'US'
+	return 'US'
+}
+
+function getDialCode(country: CountryCode): string {
+	return country === 'MX' ? '+52' : '+1'
+}
+
+function getFlag(country: CountryCode): string {
+	return country === 'MX' ? '🇲🇽' : '🇺🇸'
+}
+
+function getNationalDigitsFromE164(internationalPhone: string | undefined): string {
+	if (!internationalPhone) return ''
+	const digits = internationalPhone.replaceAll(/\D/g, '')
+	if (digits.startsWith('52')) return digits.slice(2)
+	if (digits.startsWith('1')) return digits.slice(1)
+	return digits
+}
+
+function toE164FromNational(nationalDigits: string, country: CountryCode): string {
+	const normalized = nationalDigits.replaceAll(/\D/g, '')
+	if (normalized.length === 0) return ''
+	return country === 'MX' ? `+52${normalized}` : `+1${normalized}`
 }
 
 const styles = StyleSheet.create((theme) => ({

@@ -83,6 +83,7 @@ describe('order utilities', () => {
 				id: 'test-order-3',
 				products: [
 					{
+						id: 'prod-coffee',
 						modifications: [
 							{
 								id: 'mod-extra-shot',
@@ -95,7 +96,6 @@ describe('order utilities', () => {
 								price: 0.5,
 							},
 						],
-						id: 'prod-coffee',
 						quantity: 1,
 					},
 				],
