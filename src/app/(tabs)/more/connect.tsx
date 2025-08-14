@@ -1,6 +1,6 @@
 import { Linking, View } from 'react-native'
 
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
 
@@ -22,15 +22,16 @@ const handleInstagram = () => {
 }
 
 export default function Connect() {
+	const { t } = useLingui()
 	return (
 		<>
 			<Head>
-				<title>Connect - TOLO Buen Café</title>
+				<title>{t`Connect - TOLO Buen Café`}</title>
 				<meta
-					content="Connect with TOLO: call, website, Instagram."
+					content={t`Connect with TOLO: call, website, Instagram.`}
 					name="description"
 				/>
-				<meta content="Connect - TOLO Buen Café" property="og:title" />
+				<meta content={t`Connect - TOLO Buen Café`} property="og:title" />
 				<meta content="/more/connect" property="og:url" />
 			</Head>
 			<ScreenContainer contentContainerStyle={styles.scrollContent}>

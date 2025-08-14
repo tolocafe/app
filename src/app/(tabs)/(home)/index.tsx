@@ -119,7 +119,9 @@ export default function Menu() {
 			</Head>
 			<ScreenContainer contentInsetAdjustmentBehavior="automatic">
 				<View style={styles.categoryTitle}>
-					<H2>Menu</H2>
+					<H2>
+						<Trans>Menu</Trans>
+					</H2>
 				</View>
 				{categories.map((category) => renderCategorySection(category))}
 			</ScreenContainer>
