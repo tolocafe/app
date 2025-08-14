@@ -18,6 +18,7 @@ import { z } from 'zod/v4'
 import { Button } from '@/components/Button'
 import ScreenContainer from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
+import PhoneNumberInput from '@/components/PhoneNumberInput'
 import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
@@ -138,16 +139,12 @@ export default function SignIn() {
 								</Label>
 								<Field name="phoneNumber">
 									{(field) => (
-										<TextInput
-											autoComplete="tel"
-											keyboardType="phone-pad"
-											onBlur={field.handleBlur}
-											onChangeText={field.handleChange}
-											placeholder={t`+1234567890`}
-											style={styles.input}
-											textContentType="telephoneNumber"
-											value={field.state.value}
-										/>
+																	<PhoneNumberInput
+								value={field.state.value}
+								onChangeText={field.handleChange}
+								placeholder={t`Phone number`}
+								inputProps={{ onBlur: field.handleBlur, style: styles.input }}
+							/>
 									)}
 								</Field>
 							</View>
