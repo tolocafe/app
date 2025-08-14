@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Platform } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
@@ -10,9 +10,10 @@ import {
 } from '@react-navigation/native'
 import * as Sentry from '@sentry/react-native'
 import 'react-native-reanimated'
-import { Stack, useNavigationContainerRef } from 'expo-router'
+import { Stack, useNavigationContainerRef, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { LanguageProvider } from '@/lib/contexts/language-context'
 import { useColorScheme } from '@/lib/hooks/use-color-scheme'
@@ -74,7 +75,18 @@ function RootLayout() {
 											default: undefined,
 											web: 'fade',
 										}),
-										headerShown: false,
+										headerShown: true,
+										headerTitle: '',
+										headerLeft: () => null,
+										headerRight: ({ tintColor }) => (
+											<TouchableOpacity
+												onPress={() => router.back()}
+												style={{ paddingHorizontal: 12, paddingVertical: 4 }}
+												accessibilityLabel="Close"
+											>
+												<Ionicons name="close" size={24} color={tintColor} />
+											</TouchableOpacity>
+										),
 										presentation: Platform.select({
 											default: 'modal',
 											web: 'transparentModal',

@@ -4,7 +4,6 @@ import {
 	Platform,
 	Pressable,
 	TextInput,
-	TouchableOpacity,
 	View,
 } from 'react-native'
 
@@ -22,10 +21,6 @@ import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
 } from '@/lib/queries/auth'
-
-const handleClose = () => {
-	router.back()
-}
 
 const signInSchema = z.object({
 	phoneNumber: z.string().trim().min(1, 'Please enter a phone number'),
@@ -107,12 +102,6 @@ export default function SignIn() {
 			contentContainerStyle={{ alignContent: 'center', padding: 10 }}
 			keyboardAware
 		>
-			<View style={styles.header}>
-				<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-					<Text style={styles.closeButtonText}>✕</Text>
-				</TouchableOpacity>
-			</View>
-
 			{itemName && (
 				<View style={styles.messageContainer}>
 					<Paragraph style={styles.message}>
@@ -247,13 +236,6 @@ const styles = StyleSheet.create((theme) => ({
 	backButtonText: {
 		color: theme.colors.primary,
 	},
-	closeButton: {
-		padding: theme.spacing.sm,
-	},
-	closeButtonText: {
-		color: theme.colors.text,
-		fontSize: theme.typography.h3.fontSize,
-	},
 	container: {
 		backgroundColor: theme.colors.background,
 		flex: 1,
@@ -266,10 +248,6 @@ const styles = StyleSheet.create((theme) => ({
 	errorText: {
 		color: theme.colors.error,
 		marginTop: theme.spacing.xs,
-	},
-	header: {
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
 	},
 	input: {
 		backgroundColor: theme.colors.surface,
