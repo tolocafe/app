@@ -12,13 +12,13 @@ export type Order = {
 	createdAt: Date
 	customerNote?: string
 	id: string
-	products: OrderPRoduct[]
+	products: OrderProduct[]
 	status: 'cancelled' | 'completed' | 'confirmed' | 'draft' | 'submitted'
 	totalAmount: number
 	updatedAt: Date
 }
 
-export type OrderPRoduct = {
+export type OrderProduct = {
 	id: string
 	modifications?: {
 		id: string
@@ -29,7 +29,7 @@ export type OrderPRoduct = {
 }
 
 type OrderStore = {
-	addItem: (item: Pick<OrderPRoduct, 'id' | 'quantity'>) => void
+	addItem: (item: Pick<OrderProduct, 'id' | 'quantity'>) => void
 	clearOrder: () => void
 
 	// Actions
@@ -47,7 +47,7 @@ type OrderStore = {
 export const useOrderStore = create<OrderStore>()(
 	persist(
 		(set, get) => ({
-			addItem: (item: Pick<OrderPRoduct, 'id' | 'quantity'>) => {
+			addItem: (item: Pick<OrderProduct, 'id' | 'quantity'>) => {
 				const { currentOrder } = get()
 				if (!currentOrder) {
 					get().createOrder()
@@ -58,7 +58,7 @@ export const useOrderStore = create<OrderStore>()(
 					(existingItem) => existingItem.id === item.id,
 				)
 
-				let updatedItems: OrderPRoduct[]
+				let updatedItems: OrderProduct[]
 				if (existingItemIndex === -1) {
 					// Add new item
 					updatedItems = [...currentOrder.products, { ...item }]
@@ -211,7 +211,7 @@ export const useAddItemGuarded = () => {
 	const { data: user } = useQuery(selfQueryOptions)
 	const queryClient = useQueryClient()
 
-	return (item: Pick<OrderPRoduct, 'id' | 'quantity'>) => {
+	return (item: Pick<OrderProduct, 'id' | 'quantity'>) => {
 		const isAuthenticated = Boolean(user)
 		if (!isAuthenticated) {
 			const product = queryClient.getQueryData(

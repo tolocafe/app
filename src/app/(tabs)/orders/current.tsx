@@ -10,6 +10,7 @@ import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, Paragraph, Text } from '@/components/Text'
 import { selfQueryOptions } from '@/lib/queries/auth'
@@ -22,8 +23,9 @@ import {
 	useRemoveItem,
 	useUpdateItem,
 } from '@/lib/stores/order-store'
+import { formatPosterPrice } from '@/lib/utils/price'
 
-import type { OrderPRoduct } from '@/lib/stores/order-store'
+import type { OrderProduct } from '@/lib/stores/order-store'
 
 const getProductName = (productId: string): string => {
 	const productData = queryClient.getQueryData(
@@ -46,7 +48,7 @@ const getProductPrice = (productId: string): null | string => {
 	const product = productData
 	if (!product) return null
 	const priceRaw = Object.values(product.price)[0] || '0'
-	return `$${Number.parseFloat(priceRaw).toFixed(2)}`
+	return formatPosterPrice(Number(priceRaw))
 }
 
 export default function OrderDetail() {
@@ -112,7 +114,7 @@ export default function OrderDetail() {
 		)
 	}
 
-	const renderOrderItem = (item: OrderPRoduct, index: number) => (
+	const renderOrderItem = (item: OrderProduct, index: number) => (
 		<View key={`${item.id}-${index}`} style={styles.orderItem}>
 			<View style={styles.itemHeader}>
 				<Paragraph style={styles.itemName}>{getProductName(item.id)}</Paragraph>
@@ -187,31 +189,35 @@ export default function OrderDetail() {
 		)
 	}
 
+	const currentOrderTotalCents = order.products.reduce((sum, item) => {
+		const productData = queryClient.getQueryData(
+			productQueryOptions(item.id).queryKey,
+		)
+		const unitPriceCents = productData
+			? Number(Object.values(productData.price)[0] || 0)
+			: 0
+		const modificationsTotalCents = (item.modifications ?? []).reduce(
+			(moduleSum, module_) => moduleSum + (module_.price || 0),
+			0,
+		)
+		return sum + (unitPriceCents + modificationsTotalCents) * item.quantity
+	}, 0)
+
 	return (
 		<>
 			<Head>
 				<title>{t`Current Order`}</title>
 			</Head>
 			<ScreenContainer keyboardAware>
-				<View style={styles.orderInfo}>
-					<Paragraph style={styles.orderStatus}>
-						{order.status === 'draft' && <Trans>Draft</Trans>}
-						{order.status === 'submitted' && <Trans>Submitted</Trans>}
-						{order.status === 'confirmed' && <Trans>Confirmed</Trans>}
-						{order.status === 'completed' && <Trans>Completed</Trans>}
-						{order.status === 'cancelled' && <Trans>Cancelled</Trans>}
-					</Paragraph>
-				</View>
-
 				{user && (
-					<View style={styles.walletBar}>
+					<Card style={styles.walletCard}>
 						<Paragraph style={styles.walletLabel}>
 							<Trans>Wallet Balance</Trans>
 						</Paragraph>
 						<Paragraph style={styles.walletValue}>
 							${(Number(user.ewallet ?? '0') / 100).toFixed(2)}
 						</Paragraph>
-					</View>
+					</Card>
 				)}
 
 				<View style={styles.itemsSection}>
@@ -254,7 +260,7 @@ export default function OrderDetail() {
 							<Trans>Total</Trans>
 						</Paragraph>
 						<Paragraph style={styles.totalAmount}>
-							<Trans>Calculated at checkout</Trans>
+							{formatPosterPrice(currentOrderTotalCents)}
 						</Paragraph>
 					</View>
 				</View>
@@ -268,7 +274,7 @@ export default function OrderDetail() {
 						selector={(state) => [state.canSubmit, state.isSubmitting]}
 					>
 						{([canSubmit, isSubmitting]) => (
-							<Button disabled={!canSubmit} onPress={handleSubmit}>
+							<Button disabled={!canSubmit} fullWidth onPress={handleSubmit}>
 								{isSubmitting ? (
 									<Trans>Submitting...</Trans>
 								) : (
@@ -419,16 +425,13 @@ const styles = StyleSheet.create((theme) => ({
 		borderTopWidth: 1,
 		padding: theme.layout.screenPadding,
 	},
-	walletBar: {
+	walletCard: {
 		alignItems: 'center',
-		backgroundColor: theme.colors.surface,
-		borderBottomWidth: 1,
-		borderColor: theme.colors.border,
-		borderTopWidth: 1,
 		flexDirection: 'row',
+		gap: theme.spacing.sm,
 		justifyContent: 'space-between',
-		paddingHorizontal: theme.layout.screenPadding,
-		paddingVertical: theme.spacing.sm,
+		marginHorizontal: theme.layout.screenPadding,
+		marginVertical: theme.spacing.sm,
 	},
 
 	walletLabel: {

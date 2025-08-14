@@ -10,7 +10,10 @@ import { Button } from '@/components/Button'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, H3, Paragraph, Text } from '@/components/Text'
 import { selfQueryOptions } from '@/lib/queries/auth'
+import { productQueryOptions } from '@/lib/queries/product'
+import { queryClient } from '@/lib/query-client'
 import { useCurrentOrder, useOrderStats } from '@/lib/stores/order-store'
+import { formatPosterPrice } from '@/lib/utils/price'
 
 // removed unused Order type used by deleted renderOrderItem
 
@@ -26,6 +29,23 @@ export default function Orders() {
 	const { t } = useLingui()
 	const currentOrder = useCurrentOrder()
 	const { totalItems } = useOrderStats()
+
+	const currentOrderTotalCents = (() => {
+		if (!currentOrder) return 0
+		return currentOrder.products.reduce((sum, item) => {
+			const productData = queryClient.getQueryData(
+				productQueryOptions(item.id).queryKey,
+			)
+			const unitPriceCents = productData
+				? Number(Object.values(productData.price)[0] || 0)
+				: 0
+			const modificationsTotalCents = (item.modifications ?? []).reduce(
+				(moduleSum, module_) => moduleSum + (module_.price || 0),
+				0,
+			)
+			return sum + (unitPriceCents + modificationsTotalCents) * item.quantity
+		}, 0)
+	})()
 
 	const handleCurrentOrderPress = () => {
 		if (currentOrder) {
@@ -91,7 +111,7 @@ export default function Orders() {
 								</Text>
 							</View>
 							<Paragraph style={styles.currentOrderText}>
-								<Trans>Total calculated at checkout</Trans>
+								{formatPosterPrice(currentOrderTotalCents)}
 							</Paragraph>
 							<Paragraph style={styles.tapToEdit}>
 								<Trans>Tap to view and edit</Trans>

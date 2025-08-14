@@ -1,22 +1,18 @@
 {
-	"cli": {
-		"version": ">= 16.17.0",
-		"appVersionSource": "remote"
-	},
 	"build": {
 		"common": {
 			"bun": "1.2.20",
 			"node": "22.18.0"
 		},
 		"development": {
+			"channel": "development",
 			"developmentClient": true,
 			"distribution": "internal",
-			"channel": "development",
 			"extends": "common"
 		},
 		"preview": {
-			"distribution": "internal",
 			"channel": "preview",
+			"distribution": "internal",
 			"extends": "common"
 		},
 		"production": {
@@ -25,11 +21,15 @@
 			"extends": "common"
 		}
 	},
+	"cli": {
+		"appVersionSource": "remote",
+		"version": ">= 16.17.0"
+	},
 	"submit": {
 		"production": {
 			"ios": {
-				"ascAppId": "6749597635",
-				"appleTeamId": "AUR7UR6M72"
+				"appleTeamId": "AUR7UR6M72",
+				"ascAppId": "6749597635"
 			}
 		}
 	}

@@ -13,6 +13,7 @@ export type ButtonProps = {
 	onPress?: (event: GestureResponderEvent) => void
 	testID?: string
 	variant?: ButtonVariant
+	fullWidth?: boolean
 }
 
 type ButtonVariant = 'primary' | 'surface'
@@ -24,6 +25,7 @@ export function Button({
 	onPress,
 	testID,
 	variant = 'primary',
+	fullWidth = false,
 }: ButtonProps) {
 	const isPrimary = variant === 'primary'
 
@@ -38,6 +40,7 @@ export function Button({
 				isPrimary ? styles.buttonPrimary : styles.buttonSurface,
 				disabled && styles.buttonDisabled,
 				pressed && !disabled && styles.buttonPressed,
+				fullWidth && styles.fullWidth,
 			]}
 			testID={testID}
 		>
@@ -78,6 +81,10 @@ const styles = StyleSheet.create((theme) => ({
 		backgroundColor: theme.colors.surface,
 		borderColor: theme.colors.border,
 		borderWidth: 1,
+	},
+	fullWidth: {
+		alignSelf: 'stretch',
+		flex: 1,
 	},
 	contentWrapper: {
 		alignItems: 'center',

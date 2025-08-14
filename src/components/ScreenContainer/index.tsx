@@ -28,7 +28,10 @@ export function ScreenContainer({
 	if (keyboardAware) {
 		return (
 			<KeyboardAwareScrollView
+				automaticallyAdjustsScrollIndicatorInsets
 				contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
+				keyboardDismissMode="interactive"
+				keyboardShouldPersistTaps="handled"
 				style={[styles.container, style]}
 				{...rest}
 			>

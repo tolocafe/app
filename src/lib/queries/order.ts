@@ -3,6 +3,7 @@ import { mutationOptions } from '@tanstack/react-query'
 import type { CreateOrder } from '@common/schemas'
 
 import { api } from '@/lib/services/api-service'
+import { formatPosterPrice } from '@/lib/utils/price'
 
 import type { Order } from '@/lib/stores/order-store'
 
@@ -41,6 +42,25 @@ export type CreateOrderResponse = {
 export const createOrderMutationOptions = mutationOptions({
 	mutationFn: (data: CreateOrder) => api.orders.create(data),
 })
+
+export type FormattedCreateOrderResponse = Omit<
+	CreateOrderResponse,
+	'order'
+> & {
+	order: CreateOrderResponse['order'] & { sumFormatted: string }
+}
+
+export function formatCreateOrderResponse(
+	response: CreateOrderResponse,
+): FormattedCreateOrderResponse {
+	return {
+		...response,
+		order: {
+			...response.order,
+			sumFormatted: formatPosterPrice(response.order.sum),
+		},
+	}
+}
 
 // Helper function to convert our internal Order format to API format
 export function convertOrderToApiFormat(order: Order): CreateOrderRequest {
