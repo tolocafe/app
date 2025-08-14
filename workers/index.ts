@@ -28,10 +28,19 @@ const app = new Hono<{
 		KV_SESSIONS: KVNamespace
 		OTP_CODES: KVNamespace
 		POSTER_TOKEN: string
+		TEST_OTP_CODE: string
+		TEST_PHONE_NUMBERS: string
 	}
 }>().basePath('/api')
 
 type SessionRecord = { createdAt: number; name: string; token: string }
+
+const isSessionRecord = (value: unknown): value is SessionRecord =>
+	typeof value === 'object' &&
+	value !== null &&
+	'createdAt' in value &&
+	'name' in value &&
+	'token' in value
 
 app.use(
 	'*',
@@ -139,13 +148,6 @@ app
 			c.env.KV_SESSIONS.get(clientId),
 		])
 
-		const isSessionRecord = (value: unknown): value is SessionRecord =>
-			typeof value === 'object' &&
-			value !== null &&
-			'createdAt' in value &&
-			'name' in value &&
-			'token' in value
-
 		const parsedSessionsUnknown: unknown = sessionsRaw
 			? JSON.parse(sessionsRaw)
 			: []
@@ -190,6 +192,7 @@ app
 		const clientId = await authenticate(c, c.env.JWT_SECRET)
 		const client = await getPosterClientById(c.env.POSTER_TOKEN, clientId)
 		if (!client) throw new HTTPException(404, { message: 'Client not found' })
+
 		return c.json(client)
 	})
 	.get('/auth/self/sessions', async (c) => {
@@ -197,17 +200,11 @@ app
 		const key = clientId
 		const sessionsRaw = await c.env.KV_SESSIONS.get(key)
 
-		const isSessionRecord = (value: unknown): value is SessionRecord =>
-			typeof value === 'object' &&
-			value !== null &&
-			'createdAt' in value &&
-			'name' in value &&
-			'token' in value
-
 		const parsedUnknown: unknown = sessionsRaw ? JSON.parse(sessionsRaw) : []
 		const sessions: SessionRecord[] = Array.isArray(parsedUnknown)
 			? parsedUnknown.filter((record) => isSessionRecord(record))
 			: []
+
 		return c.json(sessions)
 	})
 
@@ -227,6 +224,7 @@ app
 				: {}
 
 		const client = await updatePosterClient(c.env.POSTER_TOKEN, id, body)
+
 		return c.json(client)
 	})
 	.post('/orders', async (c) => {

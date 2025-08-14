@@ -339,9 +339,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	languageDropdownTrigger: {
 		alignItems: 'center',
-		borderColor: theme.colors.border,
-		borderRadius: theme.borderRadius.sm,
-		borderWidth: 1,
 		flexDirection: 'row',
 		minWidth: 120,
 		paddingHorizontal: theme.spacing.md,
@@ -426,7 +423,6 @@ const styles = StyleSheet.create((theme) => ({
 		paddingVertical: theme.spacing.lg,
 	},
 	userInfoText: {
-		color: theme.colors.textSecondary,
 		textAlign: 'center',
 	},
 	userInfoValue: {
