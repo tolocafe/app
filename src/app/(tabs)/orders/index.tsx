@@ -1,7 +1,9 @@
+import type { ImageSourcePropType } from 'react-native'
 import { TouchableOpacity, View } from 'react-native'
 
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
+import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
@@ -63,6 +65,13 @@ export default function Orders() {
 				</Head>
 				<ScreenContainer noScroll>
 					<View style={styles.signInContainer}>
+						<Image
+							contentFit="contain"
+							source={
+								require('@/assets/images/beverages.png') as ImageSourcePropType
+							}
+							style={{ height: 250, width: 250 }}
+						/>
 						<H2 style={styles.signInTitle}>
 							<Trans>Sign In Required</Trans>
 						</H2>
