@@ -10,7 +10,10 @@ export type CountryCode = 'MX' | 'US'
 
 export type PhoneNumberInputProps = {
 	countries?: CountryCode[]
-	inputProps?: Omit<ComponentProps<typeof TextInput>, 'onChangeText' | 'placeholder' | 'value'>
+	inputProps?: Omit<
+		ComponentProps<typeof TextInput>,
+		'onChangeText' | 'placeholder' | 'value'
+	>
 	onChangeText: (next: string) => void
 	placeholder?: string
 	value: string
@@ -50,14 +53,20 @@ export default function PhoneNumberInput({
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					{countries.includes('US') && (
-						<DropdownMenu.Item key="US" onSelect={() => handleSelectCountry('US')}>
+						<DropdownMenu.Item
+							key="US"
+							onSelect={() => handleSelectCountry('US')}
+						>
 							<DropdownMenu.ItemTitle>
 								United States (+1)
 							</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
 					{countries.includes('MX') && (
-						<DropdownMenu.Item key="MX" onSelect={() => handleSelectCountry('MX')}>
+						<DropdownMenu.Item
+							key="MX"
+							onSelect={() => handleSelectCountry('MX')}
+						>
 							<DropdownMenu.ItemTitle>Mexico (+52)</DropdownMenu.ItemTitle>
 						</DropdownMenu.Item>
 					)}
@@ -78,7 +87,10 @@ export default function PhoneNumberInput({
 	)
 }
 
-function formatNationalForDisplay(nationalDigits: string, country: CountryCode): string {
+function formatNationalForDisplay(
+	nationalDigits: string,
+	country: CountryCode,
+): string {
 	const digits = nationalDigits.replaceAll(/\D/g, '')
 	if (country === 'US') {
 		if (digits.length <= 3) return digits
@@ -105,7 +117,9 @@ function getFlag(country: CountryCode): string {
 	return country === 'MX' ? '🇲🇽' : '🇺🇸'
 }
 
-function getNationalDigitsFromE164(internationalPhone: string | undefined): string {
+function getNationalDigitsFromE164(
+	internationalPhone: string | undefined,
+): string {
 	if (!internationalPhone) return ''
 	const digits = internationalPhone.replaceAll(/\D/g, '')
 	if (digits.startsWith('52')) return digits.slice(2)
@@ -113,7 +127,10 @@ function getNationalDigitsFromE164(internationalPhone: string | undefined): stri
 	return digits
 }
 
-function toE164FromNational(nationalDigits: string, country: CountryCode): string {
+function toE164FromNational(
+	nationalDigits: string,
+	country: CountryCode,
+): string {
 	const normalized = nationalDigits.replaceAll(/\D/g, '')
 	if (normalized.length === 0) return ''
 	return country === 'MX' ? `+52${normalized}` : `+1${normalized}`

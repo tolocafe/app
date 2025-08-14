@@ -140,7 +140,10 @@ export default function SignIn() {
 								<Field name="phoneNumber">
 									{(field) => (
 										<PhoneNumberInput
-											inputProps={{ onBlur: field.handleBlur, style: styles.input }}
+											inputProps={{
+												onBlur: field.handleBlur,
+												style: styles.input,
+											}}
 											onChangeText={field.handleChange}
 											placeholder={t`Phone number`}
 											value={field.state.value}
