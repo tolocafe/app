@@ -1,4 +1,4 @@
-import { Alert, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, TouchableOpacity, View } from 'react-native'
 
 import { CreateOrderSchema } from '@common/schemas'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -11,6 +11,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
+import { Input } from '@/components/Input'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, Paragraph, Text } from '@/components/Text'
 import { selfQueryOptions } from '@/lib/queries/auth'
@@ -149,9 +150,7 @@ export default function OrderDetail() {
 						</TouchableOpacity>
 					</>
 				</View>
-				<Paragraph style={styles.itemPrice}>
-					{getProductPrice(item.id) ?? t`Unavailable`}
-				</Paragraph>
+				<Paragraph>{getProductPrice(item.id) ?? t`Unavailable`}</Paragraph>
 			</View>
 
 			{getProductCategory(item.id) && (
@@ -221,14 +220,14 @@ export default function OrderDetail() {
 				)}
 
 				<View style={styles.itemsSection}>
-					<H2 style={styles.sectionTitle}>
+					<H2>
 						<Trans>Order Items</Trans>
 					</H2>
 					{order.products.map((item, index) => renderOrderItem(item, index))}
 				</View>
 
 				<View style={styles.noteSection}>
-					<H2 style={styles.sectionTitle}>
+					<H2>
 						<Trans>Customer Note</Trans>
 					</H2>
 					<Field
@@ -242,12 +241,11 @@ export default function OrderDetail() {
 						}}
 					>
 						{(field) => (
-							<TextInput
+							<Input
 								multiline
 								numberOfLines={3}
 								onChangeText={(text) => field.handleChange(text)}
 								placeholder={t`Add any special instructions...`}
-								style={styles.noteInput}
 								value={field.state.value}
 							/>
 						)}
@@ -256,7 +254,7 @@ export default function OrderDetail() {
 
 				<View style={styles.totalSection}>
 					<View style={styles.totalRow}>
-						<Paragraph style={styles.totalLabel}>
+						<Paragraph>
 							<Trans>Total</Trans>
 						</Paragraph>
 						<Paragraph style={styles.totalAmount}>
@@ -324,13 +322,9 @@ const styles = StyleSheet.create((theme) => ({
 		marginTop: theme.spacing.xs,
 	},
 	itemName: {
-		color: theme.colors.text,
 		flex: 1,
 		fontSize: theme.fontSizes.md,
 		fontWeight: theme.fontWeights.medium,
-	},
-	itemPrice: {
-		color: theme.colors.text,
 	},
 	itemsSection: {
 		padding: theme.layout.screenPadding,
@@ -345,27 +339,7 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.textSecondary,
 		marginBottom: theme.spacing.xs,
 	},
-	noteInput: {
-		backgroundColor: theme.colors.surface,
-		borderColor: theme.colors.border,
-		borderRadius: theme.borderRadius.md,
-		borderWidth: 1,
-		color: theme.colors.text,
-		fontSize: theme.fontSizes.md,
-		minHeight: 80,
-		padding: theme.spacing.md,
-		textAlignVertical: 'top',
-	},
 	noteSection: {
-		padding: theme.layout.screenPadding,
-	},
-	orderDate: {
-		color: theme.colors.textSecondary,
-	},
-	orderInfo: {
-		alignItems: 'center',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
 		padding: theme.layout.screenPadding,
 	},
 	orderItem: {
@@ -378,7 +352,6 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.primary,
 	},
 	quantity: {
-		color: theme.colors.text,
 		marginHorizontal: theme.spacing.md,
 		minWidth: 30,
 		textAlign: 'center',
@@ -397,24 +370,13 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: 'center',
 		flexDirection: 'row',
 	},
-	quantityLabel: {
-		color: theme.colors.textSecondary,
-	},
 	removeButton: {
 		padding: theme.spacing.xs,
-	},
-	sectionTitle: {
-		color: theme.colors.text,
-		fontSize: theme.fontSizes.lg,
-		fontWeight: theme.fontWeights.semibold,
-		marginBottom: theme.spacing.md,
 	},
 	totalAmount: {
 		color: theme.colors.primary,
 	},
-	totalLabel: {
-		color: theme.colors.text,
-	},
+
 	totalRow: {
 		alignItems: 'center',
 		flexDirection: 'row',

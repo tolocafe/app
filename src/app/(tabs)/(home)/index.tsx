@@ -177,13 +177,9 @@ function MenuListItem({
 						<View style={styles.menuItemHeader}>
 							<H4>{item.product_name}</H4>
 						</View>
-						<Paragraph style={styles.menuItemDescription}>
-							{item.product_production_description}
-						</Paragraph>
+						<Paragraph>{item.product_production_description}</Paragraph>
 						<View style={styles.menuItemFooter}>
-							<Paragraph style={styles.menuItemPrice}>
-								{formatPosterPrice(firstPrice)}
-							</Paragraph>
+							<Paragraph>{formatPosterPrice(firstPrice)}</Paragraph>
 							<View style={styles.menuItemActions}>
 								<TouchableOpacity
 									onPress={(event) => {
@@ -273,10 +269,6 @@ const styles = StyleSheet.create((theme) => ({
 	menuItemContent: {
 		padding: theme.spacing.md,
 	},
-
-	menuItemDescription: {
-		color: theme.colors.textSecondary,
-	},
 	menuItemFooter: {
 		alignItems: 'center',
 		flexDirection: 'row',
@@ -298,11 +290,6 @@ const styles = StyleSheet.create((theme) => ({
 		height: 225,
 		width: '100%',
 	},
-
-	menuItemPrice: {
-		color: theme.colors.primary,
-	},
-
 	subtitle: {
 		color: theme.colors.textSecondary,
 		marginTop: theme.spacing.xs,

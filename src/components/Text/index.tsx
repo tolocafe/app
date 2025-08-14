@@ -107,5 +107,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	text: {
 		color: theme.colors.text,
+		fontSize: theme.typography.body.fontSize,
 	},
 }))

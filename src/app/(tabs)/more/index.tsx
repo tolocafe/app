@@ -1,23 +1,22 @@
-import { useState } from 'react'
-import { Alert, Linking, Platform, TouchableOpacity, View } from 'react-native'
+import { Linking, TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application'
 import { router } from 'expo-router'
 import Head from 'expo-router/head'
-import * as SecureStore from 'expo-secure-store'
 import { StyleSheet } from 'react-native-unistyles'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
+import { List, ListItem } from '@/components/List'
 import { ScreenContainer } from '@/components/ScreenContainer'
-import { H2, Label, Paragraph, Text } from '@/components/Text'
+import { H2, Label, Paragraph } from '@/components/Text'
 import { useLanguage } from '@/lib/contexts/language-context'
 import { selfQueryOptions } from '@/lib/queries/auth'
-import { clearAllCache } from '@/lib/queries/cache-utils'
+import { formatPosterPrice } from '@/lib/utils/price'
 
 const getStringOrFallback = (value: unknown, fallback: string): string =>
 	typeof value === 'string' ? value : fallback
@@ -27,73 +26,18 @@ const handleSignIn = () => {
 }
 
 export default function More() {
-	const { t } = useLingui()
 	const { changeLanguage, currentLanguage } = useLanguage()
 	const { data: user, isLoading: isLoadingUser } = useQuery(selfQueryOptions)
-	const [isClearingCache, setIsClearingCache] = useState(false)
 
 	const appVersion = getStringOrFallback(nativeApplicationVersion, '0')
 
 	const buildVersion = getStringOrFallback(nativeBuildVersion, '0')
 
-	const handleSignOut = () => {
-		Alert.alert(t`Sign Out`, t`Are you sure you want to sign out?`, [
-			{
-				style: 'cancel',
-				text: t`Cancel`,
-			},
-			{
-				onPress: async () => {
-					// Clear SecureStore token on native (web uses cookie)
-					if (Platform.OS !== 'web') {
-						await SecureStore.deleteItemAsync('auth_session')
-					}
+	const fullName = user
+		? getFullName(user.firstname, user.lastname) || (user.name ?? '')
+		: ''
 
-					// Clear query cache
-					await clearAllCache()
-				},
-				style: 'destructive',
-				text: t`Sign Out`,
-			},
-		])
-	}
-
-	const handleClearCache = () => {
-		Alert.alert(
-			t`Clear Cache`,
-			t`This will clear all cached data including menu items. The app will reload fresh data from the server. Continue?`,
-			[
-				{
-					style: 'cancel',
-					text: t`Cancel`,
-				},
-				{
-					onPress: async () => {
-						setIsClearingCache(true)
-						try {
-							await clearAllCache()
-
-							Alert.alert(
-								t`Cache Cleared`,
-								t`All cached data has been cleared successfully.`,
-								[{ text: t`OK` }],
-							)
-						} catch {
-							Alert.alert(
-								t`Error`,
-								t`Failed to clear cache. Please try again.`,
-								[{ text: t`OK` }],
-							)
-						} finally {
-							setIsClearingCache(false)
-						}
-					},
-					style: 'destructive',
-					text: t`Clear Cache`,
-				},
-			],
-		)
-	}
+	// moved Clear Cache to /more/app screen
 
 	return (
 		<>
@@ -109,96 +53,104 @@ export default function More() {
 					<H2 style={styles.sectionTitle}>
 						<Trans>Account</Trans>
 					</H2>
+
+					{user ? (
+						<Card>
+							<List>
+								{fullName ? (
+									<ListItem label={<Trans>Name</Trans>} text={fullName} />
+								) : null}
+								<ListItem
+									label={<Trans>Phone</Trans>}
+									text={user.phone || <Trans>Not provided</Trans>}
+								/>
+								<ListItem
+									label={<Trans>Wallet</Trans>}
+									text={formatPosterPrice(user.ewallet ?? '0')}
+								/>
+								<ListItem
+									accessibilityRole="link"
+									centered
+									label={<Trans>Edit Profile</Trans>}
+									labelColor="primary"
+									onPress={() => router.push('/more/profile')}
+								/>
+							</List>
+						</Card>
+					) : isLoadingUser ? (
+						<Card>
+							<Paragraph style={styles.userInfoText}>
+								<Trans>Loading user information...</Trans>
+							</Paragraph>
+						</Card>
+					) : (
+						<Card>
+							<Paragraph style={styles.userInfoText}>
+								<Trans>
+									Sign in to view your account information and access
+									personalized features.
+								</Trans>
+							</Paragraph>
+							<Button onPress={handleSignIn}>
+								<Trans>Sign In</Trans>
+							</Button>
+						</Card>
+					)}
+				</View>
+
+				<View style={styles.section}>
+					<H2 style={styles.sectionTitle}>
+						<Trans>Stores</Trans>
+					</H2>
+
 					<Card>
-						{user ? (
-							<>
-								<View style={styles.userInfo}>
-									<Label style={styles.userInfoLabel}>
-										<Trans>Phone</Trans>
-									</Label>
-									<Text style={styles.userInfoValue}>
-										{user.phone || <Trans>Not provided</Trans>}
-									</Text>
-								</View>
-
-								{user.name && (
-									<>
-										<View style={styles.userInfoDivider} />
-										<View style={styles.userInfo}>
-											<Label style={styles.userInfoLabel}>
-												<Trans>Name</Trans>
-											</Label>
-											<Text style={styles.userInfoValue}>{user.name}</Text>
-										</View>
-									</>
-								)}
-
-								{user.email && (
-									<>
-										<View style={styles.userInfoDivider} />
-										<View style={styles.userInfo}>
-											<Label style={styles.userInfoLabel}>
-												<Trans>Email</Trans>
-											</Label>
-											<Text style={styles.userInfoValue}>{user.email}</Text>
-										</View>
-									</>
-								)}
-
-								<Button onPress={() => router.push('/more/profile')}>
-									<Trans>Edit</Trans>
-								</Button>
-								<View style={styles.userInfoDivider} />
-								<Button onPress={handleSignOut}>
-									<Trans>Sign Out</Trans>
-								</Button>
-								<View style={styles.userInfoDivider} />
-								<View style={styles.socialIconsRow}>
-									<TouchableOpacity
-										accessibilityRole="button"
-										onPress={() =>
-											Linking.openURL('https://instagram.com/tolo.cafe')
-										}
-										style={styles.socialIcon}
-									>
-										<Ionicons
-											color={styles.socialIcon.color}
-											name="logo-instagram"
-											size={28}
-										/>
-									</TouchableOpacity>
-									<TouchableOpacity
-										accessibilityRole="button"
-										onPress={() => Linking.openURL('https://wa.me/14155551234')}
-										style={styles.socialIcon}
-									>
-										<Ionicons
-											color={styles.socialIcon.color}
-											name="logo-whatsapp"
-											size={28}
-										/>
-									</TouchableOpacity>
-								</View>
-							</>
-						) : isLoadingUser ? (
-							<View style={styles.userInfoLoading}>
-								<Paragraph style={styles.userInfoText}>
-									<Trans>Loading user information...</Trans>
-								</Paragraph>
+						<List>
+							<ListItem
+								accessibilityRole="link"
+								chevron
+								label={<Trans>Visit Us</Trans>}
+								onPress={() => router.push('/more/visit-us')}
+							/>
+							<View style={styles.socialIconsRow}>
+								<TouchableOpacity
+									accessibilityRole="button"
+									onPress={() =>
+										Linking.openURL('https://instagram.com/tolo.cafe')
+									}
+									style={styles.socialIcon}
+								>
+									<Ionicons
+										color={styles.socialIcon.color}
+										name="logo-instagram"
+										size={28}
+									/>
+								</TouchableOpacity>
+								<TouchableOpacity
+									accessibilityRole="button"
+									onPress={() => Linking.openURL('https://wa.me/14155551234')}
+									style={styles.socialIcon}
+								>
+									<Ionicons
+										color={styles.socialIcon.color}
+										name="logo-whatsapp"
+										size={28}
+									/>
+								</TouchableOpacity>
+								<TouchableOpacity
+									accessibilityRole="button"
+									onPress={() =>
+										Linking.openURL('https://www.tiktok.com/@tolo.cafe')
+									}
+									style={styles.socialIcon}
+								>
+									<Ionicons
+										color={styles.socialIcon.color}
+										name="logo-tiktok"
+										size={28}
+									/>
+								</TouchableOpacity>
 							</View>
-						) : (
-							<>
-								<Paragraph style={styles.userInfoText}>
-									<Trans>
-										Sign in to view your account information and access
-										personalized features.
-									</Trans>
-								</Paragraph>
-								<Button onPress={handleSignIn}>
-									<Trans>Sign In</Trans>
-								</Button>
-							</>
-						)}
+						</List>
 					</Card>
 				</View>
 
@@ -206,65 +158,52 @@ export default function More() {
 					<H2 style={styles.sectionTitle}>
 						<Trans>Settings</Trans>
 					</H2>
+
 					<Card>
-						<View style={styles.settingRow}>
-							<Label style={styles.settingLabel}>
-								<Trans>Language</Trans>
-							</Label>
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger>
-									<View style={styles.languageDropdownTrigger}>
-										<Label style={styles.languageDropdownText}>
-											{currentLanguage === 'en' ? 'English' : 'Español'}
-										</Label>
-										<Ionicons
-											color={styles.languageDropdownArrow.color}
-											name="chevron-down"
-											size={16}
-										/>
-									</View>
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content>
-									<DropdownMenu.Item
-										key="en"
-										onSelect={() => changeLanguage('en')}
-									>
-										<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										key="es"
-										onSelect={() => changeLanguage('es')}
-									>
-										<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
-									</DropdownMenu.Item>
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
-						</View>
+						<List>
+							<ListItem>
+								<View style={styles.settingRow}>
+									<Label style={styles.settingLabel}>
+										<Trans>Language</Trans>
+									</Label>
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger asChild>
+											<View style={styles.languageDropdownTrigger}>
+												<Label style={styles.languageDropdownText}>
+													{currentLanguage === 'en' ? 'English' : 'Español'}
+												</Label>
+												<Ionicons
+													color={styles.languageDropdownArrow.color}
+													name="chevron-down"
+													size={16}
+												/>
+											</View>
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content>
+											<DropdownMenu.Item
+												key="en"
+												onSelect={() => changeLanguage('en')}
+											>
+												<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
+											</DropdownMenu.Item>
+											<DropdownMenu.Item
+												key="es"
+												onSelect={() => changeLanguage('es')}
+											>
+												<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
+											</DropdownMenu.Item>
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
+								</View>
+							</ListItem>
 
-						<View style={styles.settingDivider} />
-
-						<TouchableOpacity
-							onPress={() => router.push('/more/visit-us')}
-							style={styles.settingRow}
-						>
-							<Label style={styles.settingLabel}>
-								<Trans>Visit Us</Trans>
-							</Label>
-							<Ionicons
-								color={styles.caret.color}
-								name="chevron-forward"
-								size={20}
+							<ListItem
+								accessibilityRole="link"
+								chevron
+								label={<Trans>App</Trans>}
+								onPress={() => router.push('/more/app')}
 							/>
-						</TouchableOpacity>
-						<View style={styles.settingDivider} />
-
-						<Button disabled={isClearingCache} onPress={handleClearCache}>
-							{isClearingCache ? (
-								<Trans>Clearing Cache...</Trans>
-							) : (
-								<Trans>Clear Cache</Trans>
-							)}
-						</Button>
+						</List>
 					</Card>
 				</View>
 
@@ -278,6 +217,13 @@ export default function More() {
 			</ScreenContainer>
 		</>
 	)
+}
+
+function getFullName(
+	firstname: string | undefined,
+	lastname: string | undefined,
+): string {
+	return `${firstname ?? ''}${lastname ? ` ${lastname}` : ''}`.trim()
 }
 
 const styles = StyleSheet.create((theme) => ({
@@ -304,7 +250,6 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.xs,
 	},
 	cardTitle: {
-		color: theme.colors.text,
 		fontSize: theme.typography.h3.fontSize,
 		fontWeight: theme.typography.h3.fontWeight,
 		marginBottom: theme.spacing.xs,
@@ -313,6 +258,13 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.textSecondary,
 		fontSize: 30,
 		marginLeft: theme.spacing.sm,
+	},
+	centerLink: {
+		alignItems: 'center',
+		paddingVertical: theme.spacing.md,
+	},
+	centerLinkText: {
+		color: theme.colors.primary,
 	},
 	clearCacheButton: {
 		alignItems: 'center',
@@ -352,15 +304,14 @@ const styles = StyleSheet.create((theme) => ({
 		fontWeight: theme.typography.body.fontWeight,
 		textAlign: 'center',
 	},
+
 	dayText: {
-		color: theme.colors.text,
 		fontSize: theme.typography.body.fontSize,
 	},
 	footer: {
 		alignItems: 'center',
 		paddingVertical: theme.spacing.md,
 	},
-
 	footerText: {
 		color: theme.colors.textSecondary,
 		fontSize: theme.typography.caption.fontSize,
@@ -390,12 +341,10 @@ const styles = StyleSheet.create((theme) => ({
 		marginLeft: theme.spacing.sm,
 	},
 	languageDropdownText: {
-		color: theme.colors.text,
 		flex: 1,
 	},
 	languageDropdownTrigger: {
 		alignItems: 'center',
-		backgroundColor: theme.colors.background,
 		borderColor: theme.colors.border,
 		borderRadius: theme.borderRadius.sm,
 		borderWidth: 1,
@@ -412,7 +361,6 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.layout.screenPadding,
 	},
 	sectionTitle: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 	settingDivider: {
@@ -420,14 +368,11 @@ const styles = StyleSheet.create((theme) => ({
 		height: 1,
 		marginVertical: 0,
 	},
-	settingLabel: {
-		color: theme.colors.text,
-	},
+	settingLabel: {},
 	settingRow: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		paddingVertical: theme.spacing.md,
 	},
 	signInButton: {
 		alignItems: 'center',
@@ -480,7 +425,6 @@ const styles = StyleSheet.create((theme) => ({
 		paddingVertical: theme.spacing.lg,
 	},
 	userInfoLabel: {
-		color: theme.colors.text,
 		flex: 1,
 	},
 	userInfoLoading: {

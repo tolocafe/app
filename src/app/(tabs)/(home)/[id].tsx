@@ -209,12 +209,6 @@ export default function MenuDetail() {
 																style={styles.modButton}
 															>
 																<View style={styles.modButtonRow}>
-																	<Text style={styles.modButtonText}>
-																		{modification.name}
-																		{modification.price > 0
-																			? ` (+${formatPosterPrice(modification.price)})`
-																			: ''}
-																	</Text>
 																	{isSelected ? (
 																		<View style={styles.modCheck}>
 																			<Ionicons
@@ -223,9 +217,16 @@ export default function MenuDetail() {
 																				size={14}
 																			/>
 																		</View>
-																	) : (
-																		<View style={styles.modCheckPlaceholder} />
-																	)}
+																	) : null}
+																	<Text style={styles.modButtonText}>
+																		{modification.name}
+																		{Number.parseInt(
+																			String(modification.price),
+																			10,
+																		)
+																			? ` +${formatPosterPrice(modification.price)}`
+																			: ''}
+																	</Text>
 																</View>
 															</TouchableOpacity>
 														)
@@ -322,7 +323,6 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.layout.screenPadding,
 	},
 	description: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.lg,
 	},
 	header: {
@@ -376,7 +376,6 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: 'space-between',
 	},
 	modButtonText: {
-		color: theme.colors.text,
 		fontSize: theme.typography.button.fontSize,
 		fontWeight: theme.fontWeights.semibold,
 		textAlign: 'center',
@@ -401,14 +400,12 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.lg,
 	},
 	modGroupTitle: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.xs,
 	},
 	modificationsSection: {
 		marginBottom: theme.spacing.xl,
 	},
 	modItemName: {
-		color: theme.colors.text,
 		flexShrink: 1,
 		paddingRight: theme.spacing.md,
 	},
@@ -450,26 +447,22 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: 'center',
 	},
 	quantityLabel: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 	quantitySection: {
 		marginBottom: theme.spacing.lg,
 	},
 	quantityText: {
-		color: theme.colors.text,
 		minWidth: 40,
 		textAlign: 'center',
 	},
 	sectionTitle: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.md,
 	},
 	timeBadge: {
 		backgroundColor: theme.colors.primary,
 	},
 	title: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 	titleOverlay: {

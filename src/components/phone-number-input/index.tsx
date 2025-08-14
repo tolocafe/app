@@ -67,7 +67,7 @@ export function PhoneNumberInput({
 	return (
 		<View style={styles.container} testID={testID}>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
+				<DropdownMenu.Trigger asChild>
 					<View style={styles.countryTrigger}>
 						<View style={styles.flagAndCode}>
 							<Text style={styles.flag}>{selectedCountry.flag}</Text>
@@ -98,8 +98,6 @@ export function PhoneNumberInput({
 					})}
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-
-			<View style={styles.divider} />
 
 			<TextInput
 				autoComplete="tel"

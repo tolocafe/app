@@ -76,21 +76,21 @@ export default function VisitUs() {
 								accessibilityLabel={t`Open location in Apple Maps`}
 								onPress={handleOpenAppleMaps}
 							>
-								<Trans>Open in Apple Maps</Trans>
+								<Trans>Apple Maps</Trans>
 							</Button>
 							<Button
 								accessibilityLabel={t`Open location in Google Maps`}
 								onPress={handleOpenGoogleMaps}
 								variant="surface"
 							>
-								<Trans>Open in Google Maps</Trans>
+								<Trans>Google Maps</Trans>
 							</Button>
 							<Button
 								accessibilityLabel={t`View on TripAdvisor`}
 								onPress={handleOpenTripAdvisor}
 								variant="surface"
 							>
-								<Trans>View on TripAdvisor</Trans>
+								<Trans>TripAdvisor</Trans>
 							</Button>
 						</View>
 					</Card>
@@ -122,12 +122,9 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.spacing.xs,
 	},
 	cardTitle: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.xs,
 	},
-	dayText: {
-		color: theme.colors.text,
-	},
+	dayText: {},
 	hoursContainer: {
 		marginBottom: theme.spacing.sm,
 		marginTop: theme.spacing.lg,
@@ -142,7 +139,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	hoursTitle: {
 		...theme.typography.h4,
-		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 	section: {
@@ -150,7 +146,6 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.layout.screenPadding,
 	},
 	sectionTitle: {
-		color: theme.colors.text,
 		marginBottom: theme.spacing.sm,
 	},
 }))
