@@ -3,6 +3,7 @@ import { Alert, Platform, Pressable, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
+import { t as tMacro } from '@lingui/macro'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
@@ -20,11 +21,11 @@ import {
 } from '@/lib/queries/auth'
 
 const signInSchema = z.object({
-	phoneNumber: z.string().trim().min(1, 'Please enter a phone number'),
+	phoneNumber: z.string().trim().min(1, tMacro`Please enter a phone number`),
 	verificationCode: z
 		.string()
 		.trim()
-		.regex(/^\d{6}$/u, 'The code must be 6 digits')
+		.regex(/^\d{6}$/u, tMacro`The code must be 6 digits`)
 		.or(z.literal('')),
 })
 

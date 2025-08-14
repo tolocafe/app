@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
@@ -28,6 +28,7 @@ const handleClose = () => {
 export default function MenuDetail() {
 	const tabBarHeight = useTabBarHeight()
 	const { id } = useLocalSearchParams<{ id: string }>()
+	const { t } = useLingui()
 
 	const addItem = useAddItemGuarded()
 	const { data: product } = useQuery(productQueryOptions(id))
@@ -97,7 +98,9 @@ export default function MenuDetail() {
 	return (
 		<>
 			<Head>
-				<title>{product.product_name} - TOLO Good Coffee</title>
+				<title>
+					{product.product_name} - {t`TOLO Good Coffee`}
+				</title>
 			</Head>
 			<ScreenContainer
 				contentContainerStyle={{ paddingBottom: tabBarHeight }}
@@ -208,35 +211,34 @@ export default function MenuDetail() {
 																}
 																style={styles.modButton}
 															>
-																<View style={styles.modButtonRow}>
-																	<Text style={styles.modButtonText}>
-																		{modification.name}
-																		{modification.price > 0
+															<View style={styles.modButtonRow}>
+																<Text style={styles.modButtonText}>
+																	{modification.name}
+																	{modification.price > 0
 																			? ` (+${formatPosterPrice(modification.price)})`
-																			: ''}
-																	</Text>
-																	{isSelected ? (
-																		<View style={styles.modCheck}>
-																			<Ionicons
-																				color={styles.modCheckIcon.color}
-																				name="checkmark"
-																				size={14}
-																			/>
-																		</View>
-																	) : (
-																		<View style={styles.modCheckPlaceholder} />
-																	)}
+																		: ''}
+																</Text>
+															{isSelected ? (
+																<View style={styles.modCheck}>
+																	<Ionicons
+																		color={styles.modCheckIcon.color}
+																		name="checkmark"
+																		size={14}
+																	/>
 																</View>
-															</TouchableOpacity>
-														)
-													})}
-												</View>
-											)}
-										</Field>
-									</View>
-								))}
-							</View>
-						)}
+															) : (
+																<View style={styles.modCheckPlaceholder} />
+															)}
+														</View>
+													)
+												})}
+											</View>
+										)}
+									</Field>
+								</View>
+							))}
+						</View>
+					)}
 
 					{/* Quantity Controls */}
 					<View style={styles.quantitySection}>

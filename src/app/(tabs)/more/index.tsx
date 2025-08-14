@@ -98,9 +98,9 @@ export default function More() {
 	return (
 		<>
 			<Head>
-				<title>More - TOLO</title>
-				<meta content="Settings and information for TOLO." name="description" />
-				<meta content="More - TOLO" property="og:title" />
+				<title>{t`More - TOLO`}</title>
+				<meta content={t`Settings and information for TOLO.`} name="description" />
+				<meta content={t`More - TOLO`} property="og:title" />
 				<meta content="/more" property="og:url" />
 			</Head>
 			<ScreenContainer contentContainerStyle={styles.scrollContent}>
@@ -184,9 +184,9 @@ export default function More() {
 							<DropdownMenu.Root>
 								<DropdownMenu.Trigger>
 									<View style={styles.languageDropdownTrigger}>
-										<Label style={styles.languageDropdownText}>
-											{currentLanguage === 'en' ? 'English' : 'Español'}
-										</Label>
+																		<Label style={styles.languageDropdownText}>
+									{currentLanguage === 'en' ? t`English` : t`Español`}
+								</Label>
 										<Ionicons
 											color={styles.languageDropdownArrow.color}
 											name="chevron-down"
@@ -199,13 +199,13 @@ export default function More() {
 										key="en"
 										onSelect={() => changeLanguage('en')}
 									>
-										<DropdownMenu.ItemTitle>English</DropdownMenu.ItemTitle>
+										<DropdownMenu.ItemTitle><Trans>English</Trans></DropdownMenu.ItemTitle>
 									</DropdownMenu.Item>
 									<DropdownMenu.Item
 										key="es"
 										onSelect={() => changeLanguage('es')}
 									>
-										<DropdownMenu.ItemTitle>Español</DropdownMenu.ItemTitle>
+										<DropdownMenu.ItemTitle><Trans>Español</Trans></DropdownMenu.ItemTitle>
 									</DropdownMenu.Item>
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>
