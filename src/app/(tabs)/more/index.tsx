@@ -248,18 +248,28 @@ export default function More() {
 					<Card>
 						<View style={styles.socialIconsRow}>
 							<TouchableOpacity
-								onPress={() => Linking.openURL('https://instagram.com/tolo.cafe')}
+								onPress={() =>
+									Linking.openURL('https://instagram.com/tolo.cafe')
+								}
 								accessibilityRole="button"
 								style={styles.socialIcon}
 							>
-								<Ionicons name="logo-instagram" size={28} color={styles.socialIcon.color} />
+								<Ionicons
+									name="logo-instagram"
+									size={28}
+									color={styles.socialIcon.color}
+								/>
 							</TouchableOpacity>
 							<TouchableOpacity
 								onPress={() => Linking.openURL('https://wa.me/14155551234')}
 								accessibilityRole="button"
 								style={styles.socialIcon}
 							>
-								<Ionicons name="logo-whatsapp" size={28} color={styles.socialIcon.color} />
+								<Ionicons
+									name="logo-whatsapp"
+									size={28}
+									color={styles.socialIcon.color}
+								/>
 							</TouchableOpacity>
 						</View>
 					</Card>
