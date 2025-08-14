@@ -16,6 +16,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { z } from 'zod/v4'
 
 import { Button } from '@/components/Button'
+import PhoneNumberInput from '@/components/PhoneNumberInput'
 import ScreenContainer from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
 import {
@@ -138,14 +139,13 @@ export default function SignIn() {
 								</Label>
 								<Field name="phoneNumber">
 									{(field) => (
-										<TextInput
-											autoComplete="tel"
-											keyboardType="phone-pad"
-											onBlur={field.handleBlur}
+										<PhoneNumberInput
+											inputProps={{
+												onBlur: field.handleBlur,
+												style: styles.input,
+											}}
 											onChangeText={field.handleChange}
-											placeholder={t`+1234567890`}
-											style={styles.input}
-											textContentType="telephoneNumber"
+											placeholder={t`Phone number`}
 											value={field.state.value}
 										/>
 									)}

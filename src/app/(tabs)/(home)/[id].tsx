@@ -377,9 +377,6 @@ const styles = StyleSheet.create((theme) => ({
 		fontWeight: theme.fontWeights.semibold,
 		textAlign: 'center',
 	},
-	modCheckIcon: {
-		color: '#FFFFFF',
-	},
 	modCheck: {
 		alignItems: 'center',
 		backgroundColor: theme.colors.primary,
@@ -387,6 +384,9 @@ const styles = StyleSheet.create((theme) => ({
 		height: 20,
 		justifyContent: 'center',
 		width: 20,
+	},
+	modCheckIcon: {
+		color: '#FFFFFF',
 	},
 	modCheckPlaceholder: {
 		height: 20,
