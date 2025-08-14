@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { TextInput, View } from 'react-native'
+import { Platform, TextInput, View } from 'react-native'
 
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useForm } from '@tanstack/react-form'
@@ -186,6 +186,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	card: {
 		backgroundColor: theme.colors.surface,
+		borderCurve: Platform.OS === 'ios' ? 'continuous' : undefined,
 		borderRadius: theme.borderRadius.lg,
 		margin: theme.layout.screenPadding,
 		padding: theme.spacing.lg,

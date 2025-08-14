@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Alert, Platform, TouchableOpacity, View } from 'react-native'
 
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
+import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application'
 import { router } from 'expo-router'
 import Head from 'expo-router/head'
 import * as SecureStore from 'expo-secure-store'
@@ -10,11 +12,15 @@ import { StyleSheet } from 'react-native-unistyles'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
 import { useLanguage } from '@/lib/contexts/language-context'
 import { selfQueryOptions } from '@/lib/queries/auth'
 import { clearAllCache } from '@/lib/queries/cache-utils'
+
+const getStringOrFallback = (value: unknown, fallback: string): string =>
+	typeof value === 'string' ? value : fallback
 
 const handleSignIn = () => {
 	router.push('/sign-in')
@@ -25,6 +31,10 @@ export default function More() {
 	const { changeLanguage, currentLanguage } = useLanguage()
 	const { data: user, isLoading: isLoadingUser } = useQuery(selfQueryOptions)
 	const [isClearingCache, setIsClearingCache] = useState(false)
+
+	const appVersion = getStringOrFallback(nativeApplicationVersion, '0')
+
+	const buildVersion = getStringOrFallback(nativeBuildVersion, '0')
 
 	const handleSignOut = () => {
 		Alert.alert(t`Sign Out`, t`Are you sure you want to sign out?`, [
@@ -99,7 +109,7 @@ export default function More() {
 					<H2 style={styles.sectionTitle}>
 						<Trans>Account</Trans>
 					</H2>
-					<View style={styles.card}>
+					<Card>
 						{user ? (
 							<>
 								<View style={styles.userInfo}>
@@ -159,14 +169,14 @@ export default function More() {
 								</Button>
 							</>
 						)}
-					</View>
+					</Card>
 				</View>
 
 				<View style={styles.section}>
 					<H2 style={styles.sectionTitle}>
 						<Trans>Settings</Trans>
 					</H2>
-					<View style={styles.card}>
+					<Card>
 						<View style={styles.settingRow}>
 							<Label style={styles.settingLabel}>
 								<Trans>Language</Trans>
@@ -177,7 +187,11 @@ export default function More() {
 										<Label style={styles.languageDropdownText}>
 											{currentLanguage === 'en' ? 'English' : 'Español'}
 										</Label>
-										<Text style={styles.languageDropdownArrow}>▼</Text>
+										<Ionicons
+											color={styles.languageDropdownArrow.color}
+											name="chevron-down"
+											size={16}
+										/>
 									</View>
 								</DropdownMenu.Trigger>
 								<DropdownMenu.Content>
@@ -207,7 +221,11 @@ export default function More() {
 							<Label style={styles.settingLabel}>
 								<Trans>Profile</Trans>
 							</Label>
-							<Text style={styles.caret}>›</Text>
+							<Ionicons
+								color={styles.caret.color}
+								name="chevron-forward"
+								size={20}
+							/>
 						</TouchableOpacity>
 						<View style={styles.settingDivider} />
 
@@ -218,7 +236,11 @@ export default function More() {
 							<Label style={styles.settingLabel}>
 								<Trans>Visit Us</Trans>
 							</Label>
-							<Text style={styles.caret}>›</Text>
+							<Ionicons
+								color={styles.caret.color}
+								name="chevron-forward"
+								size={20}
+							/>
 						</TouchableOpacity>
 						<View style={styles.settingDivider} />
 						<TouchableOpacity
@@ -228,7 +250,11 @@ export default function More() {
 							<Label style={styles.settingLabel}>
 								<Trans>Connect</Trans>
 							</Label>
-							<Text style={styles.caret}>›</Text>
+							<Ionicons
+								color={styles.caret.color}
+								name="chevron-forward"
+								size={20}
+							/>
 						</TouchableOpacity>
 
 						<Button disabled={isClearingCache} onPress={handleClearCache}>
@@ -238,12 +264,14 @@ export default function More() {
 								<Trans>Clear Cache</Trans>
 							)}
 						</Button>
-						<Paragraph style={styles.clearCacheDescription}>
-							<Trans>
-								Clear all cached data and reload fresh content from the server.
-							</Trans>
-						</Paragraph>
-					</View>
+					</Card>
+				</View>
+				<View style={styles.footer}>
+					<Paragraph style={styles.footerText}>
+						<Trans>
+							Version {appVersion} ({buildVersion})
+						</Trans>
+					</Paragraph>
 				</View>
 			</ScreenContainer>
 		</>
@@ -265,9 +293,7 @@ const styles = StyleSheet.create((theme) => ({
 		fontWeight: theme.typography.body.fontWeight,
 	},
 	card: {
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.lg,
-		padding: theme.spacing.lg,
+		// Deprecated; using <Card> component instead. Kept for potential spacing overrides.
 	},
 	cardText: {
 		color: theme.colors.textSecondary,
@@ -328,11 +354,20 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.text,
 		fontSize: theme.typography.body.fontSize,
 	},
+	footer: {
+		alignItems: 'center',
+		paddingVertical: theme.spacing.md,
+	},
+
+	footerText: {
+		color: theme.colors.textSecondary,
+		fontSize: theme.typography.caption.fontSize,
+		textAlign: 'center',
+	},
 	hoursContainer: {
 		marginBottom: theme.spacing.sm,
 		marginTop: theme.spacing.lg,
 	},
-
 	hoursRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',

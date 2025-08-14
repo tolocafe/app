@@ -9,7 +9,6 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native'
 import * as Sentry from '@sentry/react-native'
-import 'react-native-reanimated'
 import { Stack, useNavigationContainerRef } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
@@ -70,11 +69,6 @@ function RootLayout() {
 								<Stack.Screen
 									name="sign-in"
 									options={{
-										animation: Platform.select({
-											default: undefined,
-											web: 'fade',
-										}),
-										headerShown: false,
 										presentation: Platform.select({
 											default: 'modal',
 											web: 'transparentModal',

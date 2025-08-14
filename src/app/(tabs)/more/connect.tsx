@@ -5,6 +5,7 @@ import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2 } from '@/components/Text'
 
@@ -37,7 +38,7 @@ export default function Connect() {
 					<H2 style={styles.sectionTitle}>
 						<Trans>Connect</Trans>
 					</H2>
-					<View style={styles.card}>
+					<Card>
 						<Button onPress={handleCall}>
 							<Trans>Call (415) 555-1234</Trans>
 						</Button>
@@ -47,7 +48,7 @@ export default function Connect() {
 						<Button onPress={handleInstagram}>
 							<Trans>Follow @tolocoffee</Trans>
 						</Button>
-					</View>
+					</Card>
 				</View>
 			</ScreenContainer>
 		</>
@@ -55,11 +56,6 @@ export default function Connect() {
 }
 
 const styles = StyleSheet.create((theme) => ({
-	card: {
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.lg,
-		padding: theme.spacing.lg,
-	},
 	scrollContent: {
 		paddingBottom: theme.spacing.xl,
 	},

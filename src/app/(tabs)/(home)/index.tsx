@@ -1,6 +1,7 @@
 import {
 	ActivityIndicator,
 	FlatList,
+	Pressable,
 	TouchableOpacity,
 	View,
 } from 'react-native'
@@ -11,10 +12,15 @@ import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
 import Head from 'expo-router/head'
-import Animated from 'react-native-reanimated'
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from 'react-native-reanimated'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H2, H3, H4, Paragraph } from '@/components/Text'
 import { POSTER_BASE_URL } from '@/lib/api'
@@ -40,58 +46,9 @@ export default function Menu() {
 		addItem({ id: item.product_id, quantity: 1 })
 	}
 
-	const renderMenuItem = ({ item }: { item: PosterProduct }) => {
-		const firstPrice = Object.values(item.price)[0]
-
-		return (
-			<Link href={`/(tabs)/(home)/${item.product_id}`}>
-				<View style={styles.menuItem}>
-					<Animated.View
-						sharedTransitionTag={`menu-item-${item.product_id}`}
-						style={styles.menuItemImageContainer}
-					>
-						{item.photo ? (
-							<Image
-								contentFit="cover"
-								source={{
-									uri: `${POSTER_BASE_URL}${item.photo}`,
-								}}
-								// keep inline styles
-								style={{ height: '100%', width: '100%' }}
-								transition={200}
-							/>
-						) : (
-							<View style={styles.menuItemImage} />
-						)}
-					</Animated.View>
-					<View style={styles.menuItemContent}>
-						<View style={styles.menuItemHeader}>
-							<H4>{item.product_name}</H4>
-						</View>
-						<Paragraph style={styles.menuItemDescription}>
-							{item.product_production_description}
-						</Paragraph>
-						<View style={styles.menuItemFooter}>
-							<Paragraph style={styles.menuItemPrice}>
-								{formatPosterPrice(firstPrice)}
-							</Paragraph>
-							<View style={styles.menuItemActions}>
-								<TouchableOpacity
-									onPress={(event) => {
-										event.stopPropagation()
-										handleAddToBag(item)
-									}}
-									style={styles.addToBagButton}
-								>
-									<Ionicons color="#fff" name="add" size={24} />
-								</TouchableOpacity>
-							</View>
-						</View>
-					</View>
-				</View>
-			</Link>
-		)
-	}
+	const renderMenuItem = ({ item }: { item: PosterProduct }) => (
+		<MenuListItem item={item} onAddToBag={handleAddToBag} />
+	)
 
 	const renderCategorySection = (category: PosterCategory) => {
 		const categoryItems = menu.filter(
@@ -170,6 +127,82 @@ export default function Menu() {
 	)
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+
+function MenuListItem({
+	item,
+	onAddToBag,
+}: {
+	item: PosterProduct
+	onAddToBag: (item: PosterProduct) => void
+}) {
+	const scale = useSharedValue(1)
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [{ scale: scale.value }],
+	}))
+
+	const firstPrice = Object.values(item.price)[0]
+
+	return (
+		<Link asChild href={`/(tabs)/(home)/${item.product_id}`}>
+			<AnimatedPressable
+				onPressIn={() => {
+					scale.value = withSpring(0.96)
+				}}
+				onPressOut={() => {
+					scale.value = withSpring(1)
+				}}
+				style={animatedStyle}
+			>
+				<Card padded={false} style={styles.menuItem}>
+					<Animated.View
+						sharedTransitionTag={`menu-item-${item.product_id}`}
+						style={styles.menuItemImageContainer}
+					>
+						{item.photo ? (
+							<Image
+								contentFit="cover"
+								source={{
+									uri: `${POSTER_BASE_URL}${item.photo}`,
+								}}
+								// keep inline styles
+								style={{ height: '100%', width: '100%' }}
+								transition={200}
+							/>
+						) : (
+							<View style={styles.menuItemImage} />
+						)}
+					</Animated.View>
+					<View style={styles.menuItemContent}>
+						<View style={styles.menuItemHeader}>
+							<H4>{item.product_name}</H4>
+						</View>
+						<Paragraph style={styles.menuItemDescription}>
+							{item.product_production_description}
+						</Paragraph>
+						<View style={styles.menuItemFooter}>
+							<Paragraph style={styles.menuItemPrice}>
+								{formatPosterPrice(firstPrice)}
+							</Paragraph>
+							<View style={styles.menuItemActions}>
+								<TouchableOpacity
+									onPress={(event) => {
+										event.stopPropagation()
+										onAddToBag(item)
+									}}
+									style={styles.addToBagButton}
+								>
+									<Ionicons color="#fff" name="add" size={24} />
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+				</Card>
+			</AnimatedPressable>
+		</Link>
+	)
+}
+
 const styles = StyleSheet.create((theme) => ({
 	addToBagButton: {
 		backgroundColor: theme.colors.primary,
@@ -229,8 +262,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 
 	menuItem: {
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.lg,
 		overflow: 'hidden',
 		width: 225,
 	},

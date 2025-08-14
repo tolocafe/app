@@ -12,7 +12,7 @@ export default function HomeLayout() {
 
 	return (
 		<Stack screenOptions={defaultStackScreenOptions}>
-			<Stack.Screen name="index" options={{ title: t`Menu` }} />
+			<Stack.Screen name="index" options={{ title: t`Home` }} />
 			<Stack.Screen
 				name="[id]"
 				options={{ headerTransparent: true, title: '' }}

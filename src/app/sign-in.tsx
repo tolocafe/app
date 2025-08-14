@@ -1,31 +1,23 @@
 import { useState } from 'react'
-import {
-	Alert,
-	Platform,
-	Pressable,
-	TextInput,
-	TouchableOpacity,
-	View,
-} from 'react-native'
+import { Alert, Platform, Pressable, View } from 'react-native'
 
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { StyleSheet } from 'react-native-unistyles'
 import { z } from 'zod/v4'
 
 import { Button } from '@/components/Button'
+import OtpInput from '@/components/otp-input'
+import PhoneNumberInput from '@/components/phone-number-input'
 import ScreenContainer from '@/components/ScreenContainer'
 import { H2, Label, Paragraph, Text } from '@/components/Text'
 import {
 	requestOtpMutationOptions,
 	verifyOtpMutationOptions,
 } from '@/lib/queries/auth'
-
-const handleClose = () => {
-	router.back()
-}
 
 const signInSchema = z.object({
 	phoneNumber: z.string().trim().min(1, 'Please enter a phone number'),
@@ -52,187 +44,210 @@ export default function SignIn() {
 		},
 	})
 
-	const { Field, handleSubmit, resetField, setFieldValue, Subscribe } = useForm(
-		{
-			defaultValues: {
-				phoneNumber: '',
-				verificationCode: '',
-			},
-			async onSubmit({ value }) {
-				try {
-					if (stage === 'phone') {
-						await requestOtpMutation.mutateAsync({
-							phone: value.phoneNumber.trim(),
-						})
-						setStage('code')
-						// Reset code field meta/value when moving to next stage
-						setFieldValue('verificationCode', '')
-						resetField('verificationCode')
-						return
-					}
-
-					await verifyOtpMutation.mutateAsync({
-						code: value.verificationCode.trim(),
-						phone: value.phoneNumber.trim(),
-						sessionName: Platform.OS,
-					})
-				} catch (error) {
-					if (stage === 'phone') {
-						Alert.alert(
-							t`Error`,
-							(error as Error).message || t`Failed to send code`,
-						)
-					} else {
-						Alert.alert(
-							t`Error`,
-							(error as Error).message || t`Invalid verification code`,
-						)
-					}
-				}
-			},
-			validators: { onChange: signInSchema },
+	const { Field, handleSubmit, resetField, Subscribe } = useForm({
+		defaultValues: {
+			phoneNumber: '',
+			verificationCode: '',
 		},
-	)
+		async onSubmit({ value }) {
+			try {
+				if (stage === 'phone') {
+					await requestOtpMutation.mutateAsync({
+						phone: value.phoneNumber.trim(),
+					})
+					setStage('code')
+					// Reset code field meta/value when moving to next stage
+					resetField('verificationCode')
+					return
+				}
+
+				await verifyOtpMutation.mutateAsync({
+					code: value.verificationCode.trim(),
+					phone: value.phoneNumber.trim(),
+					sessionName: Platform.OS,
+				})
+			} catch (error) {
+				if (stage === 'phone') {
+					Alert.alert(
+						t`Error`,
+						(error as Error).message || t`Failed to send code`,
+					)
+				} else {
+					// Clear OTP on error to allow re-entry
+					resetField('verificationCode')
+					Alert.alert(
+						t`Error`,
+						(error as Error).message || t`Invalid verification code`,
+					)
+				}
+			}
+		},
+		validators: { onChange: signInSchema },
+	})
 
 	const handleGoBack = () => {
 		setStage('phone')
 
-		setFieldValue('verificationCode', '')
 		resetField('verificationCode')
 	}
 
 	return (
-		<ScreenContainer
-			bounces={false}
-			contentContainerStyle={{ alignContent: 'center', padding: 10 }}
-			keyboardAware
-		>
-			<View style={styles.header}>
-				<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-					<Text style={styles.closeButtonText}>✕</Text>
-				</TouchableOpacity>
-			</View>
+		<>
+			<Stack.Screen
+				options={{
+					animation: Platform.select({
+						default: undefined,
+						web: 'fade',
+					}),
+					headerBackVisible: false,
+					headerRight: () => (
+						<Pressable
+							accessibilityLabel={t`Close`}
+							accessibilityRole="button"
+							onPress={() => router.back()}
+							style={styles.headerIconPressable}
+						>
+							<Ionicons
+								color={styles.headerIconText.color}
+								name="close"
+								size={24}
+							/>
+						</Pressable>
+					),
+					headerShadowVisible: false,
+					headerShown: true,
+					headerTitle: '',
+					headerTransparent: true,
+					presentation: Platform.select({
+						default: 'modal',
+						web: 'transparentModal',
+					}),
+				}}
+			/>
+			<ScreenContainer
+				bounces={false}
+				contentContainerStyle={{ alignContent: 'center', padding: 10 }}
+				keyboardAware
+			>
+				{itemName && (
+					<View style={styles.messageContainer}>
+						<Paragraph style={styles.message}>
+							<Trans>Sign in to add &ldquo;{itemName}&rdquo; to your bag</Trans>
+						</Paragraph>
+					</View>
+				)}
 
-			{itemName && (
-				<View style={styles.messageContainer}>
-					<Paragraph style={styles.message}>
-						<Trans>Sign in to add &ldquo;{itemName}&rdquo; to your bag</Trans>
-					</Paragraph>
-				</View>
-			)}
+				<View style={styles.content}>
+					<View style={styles.authContainer}>
+						{stage === 'phone' ? (
+							<>
+								<H2 style={styles.title}>
+									<Trans>Sign in with your phone</Trans>
+								</H2>
+								<Paragraph style={styles.subtitle}>
+									<Trans>We&apos;ll send you a verification code</Trans>
+								</Paragraph>
 
-			<View style={styles.content}>
-				<View style={styles.authContainer}>
-					{stage === 'phone' ? (
-						<>
-							<H2 style={styles.title}>
-								<Trans>Sign in with your phone</Trans>
-							</H2>
-							<Paragraph style={styles.subtitle}>
-								<Trans>We&apos;ll send you a verification code</Trans>
-							</Paragraph>
-
-							<View style={styles.inputContainer}>
-								<Label style={styles.label}>
-									<Trans>Phone number</Trans>
-								</Label>
-								<Field name="phoneNumber">
-									{(field) => (
-										<TextInput
-											autoComplete="tel"
-											keyboardType="phone-pad"
-											onBlur={field.handleBlur}
-											onChangeText={field.handleChange}
-											placeholder={t`+1234567890`}
-											style={styles.input}
-											textContentType="telephoneNumber"
-											value={field.state.value}
-										/>
-									)}
-								</Field>
-							</View>
-
-							<Subscribe selector={(state) => state}>
-								{(canSubmit) => (
-									<Button
-										disabled={
-											requestOtpMutation.isPending || !canSubmit.canSubmit
-										}
-										onPress={() => handleSubmit()}
-									>
-										{requestOtpMutation.isPending ? (
-											<Trans>Sending...</Trans>
-										) : (
-											<Trans>Send Code</Trans>
-										)}
-									</Button>
-								)}
-							</Subscribe>
-						</>
-					) : (
-						<>
-							<H2 style={styles.title}>
-								<Trans>Enter verification code</Trans>
-							</H2>
-
-							<Subscribe selector={(state) => state.values.phoneNumber}>
-								{(phone) => (
-									<Paragraph style={styles.subtitle}>
-										<Trans>We sent a code to {phone}</Trans>
-									</Paragraph>
-								)}
-							</Subscribe>
-
-							<View style={styles.inputContainer}>
-								<Label style={styles.label}>
-									<Trans>Verification code</Trans>
-								</Label>
-								<Field name="verificationCode">
-									{(field) => (
-										<>
-											<TextInput
-												autoComplete="sms-otp"
-												keyboardType="number-pad"
-												maxLength={6}
+								<View style={styles.inputContainer}>
+									<Label style={styles.label}>
+										<Trans>Phone number</Trans>
+									</Label>
+									<Field name="phoneNumber">
+										{(field) => (
+											<PhoneNumberInput
 												onBlur={field.handleBlur}
-												onChangeText={field.handleChange}
-												placeholder={t`123456`}
-												style={styles.input}
-												textContentType="oneTimeCode"
+												onChange={field.handleChange}
+												placeholder={t`123 456 7890`}
 												value={field.state.value}
 											/>
-											{field.state.meta.isTouched &&
-											field.state.meta.errors.length > 0 ? (
-												<Text style={styles.errorText}>
-													{field.state.meta.errors[0]?.message}
-												</Text>
-											) : null}
-										</>
+										)}
+									</Field>
+								</View>
+
+								<Subscribe selector={(state) => state}>
+									{(canSubmit) => (
+										<Button
+											disabled={
+												requestOtpMutation.isPending || !canSubmit.canSubmit
+											}
+											onPress={() => handleSubmit()}
+										>
+											{requestOtpMutation.isPending ? (
+												<Trans>Sending...</Trans>
+											) : (
+												<Trans>Send Code</Trans>
+											)}
+										</Button>
 									)}
-								</Field>
-							</View>
+								</Subscribe>
+							</>
+						) : (
+							<>
+								<H2 style={styles.title}>
+									<Trans>Enter verification code</Trans>
+								</H2>
 
-							<Button
-								disabled={verifyOtpMutation.isPending}
-								onPress={() => handleSubmit()}
-							>
-								{verifyOtpMutation.isPending ? (
-									<Trans>Verifying...</Trans>
-								) : (
-									<Trans>Verify</Trans>
-								)}
-							</Button>
+								<Subscribe selector={(state) => state.values.phoneNumber}>
+									{(phone) => (
+										<Paragraph style={styles.subtitle}>
+											<Trans>We sent a code to {phone}</Trans>
+										</Paragraph>
+									)}
+								</Subscribe>
 
-							<Pressable onPress={handleGoBack} style={styles.backButton}>
-								<Text style={styles.backButtonText}>
-									<Trans>← Change phone number</Trans>
-								</Text>
-							</Pressable>
-						</>
-					)}
+								<View style={styles.inputContainer}>
+									<Label style={styles.label}>
+										<Trans>Verification code</Trans>
+									</Label>
+									<Field name="verificationCode">
+										{(field) => (
+											<>
+												<OtpInput
+													onBlur={field.handleBlur}
+													onChange={field.handleChange}
+													onComplete={() => handleSubmit()}
+													value={field.state.value}
+												/>
+												{field.state.meta.isTouched &&
+												field.state.meta.errors.length > 0 ? (
+													<Text style={styles.errorText}>
+														{field.state.meta.errors[0]?.message}
+													</Text>
+												) : null}
+											</>
+										)}
+									</Field>
+								</View>
+
+								<Button
+									disabled={verifyOtpMutation.isPending}
+									onPress={() => handleSubmit()}
+								>
+									{verifyOtpMutation.isPending ? (
+										<Trans>Verifying...</Trans>
+									) : (
+										<Trans>Verify</Trans>
+									)}
+								</Button>
+
+								<Pressable onPress={handleGoBack} style={styles.backButton}>
+									<View style={styles.backButtonRow}>
+										<Ionicons
+											color={styles.backButtonText.color}
+											name="arrow-back"
+											size={16}
+										/>
+										<Text style={styles.backButtonText}>
+											<Trans>Change phone number</Trans>
+										</Text>
+									</View>
+								</Pressable>
+							</>
+						)}
+					</View>
 				</View>
-			</View>
-		</ScreenContainer>
+			</ScreenContainer>
+		</>
 	)
 }
 
@@ -244,15 +259,13 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: 'center',
 		marginTop: theme.spacing.md,
 	},
+	backButtonRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: theme.spacing.xs,
+	},
 	backButtonText: {
 		color: theme.colors.primary,
-	},
-	closeButton: {
-		padding: theme.spacing.sm,
-	},
-	closeButtonText: {
-		color: theme.colors.text,
-		fontSize: theme.typography.h3.fontSize,
 	},
 	container: {
 		backgroundColor: theme.colors.background,
@@ -267,9 +280,16 @@ const styles = StyleSheet.create((theme) => ({
 		color: theme.colors.error,
 		marginTop: theme.spacing.xs,
 	},
-	header: {
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
+	headerIconPressable: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		minHeight: 44,
+		minWidth: 44,
+		padding: theme.spacing.sm,
+	},
+	headerIconText: {
+		color: theme.colors.text,
+		fontSize: theme.fontSizes.xxl,
 	},
 	input: {
 		backgroundColor: theme.colors.surface,
@@ -277,6 +297,7 @@ const styles = StyleSheet.create((theme) => ({
 		borderRadius: theme.borderRadius.sm,
 		borderWidth: 1,
 		color: theme.colors.text,
+		...theme.typography.input,
 		padding: theme.spacing.sm,
 	},
 	inputContainer: {

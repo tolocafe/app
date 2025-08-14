@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Pressable, View } from 'react-native'
+import { Platform, Pressable, View } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
 
 import { StyleSheet } from 'react-native-unistyles'
@@ -59,6 +59,7 @@ export function Button({
 const styles = StyleSheet.create((theme) => ({
 	button: {
 		alignItems: 'center',
+		borderCurve: Platform.OS === 'ios' ? 'continuous' : undefined,
 		borderRadius: theme.borderRadius.lg,
 		justifyContent: 'center',
 		paddingHorizontal: theme.spacing.lg,

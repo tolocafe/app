@@ -71,7 +71,11 @@ export default function MenuDetail() {
 			<ScreenContainer>
 				<View style={styles.header}>
 					<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-						<Text style={styles.closeButtonText}>✕</Text>
+						<Ionicons
+							color={styles.closeButtonText.color}
+							name="close"
+							size={20}
+						/>
 					</TouchableOpacity>
 				</View>
 				<View style={styles.content}>
@@ -377,9 +381,6 @@ const styles = StyleSheet.create((theme) => ({
 		fontWeight: theme.fontWeights.semibold,
 		textAlign: 'center',
 	},
-	modCheckIcon: {
-		color: '#FFFFFF',
-	},
 	modCheck: {
 		alignItems: 'center',
 		backgroundColor: theme.colors.primary,
@@ -387,6 +388,9 @@ const styles = StyleSheet.create((theme) => ({
 		height: 20,
 		justifyContent: 'center',
 		width: 20,
+	},
+	modCheckIcon: {
+		color: '#FFFFFF',
 	},
 	modCheckPlaceholder: {
 		height: 20,

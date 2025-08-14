@@ -12,15 +12,13 @@ import { H2, H3, Paragraph, Text } from '@/components/Text'
 import { selfQueryOptions } from '@/lib/queries/auth'
 import { useCurrentOrder, useOrderStats } from '@/lib/stores/order-store'
 
-import type { Order } from '@/lib/stores/order-store'
+// removed unused Order type used by deleted renderOrderItem
 
 const handleSignIn = () => {
 	router.push('/sign-in')
 }
 
-const handleOrderPress = (order: Order) => {
-	router.push(`/(tabs)/orders/${order.id}`)
-}
+// removed unused handleOrderPress used by deleted renderOrderItem
 
 export default function Orders() {
 	const { data: user } = useQuery(selfQueryOptions)
@@ -35,36 +33,7 @@ export default function Orders() {
 		}
 	}
 
-	const renderOrderItem = ({ item }: { item: Order }) => (
-		<TouchableOpacity
-			onPress={() => handleOrderPress(item)}
-			style={styles.orderCard}
-		>
-			<View style={styles.orderHeader}>
-				<H3>
-					<Trans>Order #{item.id.slice(-6)}</Trans>
-				</H3>
-				<Text style={styles.orderStatus}>
-					{item.status === 'draft' && <Trans>Draft</Trans>}
-					{item.status === 'submitted' && <Trans>Submitted</Trans>}
-					{item.status === 'confirmed' && <Trans>Confirmed</Trans>}
-					{item.status === 'completed' && <Trans>Completed</Trans>}
-					{item.status === 'cancelled' && <Trans>Cancelled</Trans>}
-				</Text>
-			</View>
-			<Paragraph style={styles.orderItems}>
-				<Trans>{item.products.length} items</Trans>
-			</Paragraph>
-			<Paragraph>
-				{item.totalAmount > 0
-					? `$${item.totalAmount.toFixed(2)}`
-					: t`Total calculated at checkout`}
-			</Paragraph>
-			<Paragraph style={styles.orderDate}>
-				{new Date(item.createdAt).toLocaleDateString()}
-			</Paragraph>
-		</TouchableOpacity>
-	)
+	// removed renderOrderItem as current order should not appear in history
 
 	if (!isAuthenticated) {
 		return (
@@ -133,23 +102,17 @@ export default function Orders() {
 
 				{/* Order History */}
 				<View style={styles.ordersContainer}>
-					{currentOrder ? (
-						<>
-							<H2 style={styles.sectionTitle}>
-								<Trans>Order History</Trans>
-							</H2>
-							{renderOrderItem({ item: currentOrder })}
-						</>
-					) : (
-						<>
-							<H3 style={styles.emptyState}>
-								<Trans>No orders yet</Trans>
-							</H3>
-							<Paragraph style={styles.emptyStateSubtitle}>
-								<Trans>Your order history will appear here</Trans>
-							</Paragraph>
-						</>
-					)}
+					<H2 style={styles.sectionTitle}>
+						<Trans>Order History</Trans>
+					</H2>
+					<>
+						<H3 style={styles.emptyState}>
+							<Trans>No orders yet</Trans>
+						</H3>
+						<Paragraph style={styles.emptyStateSubtitle}>
+							<Trans>Your order history will appear here</Trans>
+						</Paragraph>
+					</>
 				</View>
 			</ScreenContainer>
 		</>

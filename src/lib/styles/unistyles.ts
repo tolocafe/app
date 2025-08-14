@@ -47,7 +47,7 @@ const lightTheme = {
 	typography: {
 		body: {
 			fontSize: 16,
-			fontWeight: '400',
+			fontWeight: '500',
 		},
 		button: {
 			fontSize: 14,
@@ -60,11 +60,11 @@ const lightTheme = {
 		},
 		h1: {
 			fontSize: 32,
-			fontWeight: '700',
+			fontWeight: '800',
 		},
 		h2: {
 			fontSize: 24,
-			fontWeight: '600',
+			fontWeight: '700',
 		},
 		h3: {
 			fontSize: 20,
@@ -73,6 +73,10 @@ const lightTheme = {
 		h4: {
 			fontSize: 18,
 			fontWeight: '600',
+		},
+		input: {
+			fontSize: 16,
+			fontWeight: '500',
 		},
 	} as const,
 }

@@ -5,6 +5,7 @@ import Head from 'expo-router/head'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { ScreenContainer } from '@/components/ScreenContainer'
 import { H3, Label, Text } from '@/components/Text'
 
@@ -29,7 +30,7 @@ export default function VisitUs() {
 			</Head>
 			<ScreenContainer>
 				<View style={styles.section}>
-					<View style={styles.card}>
+					<Card>
 						<Text style={styles.cardTitle}>
 							<Trans>TOLO - Buen Café</Trans>
 						</Text>
@@ -92,7 +93,7 @@ export default function VisitUs() {
 								<Trans>View on TripAdvisor</Trans>
 							</Button>
 						</View>
-					</View>
+					</Card>
 				</View>
 			</ScreenContainer>
 		</>
@@ -115,11 +116,6 @@ const styles = StyleSheet.create((theme) => ({
 	actions: {
 		gap: theme.spacing.sm,
 		marginTop: theme.spacing.md,
-	},
-	card: {
-		backgroundColor: theme.colors.surface,
-		borderRadius: theme.borderRadius.lg,
-		padding: theme.spacing.lg,
 	},
 	cardText: {
 		color: theme.colors.textSecondary,
